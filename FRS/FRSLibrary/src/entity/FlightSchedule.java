@@ -20,31 +20,31 @@ public class FlightSchedule implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private Long flightScheduleId;
 
-    public Long getId() {
-        return id;
+    public Long getFlightScheduleId() {
+        return flightScheduleId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setFlightScheduleId(Long flightScheduleId) {
+        this.flightScheduleId = flightScheduleId;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        hash += (flightScheduleId != null ? flightScheduleId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
+        // TODO: Warning - this method won't work in the case the flightScheduleId fields are not set
         if (!(object instanceof FlightSchedule)) {
             return false;
         }
         FlightSchedule other = (FlightSchedule) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.flightScheduleId == null && other.flightScheduleId != null) || (this.flightScheduleId != null && !this.flightScheduleId.equals(other.flightScheduleId))) {
             return false;
         }
         return true;
@@ -52,7 +52,7 @@ public class FlightSchedule implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.FlightSchedule[ id=" + id + " ]";
+        return "entity.FlightSchedule[ id=" + flightScheduleId + " ]";
     }
     
 }

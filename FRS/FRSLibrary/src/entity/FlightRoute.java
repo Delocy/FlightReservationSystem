@@ -19,32 +19,53 @@ public class FlightRoute implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long flightRouteId;
+    
+    //need mapping
+    private Airport originAirport;
+    //need mapping
+    private Airport destinationAirport;
 
-    public Long getId() {
-        return id;
+    public Long getFlightRouteId() {
+        return flightRouteId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setFlightRouteId(Long flightRouteId) {
+        this.flightRouteId = flightRouteId;
+    }
+
+    public Airport getOriginAirport() {
+        return originAirport;
+    }
+
+    public void setOriginAirport(Airport originAirport) {
+        this.originAirport = originAirport;
+    }
+
+    public Airport getDestinationAirport() {
+        return destinationAirport;
+    }
+
+    public void setDestinationAirport(Airport destinationAirport) {
+        this.destinationAirport = destinationAirport;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        hash += (flightRouteId != null ? flightRouteId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
+        // TODO: Warning - this method won't work in the case the flightRouteId fields are not set
         if (!(object instanceof FlightRoute)) {
             return false;
         }
         FlightRoute other = (FlightRoute) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.flightRouteId == null && other.flightRouteId != null) || (this.flightRouteId != null && !this.flightRouteId.equals(other.flightRouteId))) {
             return false;
         }
         return true;
@@ -52,7 +73,7 @@ public class FlightRoute implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.FlightRoute[ id=" + id + " ]";
+        return "entity.FlightRoute[ id=" + flightRouteId + " ]";
     }
     
 }

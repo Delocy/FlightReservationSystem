@@ -5,6 +5,8 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -19,32 +21,72 @@ public class AircraftConfig implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long aircraftConfigId;
+    @Column(nullable = false)
+    private String aircraftConfigName;
+    @Column(nullable = false)
+    private Integer numCabinClass;
+    
+    //idk??
+    private AircraftType aircraftType;
+    private List<CabinClassConfig> cabinClassConfig;
 
-    public Long getId() {
-        return id;
+    public Long getAircraftConfigId() {
+        return aircraftConfigId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setAircraftConfigId(Long aircraftConfigId) {
+        this.aircraftConfigId = aircraftConfigId;
+    }
+
+    public String getAircraftConfigName() {
+        return aircraftConfigName;
+    }
+
+    public void setAircraftConfigName(String aircraftConfigName) {
+        this.aircraftConfigName = aircraftConfigName;
+    }
+
+    public Integer getNumCabinClass() {
+        return numCabinClass;
+    }
+
+    public void setNumCabinClass(Integer numCabinClass) {
+        this.numCabinClass = numCabinClass;
+    }
+
+    public AircraftType getAircraftType() {
+        return aircraftType;
+    }
+
+    public void setAircraftType(AircraftType aircraftType) {
+        this.aircraftType = aircraftType;
+    }
+
+    public List<CabinClassConfig> getCabinClassConfig() {
+        return cabinClassConfig;
+    }
+
+    public void setCabinClassConfig(List<CabinClassConfig> cabinClassConfig) {
+        this.cabinClassConfig = cabinClassConfig;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        hash += (aircraftConfigId != null ? aircraftConfigId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
+        // TODO: Warning - this method won't work in the case the aircraftConfigId fields are not set
         if (!(object instanceof AircraftConfig)) {
             return false;
         }
         AircraftConfig other = (AircraftConfig) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.aircraftConfigId == null && other.aircraftConfigId != null) || (this.aircraftConfigId != null && !this.aircraftConfigId.equals(other.aircraftConfigId))) {
             return false;
         }
         return true;
@@ -52,7 +94,7 @@ public class AircraftConfig implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.AircraftConfig[ id=" + id + " ]";
+        return "entity.AircraftConfig[ id=" + aircraftConfigId + " ]";
     }
     
 }

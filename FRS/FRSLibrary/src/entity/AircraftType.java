@@ -5,6 +5,7 @@
 package entity;
 
 import java.io.Serializable;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -19,32 +20,39 @@ public class AircraftType implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long aircraftTypeId;
+    @Column(nullable = false)
+    private String aircraftTypeName;
+    @Column(nullable = false)
+    private Long maxCapacity;
+    
+    //need mapping - need clarify also im mega confused about this!
+    private AircraftConfig aircraftConfig;
 
-    public Long getId() {
-        return id;
+    public Long getAircraftTypeId() {
+        return aircraftTypeId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setAircraftTypeId(Long aircraftTypeId) {
+        this.aircraftTypeId = aircraftTypeId;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        hash += (aircraftTypeId != null ? aircraftTypeId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
+        // TODO: Warning - this method won't work in the case the aircraftTypeId fields are not set
         if (!(object instanceof AircraftType)) {
             return false;
         }
         AircraftType other = (AircraftType) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.aircraftTypeId == null && other.aircraftTypeId != null) || (this.aircraftTypeId != null && !this.aircraftTypeId.equals(other.aircraftTypeId))) {
             return false;
         }
         return true;
@@ -52,7 +60,7 @@ public class AircraftType implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.AircraftType[ id=" + id + " ]";
+        return "entity.AircraftType[ id=" + aircraftTypeId + " ]";
     }
     
 }
