@@ -5,10 +5,17 @@
 package entity;
 
 import java.io.Serializable;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.Date;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import util.enumeration.ScheduleTypeEnum;
 
 /**
  *
@@ -19,8 +26,16 @@ public class FlightSchedule implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightScheduleId;
+    @Enumerated(EnumType.STRING)
+    private ScheduleTypeEnum scheduleType;
+    @Column(nullable = false)
+    private LocalDateTime departureDate;
+    @Column(nullable = false)
+    private LocalDateTime arrivalDate;
+    @Column(nullable = false)
+    private Duration flightDuration;
 
     public Long getFlightScheduleId() {
         return flightScheduleId;
@@ -28,6 +43,38 @@ public class FlightSchedule implements Serializable {
 
     public void setFlightScheduleId(Long flightScheduleId) {
         this.flightScheduleId = flightScheduleId;
+    }
+
+    public ScheduleTypeEnum getScheduleType() {
+        return scheduleType;
+    }
+
+    public void setScheduleType(ScheduleTypeEnum scheduleType) {
+        this.scheduleType = scheduleType;
+    }
+
+    public LocalDateTime getDepartureDate() {
+        return departureDate;
+    }
+
+    public void setDepartureDate(LocalDateTime departureDate) {
+        this.departureDate = departureDate;
+    }
+
+    public LocalDateTime getArrivalDate() {
+        return arrivalDate;
+    }
+
+    public void setArrivalDate(LocalDateTime arrivalDate) {
+        this.arrivalDate = arrivalDate;
+    }
+
+    public Duration getFlightDuration() {
+        return flightDuration;
+    }
+
+    public void setFlightDuration(Duration flightDuration) {
+        this.flightDuration = flightDuration;
     }
 
     @Override

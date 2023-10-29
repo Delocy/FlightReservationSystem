@@ -5,6 +5,7 @@
 package entity;
 
 import java.io.Serializable;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -19,32 +20,40 @@ public class Partner implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long partnerId;
+    @Column(nullable = false, length = 32)
+    private String firstName;
+    @Column(nullable = false, length = 32)
+    private String lastName;
+    @Column(nullable = false, length = 32)
+    private String username;
+    @Column(nullable = false, length = 32)
+    private String password;
 
-    public Long getId() {
-        return id;
+    public Long getPartnerId() {
+        return partnerId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setPartnerId(Long partnerId) {
+        this.partnerId = partnerId;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        hash += (partnerId != null ? partnerId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
+        // TODO: Warning - this method won't work in the case the partnerId fields are not set
         if (!(object instanceof Partner)) {
             return false;
         }
         Partner other = (Partner) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.partnerId == null && other.partnerId != null) || (this.partnerId != null && !this.partnerId.equals(other.partnerId))) {
             return false;
         }
         return true;
@@ -52,7 +61,39 @@ public class Partner implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.Partner[ id=" + id + " ]";
+        return "entity.Partner[ id=" + partnerId + " ]";
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
     
 }

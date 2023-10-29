@@ -5,7 +5,12 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -19,32 +24,43 @@ public class FlightSchedulePlan implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-
-    public Long getId() {
-        return id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long flightSchedulePlanId;
+    
+    //need mapping
+    private List<FlightSchedule> flightSchedules;
+    
+    public Long getFlightSchedulePlanId() {
+        return flightSchedulePlanId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setFlightSchedulePlanId(Long flightSchedulePlanId) {
+        this.flightSchedulePlanId = flightSchedulePlanId;
+    }
+
+    public List<FlightSchedule> getFlightSchedules() {
+        return flightSchedules;
+    }
+
+    public void setFlightSchedules(List<FlightSchedule> flightSchedules) {
+        this.flightSchedules = flightSchedules;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        hash += (flightSchedulePlanId != null ? flightSchedulePlanId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
+        // TODO: Warning - this method won't work in the case the flightSchedulePlanId fields are not set
         if (!(object instanceof FlightSchedulePlan)) {
             return false;
         }
         FlightSchedulePlan other = (FlightSchedulePlan) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.flightSchedulePlanId == null && other.flightSchedulePlanId != null) || (this.flightSchedulePlanId != null && !this.flightSchedulePlanId.equals(other.flightSchedulePlanId))) {
             return false;
         }
         return true;
@@ -52,7 +68,7 @@ public class FlightSchedulePlan implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.FlightSchedulePlan[ id=" + id + " ]";
+        return "entity.FlightSchedulePlan[ id=" + flightSchedulePlanId + " ]";
     }
     
 }
