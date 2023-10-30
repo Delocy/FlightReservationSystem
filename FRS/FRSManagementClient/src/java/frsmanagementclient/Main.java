@@ -6,6 +6,7 @@ package frsmanagementclient;
 
 import ejb.session.stateless.EmployeeSessionBeanRemote;
 import javax.ejb.EJB;
+import util.exception.FlightNumberExistException;
 
 /**
  *
@@ -17,7 +18,7 @@ public class Main {
     private static EmployeeSessionBeanRemote employeeSessionBeanRemote;
     
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FlightNumberExistException {
         MainApp mainApp = new MainApp(employeeSessionBeanRemote);
         mainApp.runApp();
     }
