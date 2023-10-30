@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 /**
  *
@@ -27,6 +28,9 @@ public class AircraftConfig implements Serializable {
     private String aircraftConfigName;
     @Column(nullable = false)
     private Integer numCabinClass;
+    
+    @OneToMany(mappedBy="aircraftconfig")
+    private List<Flight> flights;
     
     //idk??
     private AircraftType aircraftType;

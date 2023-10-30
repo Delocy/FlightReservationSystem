@@ -5,10 +5,17 @@
 package frsmanagementclient;
 
 import ejb.session.stateless.EmployeeSessionBeanRemote;
+import ejb.session.stateless.FlightSessionBeanRemote;
+import entity.AircraftConfig;
 import entity.Employee;
+import entity.Flight;
+import entity.FlightRoute;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import util.enumeration.EmployeeAccessRightEnum;
 import util.exception.EmployeeUsernameExistException;
+import util.exception.FlightNumberExistException;
 import util.exception.InvalidLoginCredentialException;
 import util.exception.UnknownPersistenceException;
 
@@ -18,6 +25,7 @@ import util.exception.UnknownPersistenceException;
  */
 public class MainApp {
     private EmployeeSessionBeanRemote employeeSessionBeanRemote;
+    private FlightSessionBeanRemote flightSessionBeanRemote;
     private Employee currentEmployee;
     
     public MainApp() {
@@ -28,7 +36,7 @@ public class MainApp {
         this.employeeSessionBeanRemote = employeeSessionBeanRemote;
     }
     
-    public void runApp() {
+    public void runApp() throws FlightNumberExistException {
         Scanner scanner = new Scanner(System.in);
         Integer response = 0;
         
@@ -82,7 +90,7 @@ public class MainApp {
         }
     }
     
-    private void menuMain() 
+    private void menuMain() throws FlightNumberExistException 
     {
         Scanner scanner = new Scanner(System.in);
         Integer response = 0;
@@ -91,33 +99,158 @@ public class MainApp {
         {
             System.out.println("*** FRS Management Portal ***\n");
             System.out.println("You are login as " + currentEmployee.getFirstName() + " with " + currentEmployee.getAccessRightEnum().toString() + " rights\n");
-            System.out.println("1: Create Employee");
-            System.out.println("2: ");
-            System.out.println("3: ");
-            System.out.println("4: Logout\n");
-            response = 0;
+            
+            EmployeeAccessRightEnum currentAccessRightEnum = currentEmployee.getAccessRightEnum();
+            if (currentAccessRightEnum == EmployeeAccessRightEnum.SYSTEMADMIN) {
+                System.out.println("1: Create Employee");
+                System.out.println("2: Logout\n");
+                response = 0;
 
-            while (response < 1 || response > 4) {
-                System.out.print("> ");
+                while (response < 1 || response > 4) {
+                    System.out.print("> ");
 
-                response = scanner.nextInt();
+                    response = scanner.nextInt();
 
-                if (response == 1) {
-                    doCreateEmployee();
-                } else if (response == 2) {
-                    // 
-                } else if (response == 3) {
-                    // 
-                } else if (response == 4) {
+                    if (response == 1) {
+                        doCreateEmployee();
+                    } else if (response == 2) {
+                        break;
+                    } else {
+                        System.out.println("Invalid option, please try again!\n");
+                    }
+                }
+
+                if (response == 2) {
                     break;
-                } else {
-                    System.out.println("Invalid option, please try again!\n");
+                }
+                
+            } else if (currentAccessRightEnum == EmployeeAccessRightEnum.FLEETMANAGER) {
+                System.out.println("1: Create Aircraft Configuration");
+                System.out.println("2: View All Aircraft Configuration");
+                System.out.println("3: View Aircraft Configuration Details");
+                System.out.println("4: Logout\n");
+                
+                response = 0;
+
+                while (response < 1 || response > 4) {
+                    System.out.print("> ");
+
+                    response = scanner.nextInt();
+
+                    if (response == 1) {
+                        //
+                    } else if (response == 2) {
+                        // 
+                    } else if (response == 3) {
+                        // 
+                    } else if (response == 4) {
+                        break;
+                    } else {
+                        System.out.println("Invalid option, please try again!\n");
+                    }
+                }
+
+                if (response == 4) {
+                    break;
+                }
+                
+            } else if (currentAccessRightEnum == EmployeeAccessRightEnum.ROUTEPLANNER) {
+                System.out.println("1: Create Flight Route");
+                System.out.println("2: View All Flight Routes");
+                System.out.println("3: Delete Flight Route");
+                System.out.println("4: Logout\n");
+                
+                response = 0;
+
+                while (response < 1 || response > 4) {
+                    System.out.print("> ");
+
+                    response = scanner.nextInt();
+
+                    if (response == 1) {
+                        //
+                    } else if (response == 2) {
+                        // 
+                    } else if (response == 3) {
+                        // 
+                    } else if (response == 4) {
+                        break;
+                    } else {
+                        System.out.println("Invalid option, please try again!\n");
+                    }
+                }
+
+                if (response == 4) {
+                    break;
+                }
+                
+            } else if (currentAccessRightEnum == EmployeeAccessRightEnum.SCHEDULEMANAGER) {
+                System.out.println("1: Create Flight");
+                System.out.println("2: View All Flights");
+                System.out.println("3: View Flight Details"); // this part then have options to update or delete the flight
+                System.out.println("4: Create Flight Schedule Plan");
+                System.out.println("5: View All Flight Schedule Plans");
+                System.out.println("6: View Flight Schedule Plan Details"); // have options to update or delete the flight schedule plan
+                System.out.println("7: Logout\n");
+                
+                response = 0;
+
+                while (response < 1 || response > 4) {
+                    System.out.print("> ");
+
+                    response = scanner.nextInt();
+
+                    if (response == 1) {
+                        doCreateFlight();
+                    } else if (response == 2) {
+                        //doViewAllFlights();
+                    } else if (response == 3) {
+                        // 
+                    } else if (response == 4) {
+                        // 
+                    } else if (response == 5) {
+                        // 
+                    } else if (response == 6) {
+                        // 
+                    } else if (response == 7) {
+                        break;
+                    } else {
+                        System.out.println("Invalid option, please try again!\n");
+                    }
+                }
+
+                if (response == 6) {
+                    break;
+                }
+                
+            } else if (currentAccessRightEnum == EmployeeAccessRightEnum.SALESMANAGER) {
+                System.out.println("1: View Seat Inventory");
+                System.out.println("2: View Flight Reservations");
+                System.out.println("3: Logout\n");
+                
+                response = 0;
+
+                while (response < 1 || response > 4) {
+                    System.out.print("> ");
+
+                    response = scanner.nextInt();
+
+                    if (response == 1) {
+                        //
+                    } else if (response == 2) {
+                        // 
+                    } else if (response == 3) {
+                        break;
+                    } else {
+                        System.out.println("Invalid option, please try again!\n");
+                    }
+                }
+
+                if (response == 3) {
+                    break;
                 }
             }
-
-            if (response == 4) {
-                break;
-            }
+           
         }
     }
     
@@ -151,6 +284,27 @@ public class MainApp {
             System.out.println("** Employee " + newEmployee.getFirstName() + newEmployee.getLastName() + " with role : " + newEmployee.getAccessRightEnum() +" has been successfully created **");
         } catch (EmployeeUsernameExistException ex) {
             System.out.println("Error occured when creating the new customer " + ex.getMessage());
+        }
+    }
+    
+    private void doCreateFlight() throws FlightNumberExistException {
+        Scanner scanner = new Scanner(System.in);
+        Flight newFlight = new Flight();
+        System.out.println("*** FRS Management Portal - Create Flight ***\n");
+        System.out.println("Enter flight number");
+        newFlight.setFlightNumber(scanner.nextLine().trim());
+
+        //if want to set flight configurations and routes at this time:
+        newFlight.setAircraftConfig(new AircraftConfig());
+        newFlight.setFlightRoute(new FlightRoute());
+
+        flightSessionBeanRemote.createNewFlight(newFlight);
+
+        try {
+            Long employeeID = flightSessionBeanRemote.createNewFlight(newFlight);
+            System.out.println("** Flight: " + newFlight.getFlightNumber() + " has been successfully created **");
+        } catch (FlightNumberExistException ex) {
+            System.out.println("Error occured when creating the new flight " + ex.getMessage());
         }
     }
     
