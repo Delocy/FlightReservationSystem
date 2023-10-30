@@ -36,6 +36,17 @@ public class Employee implements Serializable {
     private String username;
     @Column(nullable = false, length = 32)
     private String password;
+
+    public Employee() {
+    }
+
+    public Employee(String firstName, String lastName, EmployeeAccessRightEnum accessRightEnum, String username, String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.accessRightEnum = accessRightEnum;
+        this.username = username;
+        this.password = password;
+    }
     
     public Long getEmployeeID() {
         return employeeID;

@@ -9,6 +9,7 @@ package util.enumeration;
  * @author zares
  */
 public enum EmployeeAccessRightEnum {
+    SYSTEMADMIN,
     FLEETMANAGER,
     ROUTEPLANNER,
     SCHEDULEMANAGER,
