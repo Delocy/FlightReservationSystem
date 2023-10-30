@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 /**
  *
@@ -24,6 +25,11 @@ public class Flight implements Serializable {
     private Long flightId;
     @Column(nullable = false, length = 7)
     private String flightNumber;
+    
+    @ManyToOne
+    private FlightRoute flightRoute;
+    @ManyToOne
+    private AircraftConfig aircraftConfig;
 
     public Long getFlightId() {
         return flightId;
