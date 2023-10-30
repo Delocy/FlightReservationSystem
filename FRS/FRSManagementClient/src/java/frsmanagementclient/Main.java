@@ -18,7 +18,7 @@ public class Main {
     private static EmployeeSessionBeanRemote employeeSessionBeanRemote;
     
     
-    public static void main(String[] args) throws FlightNumberExistException {
+    public static void main(String[] args) {
         MainApp mainApp = new MainApp(employeeSessionBeanRemote);
         mainApp.runApp();
     }

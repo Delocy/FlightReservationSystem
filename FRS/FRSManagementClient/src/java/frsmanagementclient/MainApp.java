@@ -36,7 +36,7 @@ public class MainApp {
         this.employeeSessionBeanRemote = employeeSessionBeanRemote;
     }
     
-    public void runApp() throws FlightNumberExistException {
+    public void runApp() {
         Scanner scanner = new Scanner(System.in);
         Integer response = 0;
         
@@ -90,7 +90,7 @@ public class MainApp {
         }
     }
     
-    private void menuMain() throws FlightNumberExistException 
+    private void menuMain()
     {
         Scanner scanner = new Scanner(System.in);
         Integer response = 0;
@@ -287,7 +287,7 @@ public class MainApp {
         }
     }
     
-    private void doCreateFlight() throws FlightNumberExistException {
+    private void doCreateFlight() {
         Scanner scanner = new Scanner(System.in);
         Flight newFlight = new Flight();
         System.out.println("*** FRS Management Portal - Create Flight ***\n");
@@ -297,8 +297,6 @@ public class MainApp {
         //if want to set flight configurations and routes at this time:
         newFlight.setAircraftConfig(new AircraftConfig());
         newFlight.setFlightRoute(new FlightRoute());
-
-        flightSessionBeanRemote.createNewFlight(newFlight);
 
         try {
             Long employeeID = flightSessionBeanRemote.createNewFlight(newFlight);
