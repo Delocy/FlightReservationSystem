@@ -47,6 +47,24 @@ public class Flight implements Serializable {
         this.flightNumber = flightNumber;
     }
 
+    public FlightRoute getFlightRoute() {
+        return flightRoute;
+    }
+
+    public void setFlightRoute(FlightRoute flightRoute) {
+        this.flightRoute = flightRoute;
+    }
+
+    public AircraftConfig getAircraftConfig() {
+        return aircraftConfig;
+    }
+
+    public void setAircraftConfig(AircraftConfig aircraftConfig) {
+        this.aircraftConfig = aircraftConfig;
+    }
+
+    
+    
     @Override
     public int hashCode() {
         int hash = 0;
