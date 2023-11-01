@@ -4,7 +4,9 @@
  */
 package ejb.session.singleton;
 
+import ejb.session.stateless.AirportSessionBeanLocal;
 import ejb.session.stateless.EmployeeSessionBeanLocal;
+import ejb.session.stateless.FlightSessionBeanLocal;
 import entity.Employee;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -25,6 +27,9 @@ import util.exception.UnknownPersistenceException;
 @Startup
 
 public class DataInitializationSessionBean {
+
+    @EJB
+    private FlightSessionBeanLocal flightSessionBeanLocal;
 
     @EJB
     private EmployeeSessionBeanLocal employeeSessionBeanLocal;
@@ -57,6 +62,7 @@ public class DataInitializationSessionBean {
 //            employeeSessionBeanLocal.createNewEmployee(new Employee("RoutePlanner", "Default", EmployeeAccessRightEnum.ROUTEPLANNER, "routeplanner", "password"));
 //            employeeSessionBeanLocal.createNewEmployee(new Employee("ScheduleManager", "Default", EmployeeAccessRightEnum.SCHEDULEMANAGER, "schedulemanager", "password"));
 //            employeeSessionBeanLocal.createNewEmployee(new Employee("SalesManager", "Default", EmployeeAccessRightEnum.SALESMANAGER, "salesmanager", "password"));
+            //flightSessionBeanLocal.createNewFlight(new Flight())
         }
         catch(EmployeeUsernameExistException ex)
         {
