@@ -5,6 +5,7 @@
 package ejb.session.stateless;
 
 import entity.Airport;
+import entity.Flight;
 import entity.FlightRoute;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,9 +39,18 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
     // "Insert Code > Add Business Method")
     
     @Override
+    public FlightRoute retrieveFlightRouteByRouteID(Long routeID) throws FlightRouteNotFoundException { 
+        FlightRoute flightRoute = em.find(FlightRoute.class, routeID);
+        if (flightRoute != null) {
+            return flightRoute;
+        } else {
+            throw new FlightRouteNotFoundException("Route ID " + routeID + " does not exist!");
+        }
+    }
+    
+    @Override
     public FlightRoute createFlightRoute(Long originAirportID, Long destinationAirportID) throws AirportNotFoundException, FlightRouteExistException, UnknownPersistenceException {
         try {
-            System.out.println(originAirportID + " " + destinationAirportID);
             Airport originAirport = airportSessionBeanLocal.retrieveAirportByAirportId(originAirportID);
             Airport destinationAirport = airportSessionBeanLocal.retrieveAirportByAirportId(destinationAirportID);
 
@@ -95,6 +105,28 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
             }
         }
         return orderedFlightRoutes;
+    }
+    
+    @Override
+    public void deleteFlightRoute(Long routeID) throws FlightRouteNotFoundException {
+        try {
+            FlightRoute route = retrieveFlightRouteByRouteID(routeID);
+            List<Flight> flightsUsingThisRoute = route.getFlights();
+            
+            if(flightsUsingThisRoute.isEmpty()) {
+                em.remove(route);
+            } else {
+                route.setIsDisabled(true);
+                for (Flight flight : flightsUsingThisRoute) {
+                    flight.setFlightRoute(route);
+                }
+                em.merge(route);
+            }
+            em.flush(); 
+        } catch (FlightRouteNotFoundException ex) {
+            throw new FlightRouteNotFoundException("Flight Route does not exist in system");
+        }
+        
     }
 
 }
