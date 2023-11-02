@@ -4,13 +4,17 @@
  */
 package entity;
 
+import com.sun.javafx.scene.control.skin.VirtualFlow;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 /**
@@ -24,17 +28,26 @@ public class AircraftConfig implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long aircraftConfigId;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true, length = 64)
     private String aircraftConfigName;
     @Column(nullable = false)
     private Integer numCabinClass;
     
-    //@OneToMany(mappedBy="aircraftconfig")
-    private List<Flight> flights;
-    
-    //idk??
+    @ManyToOne(optional = false)
     private AircraftType aircraftType;
+    
+    @OneToMany(mappedBy = "aircraftConfig", fetch = FetchType.EAGER)
     private List<CabinClassConfig> cabinClassConfig;
+
+    public AircraftConfig() {
+        this.cabinClassConfig = new ArrayList<>();
+    }
+
+    public AircraftConfig(String aircraftConfigName, Integer numCabinClass, AircraftType aircraftType) {
+        this.aircraftConfigName = aircraftConfigName;
+        this.numCabinClass = numCabinClass;
+        this.aircraftType = aircraftType;
+    }
 
     public Long getAircraftConfigId() {
         return aircraftConfigId;

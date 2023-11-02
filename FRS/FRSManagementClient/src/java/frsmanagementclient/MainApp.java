@@ -4,12 +4,13 @@
  */
 package frsmanagementclient;
 
+import ejb.session.stateless.AircraftTypeSessionBeanRemote;
 import ejb.session.stateless.AirportSessionBeanRemote;
 import ejb.session.stateless.EmployeeSessionBeanRemote;
 import ejb.session.stateless.FlightRouteSessionBeanRemote;
 import ejb.session.stateless.FlightSessionBeanRemote;
 import entity.AircraftConfig;
-import entity.Airport;
+import entity.AircraftType;
 import entity.Employee;
 import entity.Flight;
 import entity.FlightRoute;
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import util.enumeration.EmployeeAccessRightEnum;
-import util.exception.AirportNotFoundException;
+import util.exception.AircraftTypeNotFoundException;
 import util.exception.EmployeeUsernameExistException;
 import util.exception.FlightNumberExistException;
 import util.exception.FlightRouteExistException;
@@ -31,16 +32,19 @@ import util.exception.UnknownPersistenceException;
 public class MainApp {
     private EmployeeSessionBeanRemote employeeSessionBeanRemote;
     private FlightSessionBeanRemote flightSessionBeanRemote;
-    private FlightRouteSessionBeanRemote flightRouteSessionBeanRemote;
     private AirportSessionBeanRemote airportSessionBeanRemote;
+    private AircraftTypeSessionBeanRemote aircraftTypeSessionBeanRemote;
     private Employee currentEmployee;
     
     public MainApp() {
         
     }
 
-    public MainApp(EmployeeSessionBeanRemote employeeSessionBeanRemote) {
+    public MainApp(EmployeeSessionBeanRemote employeeSessionBeanRemote, FlightSessionBeanRemote flightSessionBeanRemote, AirportSessionBeanRemote airportSessionBeanRemote, AircraftTypeSessionBeanRemote aircraftTypeSessionBeanRemote) {
         this.employeeSessionBeanRemote = employeeSessionBeanRemote;
+        this.flightSessionBeanRemote = flightSessionBeanRemote;
+        this.airportSessionBeanRemote = airportSessionBeanRemote;
+        this.aircraftTypeSessionBeanRemote = aircraftTypeSessionBeanRemote;
     }
 
     
@@ -381,5 +385,31 @@ public class MainApp {
 //                   
 //        }
 //    }
+    
+    private void doCreateAircraftConfig() throws AircraftTypeNotFoundException {
+        Scanner sc = new Scanner(System.in);
+        AircraftConfig newAircraftConfig = new AircraftConfig();
+        
+        System.out.println("*** FRS Management Portal - Create New Aircraft Configuration ***\n");
+        System.out.printf("%20s%25s%20s\n", "Aircraft Type ID", "Name", "Max Seat Capacity");
+        List<AircraftType> aircraftTypes = aircraftTypeSessionBeanRemote.retrieveAllAircraftType();
+        for (AircraftType a : aircraftTypes) {
+            System.out.printf("%20s%25s%20s\n", a.getAircraftTypeId().toString(), a.getAircraftTypeName(), a.getMaxCapacity());
+        }
+        
+        System.out.print("Enter Aircraft Type ID> ");
+        Long aircraftTypeId = sc.nextLong();
+        sc.nextLine();
+        
+        AircraftType aircraftType = aircraftTypeSessionBeanRemote.retrieveAircraftTypeByAircraftTypeId(aircraftTypeId);
+        String name = sc.nextLine().trim();
+        newAircraftConfig.setAircraftConfigName(name);
+        int numCabinClass = sc.nextInt();
+        newAircraftConfig.setNumCabinClass(numCabinClass);
+        
+        
+        // next i needa add da cabin class details T_T
+        
+    }
     
 }
