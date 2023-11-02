@@ -35,6 +35,10 @@ public class Airport implements Serializable {
 
     public Airport() {
     }
+    
+    public Airport(String airportCode) {
+        this.airportCode = airportCode;
+    }
 
     public Airport(String airportName, String airportCode, String city, String state, String country) {
         this.airportName = airportName;

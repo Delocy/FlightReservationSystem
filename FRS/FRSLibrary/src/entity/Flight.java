@@ -28,6 +28,7 @@ public class Flight implements Serializable {
     
     @ManyToOne
     private FlightRoute flightRoute;
+    
     @ManyToOne
     private AircraftConfig aircraftConfig;
 

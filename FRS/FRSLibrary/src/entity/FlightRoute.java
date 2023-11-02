@@ -10,6 +10,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 /**
@@ -23,12 +26,16 @@ public class FlightRoute implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightRouteId;
+    //private boolean hasComplementaryReturnRoute;
     
-    @OneToMany(mappedBy="flightroute")
+    @OneToMany(mappedBy="flightRoute")
     private List<Flight> flights;
-    //need mapping
+    @ManyToOne
+    @JoinColumn(name = "originairport")
     private Airport originAirport;
-    //need mapping
+
+    @ManyToOne
+    @JoinColumn(name = "destinationairport")
     private Airport destinationAirport;
 
     public Long getFlightRouteId() {
@@ -38,6 +45,16 @@ public class FlightRoute implements Serializable {
     public void setFlightRouteId(Long flightRouteId) {
         this.flightRouteId = flightRouteId;
     }
+
+//    public boolean isHasComplementaryReturnRoute() {
+//        return hasComplementaryReturnRoute;
+//    }
+//
+//    public void setHasComplementaryReturnRoute(boolean hasComplementaryReturnRoute) {
+//        this.hasComplementaryReturnRoute = hasComplementaryReturnRoute;
+//    }
+    
+    
 
     public Airport getOriginAirport() {
         return originAirport;
