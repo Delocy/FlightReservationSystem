@@ -29,7 +29,7 @@ public class AircraftConfig implements Serializable {
     @Column(nullable = false)
     private Integer numCabinClass;
     
-    @OneToMany(mappedBy="aircraftconfig")
+    //@OneToMany(mappedBy="aircraftconfig")
     private List<Flight> flights;
     
     //idk??

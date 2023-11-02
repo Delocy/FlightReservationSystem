@@ -4,9 +4,12 @@
  */
 package frsmanagementclient;
 
+import ejb.session.stateless.AirportSessionBeanRemote;
 import ejb.session.stateless.EmployeeSessionBeanRemote;
+import ejb.session.stateless.FlightRouteSessionBeanRemote;
 import ejb.session.stateless.FlightSessionBeanRemote;
 import entity.AircraftConfig;
+import entity.Airport;
 import entity.Employee;
 import entity.Flight;
 import entity.FlightRoute;
@@ -14,8 +17,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import util.enumeration.EmployeeAccessRightEnum;
+import util.exception.AirportNotFoundException;
 import util.exception.EmployeeUsernameExistException;
 import util.exception.FlightNumberExistException;
+import util.exception.FlightRouteExistException;
 import util.exception.InvalidLoginCredentialException;
 import util.exception.UnknownPersistenceException;
 
@@ -26,6 +31,8 @@ import util.exception.UnknownPersistenceException;
 public class MainApp {
     private EmployeeSessionBeanRemote employeeSessionBeanRemote;
     private FlightSessionBeanRemote flightSessionBeanRemote;
+    private FlightRouteSessionBeanRemote flightRouteSessionBeanRemote;
+    private AirportSessionBeanRemote airportSessionBeanRemote;
     private Employee currentEmployee;
     
     public MainApp() {
@@ -35,8 +42,10 @@ public class MainApp {
     public MainApp(EmployeeSessionBeanRemote employeeSessionBeanRemote) {
         this.employeeSessionBeanRemote = employeeSessionBeanRemote;
     }
+
     
-    public void runApp() {
+    
+    public void runApp() throws AirportNotFoundException, FlightRouteExistException, UnknownPersistenceException {
         Scanner scanner = new Scanner(System.in);
         Integer response = 0;
         
@@ -90,7 +99,7 @@ public class MainApp {
         }
     }
     
-    private void menuMain()
+    private void menuMain() throws AirportNotFoundException, FlightRouteExistException, UnknownPersistenceException
     {
         Scanner scanner = new Scanner(System.in);
         Integer response = 0;
@@ -168,7 +177,7 @@ public class MainApp {
                     response = scanner.nextInt();
 
                     if (response == 1) {
-                        //
+                        doCreateFlightRoute();
                     } else if (response == 2) {
                         // 
                     } else if (response == 3) {
@@ -197,13 +206,13 @@ public class MainApp {
 
                 while (response < 1 || response > 4) {
                     System.out.print("> ");
-
+ 
                     response = scanner.nextInt();
 
                     if (response == 1) {
-                        doCreateFlight();
+                        //doCreateFlight();
                     } else if (response == 2) {
-                        //doViewAllFlights();
+                        // doViewAllFlights();
                     } else if (response == 3) {
                         // 
                     } else if (response == 4) {
@@ -263,6 +272,7 @@ public class MainApp {
         System.out.print("Enter last name> ");
         newEmployee.setLastName(scanner.nextLine().trim());
         System.out.println("Select employeeAccessRight \n 1: Fleet Manager \n 2: Route Planner \n 3: Schedule Manager \n 4: Sales Manager");
+       
         Integer accessRightInt = scanner.nextInt();
         if (accessRightInt == 1) {
             newEmployee.setAccessRightEnum(EmployeeAccessRightEnum.FLEETMANAGER);
@@ -275,10 +285,11 @@ public class MainApp {
         } else {
             System.out.println("Invalid input , please try again!\n");
         }
+        scanner.nextLine();
         System.out.print("Enter username> ");
-        newEmployee.setLastName(scanner.nextLine().trim());
+        newEmployee.setUsername(scanner.nextLine().trim());
         System.out.print("Enter password> ");
-        newEmployee.setLastName(scanner.nextLine().trim());
+        newEmployee.setPassword(scanner.nextLine().trim());
         try {
             Long employeeID = employeeSessionBeanRemote.createNewEmployee(newEmployee);
             System.out.println("** Employee " + newEmployee.getFirstName() + newEmployee.getLastName() + " with role : " + newEmployee.getAccessRightEnum() +" has been successfully created **");
@@ -287,23 +298,88 @@ public class MainApp {
         }
     }
     
-    private void doCreateFlight() {
+    private void doCreateFlightRoute() throws AirportNotFoundException, FlightRouteExistException, UnknownPersistenceException {
         Scanner scanner = new Scanner(System.in);
-        Flight newFlight = new Flight();
-        System.out.println("*** FRS Management Portal - Create Flight ***\n");
-        System.out.println("Enter flight number");
-        newFlight.setFlightNumber(scanner.nextLine().trim());
-
-        //if want to set flight configurations and routes at this time:
-        newFlight.setAircraftConfig(new AircraftConfig());
-        newFlight.setFlightRoute(new FlightRoute());
-
-        try {
-            Long employeeID = flightSessionBeanRemote.createNewFlight(newFlight);
-            System.out.println("** Flight: " + newFlight.getFlightNumber() + " has been successfully created **");
-        } catch (FlightNumberExistException ex) {
-            System.out.println("Error occured when creating the new flight " + ex.getMessage());
+        System.out.println("*** FRS Management Portal - Create Flight Route ***\n");
+        System.out.println("Enter origin IATA airport code");
+        String origin = scanner.nextLine().trim();
+        Airport originAirport = airportSessionBeanRemote.retrieveAirportByAirportCode(origin);
+        System.out.println("Enter destination IATA airport code");
+        String destination = scanner.nextLine().trim();
+        Airport destinationAirport = airportSessionBeanRemote.retrieveAirportByAirportCode(destination);
+        
+        FlightRoute newFlightRoute = flightRouteSessionBeanRemote.createFlightRoute(originAirport.getAirportId(), destinationAirport.getAirportId());
+        System.out.println("** Flight Route: from Origin " + newFlightRoute.getOriginAirport() + " to Destination " + newFlightRoute.getDestinationAirport() + " has been successfully created **");
+        System.out.println("Would you like to create a complementary return route? (Y/N)");
+        if (scanner.nextLine().trim().equalsIgnoreCase("Y")) {
+//            FlightRoute newReturnRoute = new FlightRoute();
+              flightRouteSessionBeanRemote.createFlightRoute(destinationAirport.getAirportId(), originAirport.getAirportId());
+              System.out.println("** Flight Route: from Origin " + newFlightRoute.getOriginAirport() + " to Destination " + newFlightRoute.getDestinationAirport() + " has been successfully created **");
         }
     }
+    
+    private void doViewAllFlightRoutes() {
+        System.out.println("*** FRS Management Portal - View All Flight Routes ***\n");
+        List<FlightRoute> allFlightRoutes = flightRouteSessionBeanRemote.viewAllFlightRoutes();
+        System.out.printf("%4s%16s%24s\n", "Index", "Origin Airport", "Destination Airport");
+        int index = 1;
+        for (FlightRoute flightRoute : allFlightRoutes) {
+            index++;
+            System.out.printf("%4s%16s%24s\n", index, flightRoute.getOriginAirport().toString(), flightRoute.getDestinationAirport().toString());
+        }    
+    }
+    
+//    private void doCreateFlight() {
+//        Scanner scanner = new Scanner(System.in);
+//        Flight newFlight = new Flight();
+//        System.out.println("*** FRS Management Portal - Create Flight ***\n");
+//        System.out.println("Enter flight number");
+//        newFlight.setFlightNumber(scanner.nextLine().trim());
+//
+//        //if want to set flight configurations and routes at this time:
+//        newFlight.setAircraftConfig(new AircraftConfig());
+//        System.out.println("Select flight route");
+//        //
+//        FlightRoute flightRoute = new FlightRoute();
+//        newFlight.setFlightRoute(flightRoute);
+//
+//        try {
+//            Long flightID = flightSessionBeanRemote.createNewFlight(newFlight);
+//            System.out.println("** Flight: " + newFlight.getFlightNumber() + " has been successfully created **");
+//        } catch (FlightNumberExistException ex) {
+//            System.out.println("Error occured when creating the new flight " + ex.getMessage());
+//        }
+//        
+//        if (flightRoute.isHasComplementaryReturnRoute()) {
+//            System.out.println("Do you want to create a complementary return flight based on the same aircraft configuration but with a different flight number?");
+//            Flight returnFlight = new Flight();
+//            String input = scanner.nextLine().trim();
+//            if (input.equals("Y")) {
+//                System.out.println("Enter new flight number for return flight");
+//                returnFlight.setFlightNumber(scanner.nextLine().trim());
+//                returnFlight.setAircraftConfig(newFlight.getAircraftConfig());
+//                // returnFlight.setFlightRoute(flightRoute.getReturnRoute());
+//                try {
+//                    Long flightID = flightSessionBeanRemote.createNewFlight(returnFlight);
+//                    System.out.println("** Return Flight: " + newFlight.getFlightNumber() + " has been successfully created **");
+//                } catch (FlightNumberExistException ex) {
+//                    System.out.println("Error occured when creating the new flight " + ex.getMessage());
+//                }
+//            } else if (input.equals("N")) {
+//                returnFlight.setFlightNumber(newFlight.getFlightNumber());
+//                returnFlight.setAircraftConfig(newFlight.getAircraftConfig());
+//                // returnFlight.setFlightRoute(flightRoute.getReturnRoute());
+//                try {
+//                    Long flightID = flightSessionBeanRemote.createNewFlight(returnFlight);
+//                    System.out.println("** Flight: " + newFlight.getFlightNumber() + " has been successfully created **");
+//                } catch (FlightNumberExistException ex) {
+//                    System.out.println("Error occured when creating the new flight " + ex.getMessage());
+//                }
+//            } else {
+//                //
+//            }
+//                   
+//        }
+//    }
     
 }

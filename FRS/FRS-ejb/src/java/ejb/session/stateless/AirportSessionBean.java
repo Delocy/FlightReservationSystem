@@ -12,6 +12,7 @@ import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import util.exception.AirportNotFoundException;
 import util.exception.UnknownPersistenceException;
 
@@ -49,11 +50,11 @@ public class AirportSessionBean implements AirportSessionBeanRemote, AirportSess
     }
     
     public Airport retrieveAirportByAirportCode(String airportCode) throws AirportNotFoundException {
-        Query query = em.createQuery("SELECT a FROM Airport a WHERE a.airportCode = :inAirportCode");
+        TypedQuery<Airport> query = em.createQuery("SELECT a FROM Airport a WHERE a.airportCode = :inAirportCode", Airport.class);
         query.setParameter("inAirportCode", airportCode);
         
         try {
-            return (Airport)query.getSingleResult();
+            return query.getSingleResult();
         } catch (NoResultException | NonUniqueResultException ex) {
             throw new AirportNotFoundException("Airport code " + airportCode + " does not exist!");
         }

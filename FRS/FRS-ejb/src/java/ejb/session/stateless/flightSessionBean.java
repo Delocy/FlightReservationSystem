@@ -6,12 +6,16 @@ package ejb.session.stateless;
 
 import entity.Employee;
 import entity.Flight;
+import entity.FlightRoute;
+import java.util.ArrayList;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import util.exception.EmployeeNotFoundException;
 import util.exception.FlightNotFoundException;
 import util.exception.FlightNumberExistException;
@@ -53,4 +57,28 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
             throw new FlightNotFoundException("Flight " + flightNo + " does not exist!");
         }
     }
+    
+//    @Override
+//    public Flight retrieveFlightByFlightID(Long flightId) {
+//        return em.find(Flight.class, flightId);
+//    }
+//    
+//    @Override
+//    public List<Flight> viewAllFlights() {
+//        TypedQuery<Flight> query = em.createQuery("SELECT f FROM Flight f ORDER BY f.flightNumber ASC", Flight.class);
+//        List<Flight> allFlights = query.getResultList();
+//        
+//        List<Flight> orderedFlights = new ArrayList<>();
+//        
+//        for (Flight flight : allFlights) {
+//           if (!orderedFlights.contains(flight)) {
+//               FlightRoute flightRoute = flight.getFlightRoute();
+//               if (flightRoute.isHasComplementaryReturnRoute()) {
+//                   Flight complementaryReturnFlight = flightRoute.getComplementaryReturnFlight();
+//               }
+//               
+//           }
+//        }
+//    }
+    
 }
