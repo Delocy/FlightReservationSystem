@@ -5,6 +5,7 @@
 package ejb.session.stateless;
 
 import entity.AircraftType;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -59,5 +60,11 @@ public class AircraftTypeSessionBean implements AircraftTypeSessionBeanRemote, A
         } catch (NoResultException | NonUniqueResultException ex) {
             throw new AircraftTypeNotFoundException("Aircraft Type Name " + aircraftTypeName + " does not exist!");
         }
+    }
+    
+    @Override
+    public List<AircraftType> retrieveAllAircraftType() {
+        Query query = em.createQuery("SELECT a from AircraftType a ORDER BY a.aircraftTypeName ASC");
+        return query.getResultList();
     }
 }
