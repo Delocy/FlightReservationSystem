@@ -4,7 +4,9 @@
  */
 package entity;
 
+import com.sun.javafx.scene.control.skin.VirtualFlow;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -36,6 +38,16 @@ public class AircraftConfig implements Serializable {
     
     @OneToMany(mappedBy = "aircraftConfig", fetch = FetchType.EAGER)
     private List<CabinClassConfig> cabinClassConfig;
+
+    public AircraftConfig() {
+        this.cabinClassConfig = new ArrayList<>();
+    }
+
+    public AircraftConfig(String aircraftConfigName, Integer numCabinClass, AircraftType aircraftType) {
+        this.aircraftConfigName = aircraftConfigName;
+        this.numCabinClass = numCabinClass;
+        this.aircraftType = aircraftType;
+    }
 
     public Long getAircraftConfigId() {
         return aircraftConfigId;
