@@ -4,9 +4,11 @@
  */
 package frsmanagementclient;
 
+import ejb.session.stateless.AircraftTypeSessionBeanRemote;
+import ejb.session.stateless.AirportSessionBeanRemote;
 import ejb.session.stateless.EmployeeSessionBeanRemote;
+import ejb.session.stateless.FlightSessionBeanRemote;
 import javax.ejb.EJB;
-import util.exception.FlightNumberExistException;
 
 /**
  *
@@ -15,11 +17,20 @@ import util.exception.FlightNumberExistException;
 public class Main {
 
     @EJB
+    private static AircraftTypeSessionBeanRemote aircraftTypeSessionBeanRemote;
+
+    @EJB
+    private static AirportSessionBeanRemote airportSessionBeanRemote;
+
+    @EJB
+    private static FlightSessionBeanRemote flightSessionBeanRemote;
+
+    @EJB
     private static EmployeeSessionBeanRemote employeeSessionBeanRemote;
     
     
     public static void main(String[] args) {
-        MainApp mainApp = new MainApp(employeeSessionBeanRemote);
+        MainApp mainApp = new MainApp(employeeSessionBeanRemote, flightSessionBeanRemote, airportSessionBeanRemote, aircraftTypeSessionBeanRemote);
         mainApp.runApp();
     }
     
