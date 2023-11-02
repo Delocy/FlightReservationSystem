@@ -5,6 +5,7 @@
 package ejb.session.stateless;
 
 import entity.AircraftType;
+import java.util.List;
 import javax.ejb.Remote;
 import util.exception.AircraftTypeNotFoundException;
 import util.exception.UnknownPersistenceException;
@@ -20,4 +21,6 @@ public interface AircraftTypeSessionBeanRemote {
     public AircraftType retrieveAircraftTypeByAircraftTypeId(Long aircraftTypeId) throws AircraftTypeNotFoundException;
 
     public AircraftType retrieveAircraftTypeByAircraftTypeName(String aircraftTypeName) throws AircraftTypeNotFoundException;
+    
+    public List<AircraftType> retrieveAllAircraftType();
 }
