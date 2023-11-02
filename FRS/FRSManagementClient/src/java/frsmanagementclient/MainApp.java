@@ -322,12 +322,12 @@ public class MainApp {
         //System.out.println(destinationAirport.getAirportId());
         
         FlightRoute newFlightRoute = flightRouteSessionBeanRemote.createFlightRoute(originAirport.getAirportId(), destinationAirport.getAirportId());
-        System.out.println("** Flight Route: from Origin " + newFlightRoute.getOriginAirport() + " to Destination " + newFlightRoute.getDestinationAirport() + " has been successfully created **");
+        System.out.println("** Flight Route: from Origin " + newFlightRoute.getOriginAirport().getAirportName() + " to Destination " + newFlightRoute.getDestinationAirport().getAirportName() + " has been successfully created **");
         System.out.println("Would you like to create a complementary return route? (Y/N)");
         if (scanner.nextLine().trim().equalsIgnoreCase("Y")) {
 //            FlightRoute newReturnRoute = new FlightRoute();
-              flightRouteSessionBeanRemote.createFlightRoute(destinationAirport.getAirportId(), originAirport.getAirportId());
-              System.out.println("** Flight Route: from Origin " + newFlightRoute.getOriginAirport() + " to Destination " + newFlightRoute.getDestinationAirport() + " has been successfully created **");
+              FlightRoute compFlightRoute = flightRouteSessionBeanRemote.createFlightRoute(destinationAirport.getAirportId(), originAirport.getAirportId());
+              System.out.println("** Flight Route: from Origin " + compFlightRoute.getOriginAirport().getAirportName() + " to Destination " + compFlightRoute.getDestinationAirport().getAirportName() + " has been successfully created **");
         }
     }
     
