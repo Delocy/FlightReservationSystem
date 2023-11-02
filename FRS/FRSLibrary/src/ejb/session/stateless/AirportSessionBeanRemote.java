@@ -4,7 +4,10 @@
  */
 package ejb.session.stateless;
 
+import entity.Airport;
 import javax.ejb.Remote;
+import util.exception.AirportNotFoundException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -12,5 +15,9 @@ import javax.ejb.Remote;
  */
 @Remote
 public interface AirportSessionBeanRemote {
-    
+    public Long createNewAirport(Airport airport) throws UnknownPersistenceException;
+
+    public Airport retrieveAirportByAirportId(Long airportId) throws AirportNotFoundException;
+
+    public Airport retrieveAirportByAirportCode(String airportCode) throws AirportNotFoundException;
 }
