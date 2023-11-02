@@ -11,6 +11,7 @@ import ejb.session.stateless.FlightRouteSessionBeanRemote;
 import ejb.session.stateless.FlightSessionBeanRemote;
 import entity.AircraftConfig;
 import entity.AircraftType;
+import entity.Airport;
 import entity.Employee;
 import entity.Flight;
 import entity.FlightRoute;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Scanner;
 import util.enumeration.EmployeeAccessRightEnum;
 import util.exception.AircraftTypeNotFoundException;
+import util.exception.AirportNotFoundException;
 import util.exception.EmployeeUsernameExistException;
 import util.exception.FlightNumberExistException;
 import util.exception.FlightRouteExistException;
@@ -32,6 +34,7 @@ import util.exception.UnknownPersistenceException;
 public class MainApp {
     private EmployeeSessionBeanRemote employeeSessionBeanRemote;
     private FlightSessionBeanRemote flightSessionBeanRemote;
+    private FlightRouteSessionBeanRemote flightRouteSessionBeanRemote;
     private AirportSessionBeanRemote airportSessionBeanRemote;
     private AircraftTypeSessionBeanRemote aircraftTypeSessionBeanRemote;
     private Employee currentEmployee;
@@ -40,9 +43,10 @@ public class MainApp {
         
     }
 
-    public MainApp(EmployeeSessionBeanRemote employeeSessionBeanRemote, FlightSessionBeanRemote flightSessionBeanRemote, AirportSessionBeanRemote airportSessionBeanRemote, AircraftTypeSessionBeanRemote aircraftTypeSessionBeanRemote) {
+    public MainApp(EmployeeSessionBeanRemote employeeSessionBeanRemote, FlightSessionBeanRemote flightSessionBeanRemote, FlightRouteSessionBeanRemote flightRouteSessionBeanRemote,AirportSessionBeanRemote airportSessionBeanRemote, AircraftTypeSessionBeanRemote aircraftTypeSessionBeanRemote) {
         this.employeeSessionBeanRemote = employeeSessionBeanRemote;
         this.flightSessionBeanRemote = flightSessionBeanRemote;
+        this.flightRouteSessionBeanRemote = flightRouteSessionBeanRemote;
         this.airportSessionBeanRemote = airportSessionBeanRemote;
         this.aircraftTypeSessionBeanRemote = aircraftTypeSessionBeanRemote;
     }
@@ -183,7 +187,7 @@ public class MainApp {
                     if (response == 1) {
                         doCreateFlightRoute();
                     } else if (response == 2) {
-                        // 
+                        doViewAllFlightRoutes();
                     } else if (response == 3) {
                         // 
                     } else if (response == 4) {
@@ -308,9 +312,13 @@ public class MainApp {
         System.out.println("Enter origin IATA airport code");
         String origin = scanner.nextLine().trim();
         Airport originAirport = airportSessionBeanRemote.retrieveAirportByAirportCode(origin);
+        //System.out.println(airportSessionBeanRemote.retrieveAirportByAirportId(originAirport.getAirportId()).toString());
+        //System.out.println(originAirport.getAirportId());
         System.out.println("Enter destination IATA airport code");
         String destination = scanner.nextLine().trim();
         Airport destinationAirport = airportSessionBeanRemote.retrieveAirportByAirportCode(destination);
+        //System.out.println(airportSessionBeanRemote.retrieveAirportByAirportId(destinationAirport.getAirportId()).toString());
+        //System.out.println(destinationAirport.getAirportId());
         
         FlightRoute newFlightRoute = flightRouteSessionBeanRemote.createFlightRoute(originAirport.getAirportId(), destinationAirport.getAirportId());
         System.out.println("** Flight Route: from Origin " + newFlightRoute.getOriginAirport() + " to Destination " + newFlightRoute.getDestinationAirport() + " has been successfully created **");

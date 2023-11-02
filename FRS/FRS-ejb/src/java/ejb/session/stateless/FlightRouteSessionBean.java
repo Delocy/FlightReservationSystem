@@ -8,13 +8,16 @@ import entity.Airport;
 import entity.FlightRoute;
 import java.util.ArrayList;
 import java.util.List;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import util.exception.AirportNotFoundException;
 import util.exception.FlightRouteExistException;
+import util.exception.FlightRouteNotFoundException;
 import util.exception.UnknownPersistenceException;
 
 /**
@@ -24,10 +27,12 @@ import util.exception.UnknownPersistenceException;
 @Stateless
 public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, FlightRouteSessionBeanLocal {
 
+    @EJB
+    private AirportSessionBeanLocal airportSessionBeanLocal;
+
     @PersistenceContext(unitName = "FRS-ejbPU")
     private EntityManager em;
     
-    private AirportSessionBeanLocal airportSessionBeanLocal;
 
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
@@ -35,7 +40,7 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
     @Override
     public FlightRoute createFlightRoute(Long originAirportID, Long destinationAirportID) throws AirportNotFoundException, FlightRouteExistException, UnknownPersistenceException {
         try {
-            
+            System.out.println(originAirportID + " " + destinationAirportID);
             Airport originAirport = airportSessionBeanLocal.retrieveAirportByAirportId(originAirportID);
             Airport destinationAirport = airportSessionBeanLocal.retrieveAirportByAirportId(destinationAirportID);
 
@@ -44,7 +49,7 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
             route.setDestinationAirport(destinationAirport);
 
             em.persist(route);
-            
+            em.flush();
             return route;
         } catch (AirportNotFoundException ex) {
             throw new AirportNotFoundException("Airport does not exist in system");
@@ -65,9 +70,13 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
     @Override
     public List<FlightRoute> viewAllFlightRoutes() {
         // we sorted it by airport id
-        TypedQuery<FlightRoute> query = em.createQuery("SELECT fr FROM FlightRoute fr ORDER BY fr.originairport.airportname ASC", FlightRoute.class);
+        Query query = em.createQuery("SELECT DISTINCT f FROM FlightRoute f ORDER BY f.originAirport.airportName ASC");
         List<FlightRoute> allFlightRoutes = query.getResultList();
 
+//        if (allFlightRoutes.isEmpty()) {
+//                throw new FlightRouteNotFoundException("No flight routes in system");
+//        }
+//        
         List<FlightRoute> orderedFlightRoutes = new ArrayList<>();
         for (FlightRoute route : allFlightRoutes) {
             if (!orderedFlightRoutes.contains(route)) {

@@ -7,8 +7,12 @@ package frsmanagementclient;
 import ejb.session.stateless.AircraftTypeSessionBeanRemote;
 import ejb.session.stateless.AirportSessionBeanRemote;
 import ejb.session.stateless.EmployeeSessionBeanRemote;
+import ejb.session.stateless.FlightRouteSessionBeanRemote;
 import ejb.session.stateless.FlightSessionBeanRemote;
 import javax.ejb.EJB;
+import util.exception.AirportNotFoundException;
+import util.exception.FlightRouteExistException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -26,11 +30,14 @@ public class Main {
     private static FlightSessionBeanRemote flightSessionBeanRemote;
 
     @EJB
+    private static FlightRouteSessionBeanRemote flightRouteSessionBeanRemote;
+    
+    @EJB
     private static EmployeeSessionBeanRemote employeeSessionBeanRemote;
     
     
-    public static void main(String[] args) {
-        MainApp mainApp = new MainApp(employeeSessionBeanRemote, flightSessionBeanRemote, airportSessionBeanRemote, aircraftTypeSessionBeanRemote);
+    public static void main(String[] args) throws AirportNotFoundException, FlightRouteExistException, UnknownPersistenceException {
+        MainApp mainApp = new MainApp(employeeSessionBeanRemote, flightSessionBeanRemote, flightRouteSessionBeanRemote , airportSessionBeanRemote, aircraftTypeSessionBeanRemote);
         mainApp.runApp();
     }
     
