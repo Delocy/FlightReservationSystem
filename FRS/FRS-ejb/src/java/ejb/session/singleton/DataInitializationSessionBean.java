@@ -4,8 +4,16 @@
  */
 package ejb.session.singleton;
 
+import ejb.session.stateless.AircraftTypeSessionBeanLocal;
+import ejb.session.stateless.AirportSessionBeanLocal;
 import ejb.session.stateless.EmployeeSessionBeanLocal;
+import ejb.session.stateless.FlightSessionBeanLocal;
+import entity.AircraftType;
+import entity.Airport;
 import entity.Employee;
+import entity.Flight;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
@@ -25,6 +33,12 @@ import util.exception.UnknownPersistenceException;
 @Startup
 
 public class DataInitializationSessionBean {
+
+    @EJB
+    private AirportSessionBeanLocal airportSessionBeanLocal;
+
+    @EJB
+    private AircraftTypeSessionBeanLocal aircraftTypeSessionBeanLocal;
 
     @EJB
     private EmployeeSessionBeanLocal employeeSessionBeanLocal;
@@ -53,10 +67,23 @@ public class DataInitializationSessionBean {
         try
         {
             employeeSessionBeanLocal.createNewEmployee(new Employee("SystemAdmin", "Default", EmployeeAccessRightEnum.SYSTEMADMIN, "systemadmin", "password"));
-//            employeeSessionBeanLocal.createNewEmployee(new Employee("FleetManager", "Default", EmployeeAccessRightEnum.FLEETMANAGER, "fleetmanager", "password"));
+            
+                //            employeeSessionBeanLocal.createNewEmployee(new Employee("FleetManager", "Default", EmployeeAccessRightEnum.FLEETMANAGER, "fleetmanager", "password"));
 //            employeeSessionBeanLocal.createNewEmployee(new Employee("RoutePlanner", "Default", EmployeeAccessRightEnum.ROUTEPLANNER, "routeplanner", "password"));
 //            employeeSessionBeanLocal.createNewEmployee(new Employee("ScheduleManager", "Default", EmployeeAccessRightEnum.SCHEDULEMANAGER, "schedulemanager", "password"));
 //            employeeSessionBeanLocal.createNewEmployee(new Employee("SalesManager", "Default", EmployeeAccessRightEnum.SALESMANAGER, "salesmanager", "password"));
+            
+            try {
+                airportSessionBeanLocal.createNewAirport(new Airport("Changi", "SIN", "Singapore", "Singapore", "Singapore"));
+            } catch (UnknownPersistenceException ex) {
+                Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            try {
+                aircraftTypeSessionBeanLocal.createNewAircraftType(new AircraftType("Boeing-737", (long) 204));
+            } catch (UnknownPersistenceException ex) {
+                Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         catch(EmployeeUsernameExistException ex)
         {

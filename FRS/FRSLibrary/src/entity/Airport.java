@@ -24,7 +24,7 @@ public class Airport implements Serializable {
     private Long airportId;
     @Column(nullable = false)
     private String airportName;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String airportCode;
     @Column(nullable = false)
     private String city;
@@ -32,6 +32,17 @@ public class Airport implements Serializable {
     private String state;
     @Column(nullable = false)
     private String country;
+
+    public Airport() {
+    }
+
+    public Airport(String airportName, String airportCode, String city, String state, String country) {
+        this.airportName = airportName;
+        this.airportCode = airportCode;
+        this.city = city;
+        this.state = state;
+        this.country = country;
+    }
 
     public Long getAirportId() {
         return airportId;

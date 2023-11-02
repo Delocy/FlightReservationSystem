@@ -26,12 +26,34 @@ public class AircraftType implements Serializable {
     private String aircraftTypeName;
     @Column(nullable = false)
     private Long maxCapacity;
+
+    public AircraftType() {
+    }
+
+    public AircraftType(String aircraftTypeName, Long maxCapacity) {
+        this.aircraftTypeName = aircraftTypeName;
+        this.maxCapacity = maxCapacity;
+    }
     
-    //need mapping - need clarify also im mega confused about this!
-    private AircraftConfig aircraftConfig;
 
     public Long getAircraftTypeId() {
         return aircraftTypeId;
+    }
+
+    public String getAircraftTypeName() {
+        return aircraftTypeName;
+    }
+
+    public void setAircraftTypeName(String aircraftTypeName) {
+        this.aircraftTypeName = aircraftTypeName;
+    }
+
+    public Long getMaxCapacity() {
+        return maxCapacity;
+    }
+
+    public void setMaxCapacity(Long maxCapacity) {
+        this.maxCapacity = maxCapacity;
     }
 
     public void setAircraftTypeId(Long aircraftTypeId) {
