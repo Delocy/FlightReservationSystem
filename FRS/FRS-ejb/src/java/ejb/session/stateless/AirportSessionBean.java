@@ -40,12 +40,21 @@ public class AirportSessionBean implements AirportSessionBeanRemote, AirportSess
         }
     }
     
-    public Airport retrieveAirportByAirportId(Long airportId) throws AirportNotFoundException {
-        Airport airport = em.find(Airport.class, airportId);
+    public Airport retrieveAirportByAirportId(Long airportID) throws AirportNotFoundException { 
+//        TypedQuery<Airport> query = em.createQuery("SELECT a FROM Airport a WHERE a.airportID = :inAirportID", Airport.class);
+//        query.setParameter("inAirportID", airportID);
+//        
+//        try {
+//            return query.getSingleResult();
+//        } catch (NoResultException | NonUniqueResultException ex) {
+//            throw new AirportNotFoundException("Airport ID " + airportID + " does not exist!");
+//        }
+
+        Airport airport = em.find(Airport.class, airportID);
         if (airport != null) {
             return airport;
         } else {
-            throw new AirportNotFoundException("Airport ID " + airportId + " does not exist!");
+            throw new AirportNotFoundException("Airport ID " + airportID + " does not exist!");
         }
     }
     

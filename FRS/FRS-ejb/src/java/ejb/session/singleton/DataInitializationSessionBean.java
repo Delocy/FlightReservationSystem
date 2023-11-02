@@ -67,7 +67,6 @@ public class DataInitializationSessionBean {
         try
         {
             employeeSessionBeanLocal.createNewEmployee(new Employee("SystemAdmin", "Default", EmployeeAccessRightEnum.SYSTEMADMIN, "systemadmin", "password"));
-            
             employeeSessionBeanLocal.createNewEmployee(new Employee("FleetManager", "Default", EmployeeAccessRightEnum.FLEETMANAGER, "fleetmanager", "password"));
             employeeSessionBeanLocal.createNewEmployee(new Employee("RoutePlanner", "Default", EmployeeAccessRightEnum.ROUTEPLANNER, "routeplanner", "password"));
             employeeSessionBeanLocal.createNewEmployee(new Employee("ScheduleManager", "Default", EmployeeAccessRightEnum.SCHEDULEMANAGER, "schedulemanager", "password"));
@@ -75,6 +74,7 @@ public class DataInitializationSessionBean {
             
             try {
                 airportSessionBeanLocal.createNewAirport(new Airport("Changi", "SIN", "Singapore", "Singapore", "Singapore"));
+                airportSessionBeanLocal.createNewAirport(new Airport("Adelaide", "ADL", "Adelaide", "Adelaide", "Australia"));
             } catch (UnknownPersistenceException ex) {
                 Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
             }
