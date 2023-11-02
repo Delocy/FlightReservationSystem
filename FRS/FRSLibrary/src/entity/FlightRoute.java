@@ -31,7 +31,6 @@ public class FlightRoute implements Serializable {
     //private boolean hasComplementaryReturnRoute;
     private boolean isDisabled;
     
-    @JoinColumn(nullable = false)
     @OneToMany(mappedBy="flightRoute")
     private List<Flight> flights;
     
