@@ -5,7 +5,9 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -27,7 +29,9 @@ public class FlightRoute implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightRouteId;
     //private boolean hasComplementaryReturnRoute;
+    private boolean isDisabled;
     
+    @JoinColumn(nullable = false)
     @OneToMany(mappedBy="flightRoute")
     private List<Flight> flights;
     
@@ -39,6 +43,12 @@ public class FlightRoute implements Serializable {
     @JoinColumn(name = "destinationAirport")
     private Airport destinationAirport;
 
+   
+    public FlightRoute() {
+        this.isDisabled = false;
+        this.flights = new ArrayList<>();
+    }
+
     public Long getFlightRouteId() {
         return flightRouteId;
     }
@@ -47,16 +57,27 @@ public class FlightRoute implements Serializable {
         this.flightRouteId = flightRouteId;
     }
 
-//    public boolean isHasComplementaryReturnRoute() {
-//        return hasComplementaryReturnRoute;
-//    }
-//
-//    public void setHasComplementaryReturnRoute(boolean hasComplementaryReturnRoute) {
-//        this.hasComplementaryReturnRoute = hasComplementaryReturnRoute;
-//    }
+    public boolean isDisabled() {
+        return isDisabled;
+    }
+
+    public void setIsDisabled(boolean isDisabled) {
+        this.isDisabled = isDisabled;
+    }
     
     
 
+    public List<Flight> getFlights() {
+        return flights;
+    }
+
+    public void setFlights(List<Flight> flights) {
+        this.flights = flights;
+    }
+    
+    
+    
+    
     public Airport getOriginAirport() {
         return originAirport;
     }
@@ -73,6 +94,7 @@ public class FlightRoute implements Serializable {
         this.destinationAirport = destinationAirport;
     }
 
+    
     @Override
     public int hashCode() {
         int hash = 0;

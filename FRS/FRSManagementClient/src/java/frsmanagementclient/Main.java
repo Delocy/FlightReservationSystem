@@ -12,6 +12,7 @@ import ejb.session.stateless.FlightSessionBeanRemote;
 import javax.ejb.EJB;
 import util.exception.AirportNotFoundException;
 import util.exception.FlightRouteExistException;
+import util.exception.FlightRouteNotFoundException;
 import util.exception.UnknownPersistenceException;
 
 /**
@@ -36,7 +37,7 @@ public class Main {
     private static EmployeeSessionBeanRemote employeeSessionBeanRemote;
     
     
-    public static void main(String[] args) throws AirportNotFoundException, FlightRouteExistException, UnknownPersistenceException {
+    public static void main(String[] args) throws AirportNotFoundException, FlightRouteExistException, UnknownPersistenceException, FlightRouteNotFoundException {
         MainApp mainApp = new MainApp(employeeSessionBeanRemote, flightSessionBeanRemote, flightRouteSessionBeanRemote , airportSessionBeanRemote, aircraftTypeSessionBeanRemote);
         mainApp.runApp();
     }
