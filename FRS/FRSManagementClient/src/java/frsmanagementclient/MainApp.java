@@ -5,27 +5,34 @@
 package frsmanagementclient;
 
 import ejb.session.stateless.AircraftTypeSessionBeanRemote;
+import ejb.session.stateless.AircraftConfigSessionBeanRemote;
 import ejb.session.stateless.AirportSessionBeanRemote;
+import ejb.session.stateless.CabinClassConfigSessionBeanRemote;
 import ejb.session.stateless.EmployeeSessionBeanRemote;
 import ejb.session.stateless.FlightRouteSessionBeanRemote;
 import ejb.session.stateless.FlightSessionBeanRemote;
 import entity.AircraftConfig;
 import entity.AircraftType;
 import entity.Airport;
+import entity.CabinClassConfig;
 import entity.Employee;
 import entity.Flight;
 import entity.FlightRoute;
+import java.awt.color.ColorSpace;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import util.enumeration.CabinClassNameEnum;
 import util.enumeration.EmployeeAccessRightEnum;
 import util.exception.AircraftTypeNotFoundException;
 import util.exception.AirportNotFoundException;
+import util.exception.CabinClassNameNotFoundException;
 import util.exception.EmployeeUsernameExistException;
 import util.exception.FlightNumberExistException;
 import util.exception.FlightRouteExistException;
 import util.exception.FlightRouteNotFoundException;
 import util.exception.InvalidLoginCredentialException;
+import util.exception.MaxSeatCapacityExceededException;
 import util.exception.UnknownPersistenceException;
 
 /**
@@ -38,18 +45,22 @@ public class MainApp {
     private FlightRouteSessionBeanRemote flightRouteSessionBeanRemote;
     private AirportSessionBeanRemote airportSessionBeanRemote;
     private AircraftTypeSessionBeanRemote aircraftTypeSessionBeanRemote;
+    private CabinClassConfigSessionBeanRemote cabinClassConfigSessionBeanRemote;
+    private AircraftConfigSessionBeanRemote aircraftConfigSessionBeanRemote;
     private Employee currentEmployee;
     
     public MainApp() {
         
     }
 
-    public MainApp(EmployeeSessionBeanRemote employeeSessionBeanRemote, FlightSessionBeanRemote flightSessionBeanRemote, FlightRouteSessionBeanRemote flightRouteSessionBeanRemote,AirportSessionBeanRemote airportSessionBeanRemote, AircraftTypeSessionBeanRemote aircraftTypeSessionBeanRemote) {
+    public MainApp(EmployeeSessionBeanRemote employeeSessionBeanRemote, FlightSessionBeanRemote flightSessionBeanRemote, FlightRouteSessionBeanRemote flightRouteSessionBeanRemote,AirportSessionBeanRemote airportSessionBeanRemote, AircraftTypeSessionBeanRemote aircraftTypeSessionBeanRemote, CabinClassConfigSessionBeanRemote cabinClassConfigSessionBeanRemote, AircraftConfigSessionBeanRemote aircraftConfigSessionBeanRemote) {
         this.employeeSessionBeanRemote = employeeSessionBeanRemote;
         this.flightSessionBeanRemote = flightSessionBeanRemote;
         this.flightRouteSessionBeanRemote = flightRouteSessionBeanRemote;
         this.airportSessionBeanRemote = airportSessionBeanRemote;
         this.aircraftTypeSessionBeanRemote = aircraftTypeSessionBeanRemote;
+        this.cabinClassConfigSessionBeanRemote = cabinClassConfigSessionBeanRemote;
+        this.aircraftConfigSessionBeanRemote = aircraftConfigSessionBeanRemote;
     }
 
     
@@ -400,7 +411,7 @@ public class MainApp {
 //        }
 //    }
     
-    private void doCreateAircraftConfig() throws AircraftTypeNotFoundException {
+    private void doCreateAircraftConfig() throws AircraftTypeNotFoundException, CabinClassNameNotFoundException, MaxSeatCapacityExceededException, UnknownPersistenceException {
         Scanner sc = new Scanner(System.in);
         AircraftConfig newAircraftConfig = new AircraftConfig();
         
@@ -416,14 +427,73 @@ public class MainApp {
         sc.nextLine();
         
         AircraftType aircraftType = aircraftTypeSessionBeanRemote.retrieveAircraftTypeByAircraftTypeId(aircraftTypeId);
+        newAircraftConfig.setAircraftType(aircraftType);
+        //do i need to set aircraftconfig on aircraft type..?
+        System.out.print("Enter Aircraft Configuration Name> ");
         String name = sc.nextLine().trim();
         newAircraftConfig.setAircraftConfigName(name);
+        System.out.print("Enter number of cabin classes> ");
         int numCabinClass = sc.nextInt();
         newAircraftConfig.setNumCabinClass(numCabinClass);
         
+        int seatCapacity = 0;
         
-        // next i needa add da cabin class details T_T
+        System.out.println("*** FRS Management Portal - Create New Aircraft Configuration :: Cabin Configuration ***\n");
+        List<CabinClassConfig> cabins = new ArrayList<>();
+        for (int i = 0; i < numCabinClass; i++) {
+            CabinClassConfig cabin = doCreateCabinClass();
+            seatCapacity += cabin.getMaxSeatCapacity();
+            cabins.add(cabin);
+        }
         
+        if (seatCapacity <= aircraftType.getMaxCapacity()) {
+            for (CabinClassConfig c : cabins) {
+                c.setAircraftConfig(newAircraftConfig);
+                cabinClassConfigSessionBeanRemote.createCabinClass(c);
+            }
+            newAircraftConfig.setCabinClassConfig(cabins);
+        } else {
+            throw new MaxSeatCapacityExceededException("Max seat capacity of cabin class exceeds the aircraft type!");
+        }
+        
+        Long aircraftConfigId = aircraftConfigSessionBeanRemote.createAircraftConfig(newAircraftConfig);
+        System.out.println("Aircraft Configuration " + aircraftConfigId + " created successfully!");
+       
+       
+       
+    }
+    
+    public CabinClassConfig doCreateCabinClass() throws CabinClassNameNotFoundException {
+        Scanner sc = new Scanner(System.in);
+        CabinClassConfig newCabin = new CabinClassConfig();
+        CabinClassNameEnum cabinClassName = CabinClassNameEnum.F;
+
+       System.out.print("Select cabin class (First (F), Business (J), Premium Economy (W), Economy (Y)> ");
+       String response = sc.nextLine().trim();
+       cabinClassName = cabinClassConfigSessionBeanRemote.fetchCabinClassNameEnum(response);
+       newCabin.setCabinClassName(cabinClassName);
+
+       System.out.println("Enter number of aisles> ");
+       int numAisles = sc.nextInt();
+       newCabin.setNumAisles(numAisles);
+
+       System.out.print("Enter number of rows> ");
+       int numRows = sc.nextInt();
+       newCabin.setNumRows(numRows);
+
+       System.out.print("Enter number of seats abreast> ");
+       int seatAbreast = sc.nextInt();
+       sc.nextLine();
+       newCabin.setNumSeatsAbreast(seatAbreast);
+
+       System.out.print("Enter seat configuration (eg. 3-4-3 or 2-2)> ");
+       String seatConfig = sc.nextLine().trim();
+       newCabin.setSeatConfiguration(seatConfig);
+
+       int cabinSeatCapacity = seatAbreast * numRows;
+       newCabin.setMaxSeatCapacity(cabinSeatCapacity);
+       
+       return newCabin;
     }
     
 }
