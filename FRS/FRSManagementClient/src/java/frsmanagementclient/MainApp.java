@@ -24,6 +24,7 @@ import util.exception.AirportNotFoundException;
 import util.exception.EmployeeUsernameExistException;
 import util.exception.FlightNumberExistException;
 import util.exception.FlightRouteExistException;
+import util.exception.FlightRouteNotFoundException;
 import util.exception.InvalidLoginCredentialException;
 import util.exception.UnknownPersistenceException;
 
@@ -53,7 +54,7 @@ public class MainApp {
 
     
     
-    public void runApp() throws AirportNotFoundException, FlightRouteExistException, UnknownPersistenceException {
+    public void runApp() throws AirportNotFoundException, FlightRouteExistException, UnknownPersistenceException, FlightRouteNotFoundException {
         Scanner scanner = new Scanner(System.in);
         Integer response = 0;
         
@@ -107,7 +108,7 @@ public class MainApp {
         }
     }
     
-    private void menuMain() throws AirportNotFoundException, FlightRouteExistException, UnknownPersistenceException
+    private void menuMain() throws AirportNotFoundException, FlightRouteExistException, UnknownPersistenceException, FlightRouteNotFoundException
     {
         Scanner scanner = new Scanner(System.in);
         Integer response = 0;
@@ -189,7 +190,7 @@ public class MainApp {
                     } else if (response == 2) {
                         doViewAllFlightRoutes();
                     } else if (response == 3) {
-                        // 
+                        doDeleteFlightRoute();
                     } else if (response == 4) {
                         break;
                     } else {
@@ -321,24 +322,29 @@ public class MainApp {
         //System.out.println(destinationAirport.getAirportId());
         
         FlightRoute newFlightRoute = flightRouteSessionBeanRemote.createFlightRoute(originAirport.getAirportId(), destinationAirport.getAirportId());
-        System.out.println("** Flight Route: from Origin " + newFlightRoute.getOriginAirport() + " to Destination " + newFlightRoute.getDestinationAirport() + " has been successfully created **");
+        System.out.println("** Flight Route: from Origin " + newFlightRoute.getOriginAirport().getAirportName() + " to Destination " + newFlightRoute.getDestinationAirport().getAirportName() + " has been successfully created **");
         System.out.println("Would you like to create a complementary return route? (Y/N)");
         if (scanner.nextLine().trim().equalsIgnoreCase("Y")) {
 //            FlightRoute newReturnRoute = new FlightRoute();
-              flightRouteSessionBeanRemote.createFlightRoute(destinationAirport.getAirportId(), originAirport.getAirportId());
-              System.out.println("** Flight Route: from Origin " + newFlightRoute.getOriginAirport() + " to Destination " + newFlightRoute.getDestinationAirport() + " has been successfully created **");
+              FlightRoute compFlightRoute = flightRouteSessionBeanRemote.createFlightRoute(destinationAirport.getAirportId(), originAirport.getAirportId());
+              System.out.println("** Flight Route: from Origin " + compFlightRoute.getOriginAirport().getAirportName() + " to Destination " + compFlightRoute.getDestinationAirport().getAirportName() + " has been successfully created **");
         }
     }
     
     private void doViewAllFlightRoutes() {
         System.out.println("*** FRS Management Portal - View All Flight Routes ***\n");
         List<FlightRoute> allFlightRoutes = flightRouteSessionBeanRemote.viewAllFlightRoutes();
-        System.out.printf("%4s%16s%24s\n", "Index", "Origin Airport", "Destination Airport");
-        int index = 1;
+        System.out.printf("%4s%16s%24s\n", "Route ID", "Origin Airport", "Destination Airport");
         for (FlightRoute flightRoute : allFlightRoutes) {
-            index++;
-            System.out.printf("%4s%16s%24s\n", index, flightRoute.getOriginAirport().toString(), flightRoute.getDestinationAirport().toString());
+            System.out.printf("%4s%16s%24s\n", flightRoute.getFlightRouteId(), flightRoute.getOriginAirport().getAirportName(), flightRoute.getDestinationAirport().getAirportName());
         }    
+    }
+    
+    private void doDeleteFlightRoute() throws FlightRouteNotFoundException {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("*** FRS Management Portal - Delete Flight Route ***\n");
+        System.out.println("Enter ID of flight route for deletion");
+        flightRouteSessionBeanRemote.deleteFlightRoute(scanner.nextLong());
     }
     
 //    private void doCreateFlight() {
