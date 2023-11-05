@@ -32,6 +32,7 @@ public class CabinClassConfigSessionBean implements CabinClassConfigSessionBeanR
         try {
             em.persist(c);
             c.setAircraftConfig(aircraftConfig);
+            aircraftConfig.getCabinClassConfig().add(c);
             //em.flush();
             return c.getCabinClassConfigId();
         } catch (PersistenceException ex) {
