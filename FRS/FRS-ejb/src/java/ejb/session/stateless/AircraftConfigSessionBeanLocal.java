@@ -5,6 +5,8 @@
 package ejb.session.stateless;
 
 import entity.AircraftConfig;
+import entity.CabinClassConfig;
+import java.util.List;
 import javax.ejb.Local;
 import util.exception.UnknownPersistenceException;
 
@@ -15,6 +17,6 @@ import util.exception.UnknownPersistenceException;
 @Local
 public interface AircraftConfigSessionBeanLocal {
 
-    public Long createAircraftConfig(AircraftConfig aircraftConfig) throws UnknownPersistenceException;
+    public Long createAircraftConfig(AircraftConfig aircraftConfig, List<CabinClassConfig> cabins, Long aircraftTypeId) throws UnknownPersistenceException;
     
 }

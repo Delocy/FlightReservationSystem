@@ -4,6 +4,7 @@
  */
 package ejb.session.stateless;
 
+import entity.AircraftConfig;
 import entity.CabinClassConfig;
 import javax.ejb.Local;
 import util.enumeration.CabinClassNameEnum;
@@ -19,6 +20,6 @@ public interface CabinClassConfigSessionBeanLocal {
 
     public CabinClassNameEnum fetchCabinClassNameEnum(String s) throws CabinClassNameNotFoundException;
 
-    public Long createCabinClass(CabinClassConfig c) throws UnknownPersistenceException;
+    public Long createCabinClass(CabinClassConfig c, AircraftConfig aircraftConfig) throws UnknownPersistenceException;
     
 }

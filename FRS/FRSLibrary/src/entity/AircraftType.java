@@ -41,6 +41,7 @@ public class AircraftType implements Serializable {
     public AircraftType(String aircraftTypeName, Long maxCapacity) {
         this.aircraftTypeName = aircraftTypeName;
         this.maxCapacity = maxCapacity;
+        this.aircraftConfig = new ArrayList<>();
     }
     
 
@@ -54,6 +55,14 @@ public class AircraftType implements Serializable {
 
     public void setAircraftTypeName(String aircraftTypeName) {
         this.aircraftTypeName = aircraftTypeName;
+    }
+
+    public List<AircraftConfig> getAircraftConfig() {
+        return aircraftConfig;
+    }
+
+    public void setAircraftConfig(List<AircraftConfig> aircraftConfig) {
+        this.aircraftConfig = aircraftConfig;
     }
 
     public Long getMaxCapacity() {

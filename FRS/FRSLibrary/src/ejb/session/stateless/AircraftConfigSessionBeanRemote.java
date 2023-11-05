@@ -5,6 +5,8 @@
 package ejb.session.stateless;
 
 import entity.AircraftConfig;
+import entity.CabinClassConfig;
+import java.util.List;
 import javax.ejb.Remote;
 import util.exception.UnknownPersistenceException;
 
@@ -14,5 +16,5 @@ import util.exception.UnknownPersistenceException;
  */
 @Remote
 public interface AircraftConfigSessionBeanRemote {
-    public Long createAircraftConfig(AircraftConfig aircraftConfig) throws UnknownPersistenceException;
+    public Long createAircraftConfig(AircraftConfig aircraftConfig, List<CabinClassConfig> cabins, Long aircraftTypeId) throws UnknownPersistenceException;
 }

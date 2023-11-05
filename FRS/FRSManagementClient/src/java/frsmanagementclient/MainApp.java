@@ -22,6 +22,8 @@ import java.awt.color.ColorSpace;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import util.enumeration.CabinClassNameEnum;
 import util.enumeration.EmployeeAccessRightEnum;
 import util.exception.AircraftTypeNotFoundException;
@@ -167,7 +169,7 @@ public class MainApp {
                     response = scanner.nextInt();
 
                     if (response == 1) {
-                        //
+                        doCreateAircraftConfig();
                     } else if (response == 2) {
                         // 
                     } else if (response == 3) {
@@ -411,59 +413,72 @@ public class MainApp {
 //        }
 //    }
     
-    private void doCreateAircraftConfig() throws AircraftTypeNotFoundException, CabinClassNameNotFoundException, MaxSeatCapacityExceededException, UnknownPersistenceException {
-        Scanner sc = new Scanner(System.in);
-        AircraftConfig newAircraftConfig = new AircraftConfig();
-        
-        System.out.println("*** FRS Management Portal - Create New Aircraft Configuration ***\n");
-        System.out.printf("%20s%25s%20s\n", "Aircraft Type ID", "Name", "Max Seat Capacity");
-        List<AircraftType> aircraftTypes = aircraftTypeSessionBeanRemote.retrieveAllAircraftType();
-        for (AircraftType a : aircraftTypes) {
-            System.out.printf("%20s%25s%20s\n", a.getAircraftTypeId().toString(), a.getAircraftTypeName(), a.getMaxCapacity());
-        }
-        
-        System.out.print("Enter Aircraft Type ID> ");
-        Long aircraftTypeId = sc.nextLong();
-        sc.nextLine();
-        
-        AircraftType aircraftType = aircraftTypeSessionBeanRemote.retrieveAircraftTypeByAircraftTypeId(aircraftTypeId);
-        newAircraftConfig.setAircraftType(aircraftType);
-        //do i need to set aircraftconfig on aircraft type..?
-        System.out.print("Enter Aircraft Configuration Name> ");
-        String name = sc.nextLine().trim();
-        newAircraftConfig.setAircraftConfigName(name);
-        System.out.print("Enter number of cabin classes> ");
-        int numCabinClass = sc.nextInt();
-        newAircraftConfig.setNumCabinClass(numCabinClass);
-        
-        int seatCapacity = 0;
-        
-        System.out.println("*** FRS Management Portal - Create New Aircraft Configuration :: Cabin Configuration ***\n");
-        List<CabinClassConfig> cabins = new ArrayList<>();
-        for (int i = 0; i < numCabinClass; i++) {
-            CabinClassConfig cabin = doCreateCabinClass();
-            seatCapacity += cabin.getMaxSeatCapacity();
-            cabins.add(cabin);
-        }
-        
-        if (seatCapacity <= aircraftType.getMaxCapacity()) {
-            for (CabinClassConfig c : cabins) {
-                c.setAircraftConfig(newAircraftConfig);
-                cabinClassConfigSessionBeanRemote.createCabinClass(c);
+    private void doCreateAircraftConfig() {
+        try {
+            Scanner sc = new Scanner(System.in);
+            AircraftConfig newAircraftConfig = new AircraftConfig();
+            
+            System.out.println("*** FRS Management Portal - Create New Aircraft Configuration ***\n");
+            System.out.printf("%20s%25s%20s\n", "Aircraft Type ID", "Name", "Max Seat Capacity");
+            List<AircraftType> aircraftTypes = aircraftTypeSessionBeanRemote.retrieveAllAircraftType();
+            for (AircraftType a : aircraftTypes) {
+                System.out.printf("%20s%25s%20s\n", a.getAircraftTypeId().toString(), a.getAircraftTypeName(), a.getMaxCapacity());
             }
-            newAircraftConfig.setCabinClassConfig(cabins);
-        } else {
-            throw new MaxSeatCapacityExceededException("Max seat capacity of cabin class exceeds the aircraft type!");
+            
+            System.out.print("Enter Aircraft Type ID> ");
+            Long aircraftTypeId = sc.nextLong();
+            sc.nextLine();
+            
+            //AircraftType aircraftType = aircraftTypeSessionBeanRemote.retrieveAircraftTypeByAircraftTypeId(aircraftTypeId);
+            //newAircraftConfig.setAircraftType(aircraftType);
+            //do i need to set aircraftconfig on aircraft type..?
+            System.out.print("Enter Aircraft Configuration Name> ");
+            String name = sc.nextLine().trim();
+            newAircraftConfig.setAircraftConfigName(name);
+            System.out.print("Enter number of cabin classes> ");
+            int numCabinClass = sc.nextInt();
+            newAircraftConfig.setNumCabinClass(numCabinClass);
+            
+            int seatCapacity = 0;
+            
+            System.out.println("*** FRS Management Portal - Create New Aircraft Configuration :: Cabin Configuration ***\n");
+            List<CabinClassConfig> cabins = new ArrayList<>();
+            for (int i = 0; i < numCabinClass; i++) {
+                CabinClassConfig cabin = doCreateCabinClass();
+                seatCapacity += cabin.getMaxSeatCapacity();
+                cabins.add(cabin);
+            }
+            
+            Long aircraftConfigId = aircraftConfigSessionBeanRemote.createAircraftConfig(newAircraftConfig, cabins, aircraftTypeId);
+            
+            /*
+            if (seatCapacity <= aircraftType.getMaxCapacity()) {
+                aircraftType.getAircraftConfig().add(newAircraftConfig);
+                for (CabinClassConfig c : cabins) {
+                    Long id = cabinClassConfigSessionBeanRemote.createCabinClass(c, newAircraftConfig);
+                    //c.setAircraftConfig(newAircraftConfig);
+                }
+                newAircraftConfig.setCabinClassConfig(cabins);
+            } else {
+                throw new MaxSeatCapacityExceededException("Max seat capacity of cabin class exceeds the aircraft type!");
+            }
+            
+            Long aircraftConfigId = aircraftConfigSessionBeanRemote.createAircraftConfig(newAircraftConfig);
+            */
+            System.out.println("Aircraft Configuration " + aircraftConfigId + " created successfully!");
+        } catch (CabinClassNameNotFoundException ex) {
+            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnknownPersistenceException ex) {
+            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MaxSeatCapacityExceededException ex) {
+            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        Long aircraftConfigId = aircraftConfigSessionBeanRemote.createAircraftConfig(newAircraftConfig);
-        System.out.println("Aircraft Configuration " + aircraftConfigId + " created successfully!");
        
        
        
     }
     
-    public CabinClassConfig doCreateCabinClass() throws CabinClassNameNotFoundException {
+    public CabinClassConfig doCreateCabinClass() throws CabinClassNameNotFoundException, MaxSeatCapacityExceededException {
         Scanner sc = new Scanner(System.in);
         CabinClassConfig newCabin = new CabinClassConfig();
         CabinClassNameEnum cabinClassName = CabinClassNameEnum.F;
@@ -473,7 +488,7 @@ public class MainApp {
        cabinClassName = cabinClassConfigSessionBeanRemote.fetchCabinClassNameEnum(response);
        newCabin.setCabinClassName(cabinClassName);
 
-       System.out.println("Enter number of aisles> ");
+       System.out.print("Enter number of aisles> ");
        int numAisles = sc.nextInt();
        newCabin.setNumAisles(numAisles);
 
@@ -488,6 +503,15 @@ public class MainApp {
 
        System.out.print("Enter seat configuration (eg. 3-4-3 or 2-2)> ");
        String seatConfig = sc.nextLine().trim();
+       int seats = 0;
+       for (char c : seatConfig.toCharArray()) {
+           if (Character.isDigit(c)) {
+               seats += c - '0';
+           }
+       }
+       if (seats != seatAbreast) {
+           throw new MaxSeatCapacityExceededException("Seat capacity does not correspond to number of seats abreast!");
+       }
        newCabin.setSeatConfiguration(seatConfig);
 
        int cabinSeatCapacity = seatAbreast * numRows;

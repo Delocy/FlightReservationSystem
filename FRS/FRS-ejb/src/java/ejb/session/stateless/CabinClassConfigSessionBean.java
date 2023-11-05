@@ -4,6 +4,7 @@
  */
 package ejb.session.stateless;
 
+import entity.AircraftConfig;
 import entity.CabinClassConfig;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -26,10 +27,12 @@ public class CabinClassConfigSessionBean implements CabinClassConfigSessionBeanR
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
     
-    public Long createCabinClass(CabinClassConfig c) throws UnknownPersistenceException {
+    @Override
+    public Long createCabinClass(CabinClassConfig c, AircraftConfig aircraftConfig) throws UnknownPersistenceException {
         try {
             em.persist(c);
-            em.flush();
+            c.setAircraftConfig(aircraftConfig);
+            //em.flush();
             return c.getCabinClassConfigId();
         } catch (PersistenceException ex) {
             throw new UnknownPersistenceException(ex.getMessage());
