@@ -19,4 +19,5 @@ import util.exception.UnknownPersistenceException;
 public interface AircraftConfigSessionBeanRemote {
     public Long createAircraftConfig(AircraftConfig aircraftConfig, List<CabinClassConfig> cabins, Long aircraftTypeId) throws UnknownPersistenceException;
     public List<AircraftConfig> retrieveAllAircraftConfig() throws AircraftConfigNotFoundException;
+    public AircraftConfig retrieveAircraftConfigById(Long id) throws AircraftConfigNotFoundException;
 }

@@ -173,12 +173,13 @@ public class MainApp {
                         doCreateAircraftConfig();
                     } else if (response == 2) {
                         try {
+                            System.out.println("*** FRS Management Portal - View All Aircraft Configurations ***\n");
                             doViewAllAircraftConfig();
                         } catch (AircraftConfigNotFoundException ex) {
                             Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     } else if (response == 3) {
-                        // 
+                        doViewAircraftConfigDetails();
                     } else if (response == 4) {
                         break;
                     } else {
@@ -526,7 +527,7 @@ public class MainApp {
     }
     
     public void doViewAllAircraftConfig() throws AircraftConfigNotFoundException {
-        System.out.println("*** FRS Management Portal - View All Aircraft Configurations ***\n");
+        
         System.out.printf("%30s%40s%25s%20s\n", "Aircraft Configuration ID", "Name", "Number of Cabin Classes", "Aircraft Type");
         List<AircraftConfig> aircraftConfigs = aircraftConfigSessionBeanRemote.retrieveAllAircraftConfig();
         
@@ -534,6 +535,36 @@ public class MainApp {
             System.out.printf("%30s%40s%25s%20s\n", a.getAircraftConfigId(), a.getAircraftConfigName(), a.getNumCabinClass(), a.getAircraftType().getAircraftTypeName());
         }
 
+        System.out.println("");
     }
     
+    public void doViewAircraftConfigDetails() {
+        try {
+            Scanner sc = new Scanner(System.in);
+            System.out.println("*** FRS Management Portal - View Aircraft Configuration Details ***\n");
+            doViewAllAircraftConfig();
+            
+            System.out.print("Select Aircraft Configuration ID to view details> ");
+            Long id = sc.nextLong();
+            
+            AircraftConfig aircraftConfig = aircraftConfigSessionBeanRemote.retrieveAircraftConfigById(id);
+            System.out.println("");
+            System.out.println("Aircraft Configuration ID: " + id);
+            System.out.println("Aircraft Configuration Name: " + aircraftConfig.getAircraftConfigName());
+            System.out.println("Number of Cabin Classes: " + aircraftConfig.getNumCabinClass());
+            System.out.println("Aircraft Type: " + aircraftConfig.getAircraftType().getAircraftTypeName());
+            
+            int maxCapacity = 0;
+            for (CabinClassConfig c : aircraftConfig.getCabinClassConfig()) {
+                System.out.println("\t" + c.getCabinClassName() + ", " + c.getNumAisles()+ " aisle(s), " + c.getNumRows()+ " row(s), " + c.getNumSeatsAbreast()+ " seats abreast, " + c.getSeatConfiguration()+ " seating configuration, " + c.getMaxSeatCapacity()+ " total seats");
+                maxCapacity += c.getMaxSeatCapacity();
+            }
+            
+            System.out.println("\nCabin Overview: " + aircraftConfig.getCabinClassConfig().size() + " cabin class(es) / " + maxCapacity + " total seats");
+            System.out.println("");
+        } catch (AircraftConfigNotFoundException ex) {
+            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
 }

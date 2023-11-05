@@ -73,6 +73,7 @@ public class AircraftConfigSessionBean implements AircraftConfigSessionBeanRemot
         return null;
     }
 
+    @Override
     public AircraftConfig retrieveAircraftConfigById(Long id) throws AircraftConfigNotFoundException {
         AircraftConfig aircraftConfig = em.find(AircraftConfig.class, id);
         if (aircraftConfig != null) {
@@ -84,7 +85,7 @@ public class AircraftConfigSessionBean implements AircraftConfigSessionBeanRemot
     
     @Override
     public List<AircraftConfig> retrieveAllAircraftConfig() throws AircraftConfigNotFoundException {
-        Query query = em.createQuery("SELECT a FROM AircraftConfig a ORDER BY a.aircraftType, a.aircraftConfigName");
+        Query query = em.createQuery("SELECT a FROM AircraftConfig a ORDER BY a.aircraftType ASC, a.aircraftConfigName ASC");
         
         List<AircraftConfig> aircraftConfigs = query.getResultList();
         
