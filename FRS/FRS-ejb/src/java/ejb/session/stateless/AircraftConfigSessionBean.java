@@ -15,6 +15,8 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
+import javax.persistence.Query;
+import util.exception.AircraftConfigNotFoundException;
 import util.exception.AircraftTypeNotFoundException;
 import util.exception.MaxSeatCapacityExceededException;
 import util.exception.UnknownPersistenceException;
@@ -39,6 +41,7 @@ public class AircraftConfigSessionBean implements AircraftConfigSessionBeanRemot
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
     
+    @Override
     public Long createAircraftConfig(AircraftConfig aircraftConfig, List<CabinClassConfig> cabins, Long aircraftTypeId) throws UnknownPersistenceException {
         try {
             em.persist(aircraftConfig);
@@ -58,7 +61,7 @@ public class AircraftConfigSessionBean implements AircraftConfigSessionBeanRemot
                 em.flush();
                 return aircraftConfig.getAircraftConfigId();
             } else {
-                throw MaxSeatCapacityExceededException("Cabin configuration has exceeded max seating capacity!");
+                throw new MaxSeatCapacityExceededException("Cabin configuration has exceeded max seating capacity!");
             }
         } catch (PersistenceException ex) {
             throw new UnknownPersistenceException(ex.getMessage());
@@ -70,7 +73,25 @@ public class AircraftConfigSessionBean implements AircraftConfigSessionBeanRemot
         return null;
     }
 
-    private Exception MaxSeatCapacityExceededException(String cabin_configuration_has_exceeded_max_seat) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public AircraftConfig retrieveAircraftConfigById(Long id) throws AircraftConfigNotFoundException {
+        AircraftConfig aircraftConfig = em.find(AircraftConfig.class, id);
+        if (aircraftConfig != null) {
+            return aircraftConfig;
+        } else {
+            throw new AircraftConfigNotFoundException("Aircraft Configuration " + id + " does not exist!");
+        }
+    }
+    
+    @Override
+    public List<AircraftConfig> retrieveAllAircraftConfig() throws AircraftConfigNotFoundException {
+        Query query = em.createQuery("SELECT a FROM AircraftConfig a ORDER BY a.aircraftType, a.aircraftConfigName");
+        
+        List<AircraftConfig> aircraftConfigs = query.getResultList();
+        
+        if (!aircraftConfigs.isEmpty()) {
+            return aircraftConfigs;
+        } else {
+            throw new AircraftConfigNotFoundException("No aircraft configurations found!");
+        }
     }
 }

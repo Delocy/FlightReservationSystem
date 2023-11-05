@@ -26,6 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import util.enumeration.CabinClassNameEnum;
 import util.enumeration.EmployeeAccessRightEnum;
+import util.exception.AircraftConfigNotFoundException;
 import util.exception.AircraftTypeNotFoundException;
 import util.exception.AirportNotFoundException;
 import util.exception.CabinClassNameNotFoundException;
@@ -171,7 +172,11 @@ public class MainApp {
                     if (response == 1) {
                         doCreateAircraftConfig();
                     } else if (response == 2) {
-                        // 
+                        try {
+                            doViewAllAircraftConfig();
+                        } catch (AircraftConfigNotFoundException ex) {
+                            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     } else if (response == 3) {
                         // 
                     } else if (response == 4) {
@@ -518,6 +523,17 @@ public class MainApp {
        newCabin.setMaxSeatCapacity(cabinSeatCapacity);
        
        return newCabin;
+    }
+    
+    public void doViewAllAircraftConfig() throws AircraftConfigNotFoundException {
+        System.out.println("*** FRS Management Portal - View All Aircraft Configurations ***\n");
+        System.out.printf("%30s%40s%25s%20s\n", "Aircraft Configuration ID", "Name", "Number of Cabin Classes", "Aircraft Type");
+        List<AircraftConfig> aircraftConfigs = aircraftConfigSessionBeanRemote.retrieveAllAircraftConfig();
+        
+        for (AircraftConfig a : aircraftConfigs) {
+            System.out.printf("%30s%40s%25s%20s\n", a.getAircraftConfigId(), a.getAircraftConfigName(), a.getNumCabinClass(), a.getAircraftType().getAircraftTypeName());
+        }
+
     }
     
 }

@@ -8,6 +8,7 @@ import entity.AircraftConfig;
 import entity.CabinClassConfig;
 import java.util.List;
 import javax.ejb.Local;
+import util.exception.AircraftConfigNotFoundException;
 import util.exception.UnknownPersistenceException;
 
 /**
@@ -18,5 +19,9 @@ import util.exception.UnknownPersistenceException;
 public interface AircraftConfigSessionBeanLocal {
 
     public Long createAircraftConfig(AircraftConfig aircraftConfig, List<CabinClassConfig> cabins, Long aircraftTypeId) throws UnknownPersistenceException;
+
+    public List<AircraftConfig> retrieveAllAircraftConfig() throws AircraftConfigNotFoundException;
+
+    public AircraftConfig retrieveAircraftConfigById(Long id) throws AircraftConfigNotFoundException;
     
 }
