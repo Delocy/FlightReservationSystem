@@ -8,9 +8,14 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import util.enumeration.CabinClassNameEnum;
 
 /**
  *
@@ -27,6 +32,22 @@ public class Fare implements Serializable {
     private String fareBasisCode;
     @Column(nullable = false)
     private BigDecimal fare;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private CabinClassNameEnum cabinClassName;
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
+    private FlightSchedulePlan flightSchedulePlan;
+
+    public Fare() {
+    }
+
+    public Fare(String fareBasisCode, BigDecimal fare, CabinClassNameEnum cabinClassName) {
+        this.fareBasisCode = fareBasisCode;
+        this.fare = fare;
+        this.cabinClassName = cabinClassName;
+    }
+
 
     public Long getFareId() {
         return fareId;

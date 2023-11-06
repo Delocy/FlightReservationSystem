@@ -644,7 +644,7 @@ public class MainApp {
     public CabinClassConfig doCreateCabinClass() throws CabinClassNameNotFoundException, MaxSeatCapacityExceededException {
         Scanner sc = new Scanner(System.in);
         CabinClassConfig newCabin = new CabinClassConfig();
-        CabinClassNameEnum cabinClassName = CabinClassNameEnum.F;
+        CabinClassNameEnum cabinClassName = CabinClassNameEnum.FIRST;
 
        System.out.print("Select cabin class (First (F), Business (J), Premium Economy (W), Economy (Y)> ");
        String response = sc.nextLine().trim();

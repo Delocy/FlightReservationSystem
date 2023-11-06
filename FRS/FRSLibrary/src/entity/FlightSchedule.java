@@ -7,14 +7,22 @@ package entity;
 import java.io.Serializable;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import util.enumeration.ScheduleTypeEnum;
 
 /**
@@ -30,13 +38,35 @@ public class FlightSchedule implements Serializable {
     private Long flightScheduleId;
     @Enumerated(EnumType.STRING)
     private ScheduleTypeEnum scheduleType;
+    
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
-    private LocalDateTime departureDate;
+    private Date departureDateTime;
+    
     @Column(nullable = false)
-    private LocalDateTime arrivalDate;
-    @Column(nullable = false)
-    private Duration flightDuration;
+    private Double flightDuration;
+    
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
+    private FlightSchedulePlan flightSchedulePlan;
+    
+    @OneToMany(mappedBy = "flightSchedule", fetch = FetchType.EAGER)
+    private List<SeatInventory> seatInventory;
+    
+//    @OneToMany(mappedBy = "flightSchedule", fetch = FetchType.EAGER)
+//    private List<FlightReservation> reservations;
 
+    public FlightSchedule() {
+        this.seatInventory = new ArrayList<>();
+        //this.reservations = new ArrayList<>();
+    }
+
+    public FlightSchedule(Date departureDateTime, Double flightDuration) {
+        this.departureDateTime = departureDateTime;
+        this.flightDuration = flightDuration;
+    }
+    
+    
     public Long getFlightScheduleId() {
         return flightScheduleId;
     }
@@ -53,29 +83,8 @@ public class FlightSchedule implements Serializable {
         this.scheduleType = scheduleType;
     }
 
-    public LocalDateTime getDepartureDate() {
-        return departureDate;
-    }
-
-    public void setDepartureDate(LocalDateTime departureDate) {
-        this.departureDate = departureDate;
-    }
-
-    public LocalDateTime getArrivalDate() {
-        return arrivalDate;
-    }
-
-    public void setArrivalDate(LocalDateTime arrivalDate) {
-        this.arrivalDate = arrivalDate;
-    }
-
-    public Duration getFlightDuration() {
-        return flightDuration;
-    }
-
-    public void setFlightDuration(Duration flightDuration) {
-        this.flightDuration = flightDuration;
-    }
+    
+    
 
     @Override
     public int hashCode() {
@@ -101,5 +110,45 @@ public class FlightSchedule implements Serializable {
     public String toString() {
         return "entity.FlightSchedule[ id=" + flightScheduleId + " ]";
     }
+
+    public Date getDepartureDateTime() {
+        return departureDateTime;
+    }
+
+    public void setDepartureDateTime(Date departureDateTime) {
+        this.departureDateTime = departureDateTime;
+    }
+
+    public Double getFlightDuration() {
+        return flightDuration;
+    }
+
+    public void setFlightDuration(Double flightDuration) {
+        this.flightDuration = flightDuration;
+    }
+
+    public FlightSchedulePlan getFlightSchedulePlan() {
+        return flightSchedulePlan;
+    }
+
+    public void setFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) {
+        this.flightSchedulePlan = flightSchedulePlan;
+    }
+
+    public List<SeatInventory> getSeatInventory() {
+        return seatInventory;
+    }
+
+    public void setSeatInventory(List<SeatInventory> seatInventory) {
+        this.seatInventory = seatInventory;
+    }
+
+//    public List<FlightReservation> getReservations() {
+//        return reservations;
+//    }
+//
+//    public void setReservations(List<FlightReservation> reservations) {
+//        this.reservations = reservations;
+//    }
     
 }

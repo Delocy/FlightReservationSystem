@@ -55,14 +55,14 @@ public class CabinClassConfig implements Serializable {
     public CabinClassConfig() {
     }
 
-    public CabinClassConfig(CabinClassNameEnum cabinClassName, String seatConfiguration, int numRows, int numAisles, int numSeatsAbreast, int maxSeatCapacity, AircraftConfig aircraftConfig) {
+    public CabinClassConfig(CabinClassNameEnum cabinClassName, String seatConfiguration, int numRows, int numAisles, int numSeatsAbreast) {
         this.cabinClassName = cabinClassName;
         this.seatConfiguration = seatConfiguration;
         this.numRows = numRows;
         this.numAisles = numAisles;
         this.numSeatsAbreast = numSeatsAbreast;
-        this.maxSeatCapacity = maxSeatCapacity;
-        this.aircraftConfig = aircraftConfig;
+        this.maxSeatCapacity = numRows * numSeatsAbreast;
+        //this.aircraftConfig = aircraftConfig;
     }
 
     public Long getCabinClassConfigId() {

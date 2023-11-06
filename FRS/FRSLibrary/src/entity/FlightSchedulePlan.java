@@ -5,6 +5,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -12,11 +13,18 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.validation.constraints.Size;
+import util.enumeration.ScheduleTypeEnum;
 
 /**
  *
@@ -30,13 +38,60 @@ public class FlightSchedulePlan implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightSchedulePlanId;
     
+    @Column(nullable = false, length = 32)
+    @Size(min=3, max=32)
+    private String flightNumber;
     
-    @ManyToOne(optional = false, cascade = CascadeType.DETACH)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ScheduleTypeEnum scheduleType;
+    
+    @Column(nullable = false)
+    private boolean disabled;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = true)
+    private Date recurrentEndDate;
+    
+    @OneToMany(mappedBy = "flightSchedulePlan",  fetch = FetchType.EAGER)
+    private List<FlightSchedule> flightSchedule;
+    
+    @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private Flight flight;
     
-    //need mapping
-    private List<FlightSchedule> flightSchedules;
+    @OneToMany(mappedBy = "flightSchedulePlan",  fetch = FetchType.EAGER)
+    private List<Fare> fares;
+    
+    @OneToOne(mappedBy = "returnSchedule")
+    private FlightSchedulePlan startSchedule;
+    
+    @OneToOne
+    private FlightSchedulePlan returnSchedule;
+    
+    public FlightSchedulePlan() {
+        flightSchedule = new ArrayList<>();
+        fares = new ArrayList<>();
+        disabled = false;
+    }
+    //Single schedules
+    public FlightSchedulePlan(ScheduleTypeEnum scheduleType, Flight flight) {
+        this();
+        this.scheduleType = scheduleType;
+        this.flight = flight;
+        this.flightNumber = flight.getFlightNumber();
+        this.recurrentEndDate = null;
+    }
+
+    //Recurrent schedules
+    public FlightSchedulePlan(ScheduleTypeEnum scheduleType, Date recurrentEndDate, Flight flight) {
+        this();
+        this.scheduleType = scheduleType;
+        this.recurrentEndDate = recurrentEndDate;
+        this.flight = flight;
+        this.flightNumber = flight.getFlightNumber();
+    }
+    
     
     public Long getFlightSchedulePlanId() {
         return flightSchedulePlanId;
@@ -46,13 +101,79 @@ public class FlightSchedulePlan implements Serializable {
         this.flightSchedulePlanId = flightSchedulePlanId;
     }
 
-    public List<FlightSchedule> getFlightSchedules() {
-        return flightSchedules;
+    public String getFlightNumber() {
+        return flightNumber;
     }
 
-    public void setFlightSchedules(List<FlightSchedule> flightSchedules) {
-        this.flightSchedules = flightSchedules;
+    public void setFlightNumber(String flightNumber) {
+        this.flightNumber = flightNumber;
     }
+
+    public ScheduleTypeEnum getScheduleType() {
+        return scheduleType;
+    }
+
+    public void setScheduleType(ScheduleTypeEnum scheduleType) {
+        this.scheduleType = scheduleType;
+    }
+
+    public boolean isDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
+    }
+
+    public Date getRecurrentEndDate() {
+        return recurrentEndDate;
+    }
+
+    public void setRecurrentEndDate(Date recurrentEndDate) {
+        this.recurrentEndDate = recurrentEndDate;
+    }
+
+    public List<FlightSchedule> getFlightSchedule() {
+        return flightSchedule;
+    }
+
+    public void setFlightSchedule(List<FlightSchedule> flightSchedule) {
+        this.flightSchedule = flightSchedule;
+    }
+
+    public Flight getFlight() {
+        return flight;
+    }
+
+    public void setFlight(Flight flight) {
+        this.flight = flight;
+    }
+
+    public List<Fare> getFares() {
+        return fares;
+    }
+
+    public void setFares(List<Fare> fares) {
+        this.fares = fares;
+    }
+
+    public FlightSchedulePlan getStartSchedule() {
+        return startSchedule;
+    }
+
+    public void setStartSchedule(FlightSchedulePlan startSchedule) {
+        this.startSchedule = startSchedule;
+    }
+
+    public FlightSchedulePlan getReturnSchedule() {
+        return returnSchedule;
+    }
+
+    public void setReturnSchedule(FlightSchedulePlan returnSchedule) {
+        this.returnSchedule = returnSchedule;
+    }
+
+    
 
     @Override
     public int hashCode() {
