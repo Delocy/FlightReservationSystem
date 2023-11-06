@@ -5,6 +5,7 @@
 package entity;
 
 import java.io.Serializable;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -47,7 +48,7 @@ public class CabinClassConfig implements Serializable {
     @Column(nullable = false)
     private int maxSeatCapacity;
     
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, cascade = CascadeType.DETACH)
     @JoinColumn(nullable = false)
     private AircraftConfig aircraftConfig;
 

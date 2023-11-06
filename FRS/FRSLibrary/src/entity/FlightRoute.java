@@ -7,8 +7,10 @@ package entity;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -31,7 +33,7 @@ public class FlightRoute implements Serializable {
     //private boolean hasComplementaryReturnRoute;
     private boolean isDisabled;
     
-    @OneToMany(mappedBy="flightRoute")
+    @OneToMany(mappedBy="flightRoute", fetch = FetchType.EAGER)
     private List<Flight> flights;
     
     @ManyToOne

@@ -5,11 +5,15 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 /**
  *
@@ -26,13 +30,18 @@ public class AircraftType implements Serializable {
     private String aircraftTypeName;
     @Column(nullable = false)
     private Long maxCapacity;
+    
+    @OneToMany(mappedBy = "aircraftType", fetch = FetchType.EAGER)
+    private List<AircraftConfig> aircraftConfig;
 
     public AircraftType() {
+        aircraftConfig = new ArrayList<>();
     }
 
     public AircraftType(String aircraftTypeName, Long maxCapacity) {
         this.aircraftTypeName = aircraftTypeName;
         this.maxCapacity = maxCapacity;
+        this.aircraftConfig = new ArrayList<>();
     }
     
 
@@ -46,6 +55,14 @@ public class AircraftType implements Serializable {
 
     public void setAircraftTypeName(String aircraftTypeName) {
         this.aircraftTypeName = aircraftTypeName;
+    }
+
+    public List<AircraftConfig> getAircraftConfig() {
+        return aircraftConfig;
+    }
+
+    public void setAircraftConfig(List<AircraftConfig> aircraftConfig) {
+        this.aircraftConfig = aircraftConfig;
     }
 
     public Long getMaxCapacity() {
