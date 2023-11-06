@@ -44,13 +44,13 @@ public class CabinClassConfigSessionBean implements CabinClassConfigSessionBeanR
     @Override
     public CabinClassNameEnum fetchCabinClassNameEnum(String s) throws CabinClassNameNotFoundException {
         if (s.equalsIgnoreCase("F")) {
-            return CabinClassNameEnum.F;
+            return CabinClassNameEnum.FIRST;
         } else if (s.equalsIgnoreCase("J")) {
-            return CabinClassNameEnum.J;
+            return CabinClassNameEnum.BUSINESS;
         } else if (s.equalsIgnoreCase("W")) {
-            return CabinClassNameEnum.W;
+            return CabinClassNameEnum.PREMIUM_ECONOMY;
         } else if (s.equalsIgnoreCase("Y")) {
-            return CabinClassNameEnum.Y;
+            return CabinClassNameEnum.ECONOMY;
         } else {
             throw new CabinClassNameNotFoundException("Cabin class name " + s + " does not exist!");
         }

@@ -9,8 +9,8 @@ package util.enumeration;
  * @author zares
  */
 public enum CabinClassNameEnum {
-    F,
-    J,
-    W,
-    Y
+    FIRST,
+    BUSINESS,
+    PREMIUM_ECONOMY,
+    ECONOMY
 }
