@@ -10,6 +10,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 /**
  *
@@ -23,18 +25,35 @@ public class SeatInventory implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long seatInventoryId;
     @Column(nullable = false, length = 5)
-    private Long totalAvailableSeats;
-    @Column(nullable = false, length = 5)
-    private Long totalReserveSeats;
-    @Column(nullable = false, length = 5)
-    private Long totalBalanceSeats;
-    @Column(nullable = false, length = 5)
     private Long availableSeats;
     @Column(nullable = false, length = 5)
     private Long reserveSeats;
     @Column(nullable = false, length = 5)
     private Long balanceSeats;
     
+    @Column(nullable = false)
+    private char[][] seats;
+    
+    @Column(nullable = false)
+    private boolean[][] seatsTaken;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
+    private CabinClassConfig cabinClass;
+    
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
+    private FlightSchedule flightSchedule;
+
+    public SeatInventory() {
+    }
+
+    public SeatInventory(Long availableSeats, Long reserveSeats, Long balanceSeats) {
+        this.availableSeats = availableSeats;
+        this.reserveSeats = reserveSeats;
+        this.balanceSeats = balanceSeats;
+        
+    }
 
     public Long getSeatInventoryId() {
         return seatInventoryId;
@@ -42,30 +61,6 @@ public class SeatInventory implements Serializable {
 
     public void setSeatInventoryId(Long seatInventoryId) {
         this.seatInventoryId = seatInventoryId;
-    }
-
-    public Long getTotalAvailableSeats() {
-        return totalAvailableSeats;
-    }
-
-    public void setTotalAvailableSeats(Long totalAvailableSeats) {
-        this.totalAvailableSeats = totalAvailableSeats;
-    }
-
-    public Long getTotalReserveSeats() {
-        return totalReserveSeats;
-    }
-
-    public void setTotalReserveSeats(Long totalReserveSeats) {
-        this.totalReserveSeats = totalReserveSeats;
-    }
-
-    public Long getTotalBalanceSeats() {
-        return totalBalanceSeats;
-    }
-
-    public void setTotalBalanceSeats(Long totalBalanceSeats) {
-        this.totalBalanceSeats = totalBalanceSeats;
     }
 
     public Long getAvailableSeats() {
@@ -91,6 +86,42 @@ public class SeatInventory implements Serializable {
     public void setBalanceSeats(Long balanceSeats) {
         this.balanceSeats = balanceSeats;
     }
+
+    public char[][] getSeats() {
+        return seats;
+    }
+
+    public void setSeats(char[][] seats) {
+        this.seats = seats;
+    }
+
+    public boolean[][] getSeatsTaken() {
+        return seatsTaken;
+    }
+
+    public void setSeatsTaken(boolean[][] seatsTaken) {
+        this.seatsTaken = seatsTaken;
+    }
+
+    public CabinClassConfig getCabinClass() {
+        return cabinClass;
+    }
+
+    public void setCabinClass(CabinClassConfig cabinClass) {
+        this.cabinClass = cabinClass;
+    }
+
+    public FlightSchedule getFlightSchedule() {
+        return flightSchedule;
+    }
+
+    public void setFlightSchedule(FlightSchedule flightSchedule) {
+        this.flightSchedule = flightSchedule;
+    }
+    
+    
+    
+    
 
     @Override
     public int hashCode() {
