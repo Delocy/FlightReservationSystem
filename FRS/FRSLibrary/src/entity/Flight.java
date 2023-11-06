@@ -5,13 +5,18 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 /**
  *
@@ -24,15 +29,32 @@ public class Flight implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightId;
-    @Column(nullable = false, length = 7)
+    @Column(nullable = false, unique = true, length = 7)
     private String flightNumber;
+    @Column(nullable = false, unique = false, length = 7)
+    private boolean isDisabled;
     
     @ManyToOne
     @JoinColumn(name = "flightRouteId", nullable = false)
     private FlightRoute flightRoute;
     
+    @OneToOne
+//    @JoinColumn(name = "returnFlightId") // Owning side
+    private Flight returningFlight;
+
+    @OneToOne(mappedBy = "returningFlight") // Inverse side
+    private Flight originalFlight;
+
     @ManyToOne
+    @JoinColumn(name = "aircraftConfigId", nullable = false)
     private AircraftConfig aircraftConfig;
+    
+    @OneToMany(mappedBy = "flight", fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
+    private List<FlightSchedulePlan> flightSchedulePlan;
+
+    public Flight() {
+        this.isDisabled = false;
+    }
 
     public Long getFlightId() {
         return flightId;
@@ -50,6 +72,24 @@ public class Flight implements Serializable {
         this.flightNumber = flightNumber;
     }
 
+    public boolean getIsDisabled() {
+        return isDisabled;
+    }
+
+    public void setIsDisabled(boolean isDisabled) {
+        this.isDisabled = isDisabled;
+    }
+
+    public List<FlightSchedulePlan> getFlightSchedulePlan() {
+        return flightSchedulePlan;
+    }
+
+    public void setFlightSchedulePlan(List<FlightSchedulePlan> flightSchedulePlan) {
+        this.flightSchedulePlan = flightSchedulePlan;
+    }
+    
+    
+
     public FlightRoute getFlightRoute() {
         return flightRoute;
     }
@@ -58,6 +98,23 @@ public class Flight implements Serializable {
         this.flightRoute = flightRoute;
     }
 
+    public Flight getOriginalFlight() {
+        return originalFlight;
+    }
+
+    public void setOriginalFlight(Flight originalFlight) {
+        this.originalFlight = originalFlight;
+    }
+
+    
+    public Flight getReturningFlight() {
+        return returningFlight;
+    }
+
+    public void setReturningFlight(Flight returningFlight) {
+        this.returningFlight = returningFlight;
+    }
+    
     public AircraftConfig getAircraftConfig() {
         return aircraftConfig;
     }

@@ -8,6 +8,7 @@ import com.sun.javafx.scene.control.skin.VirtualFlow;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -32,6 +33,9 @@ public class AircraftConfig implements Serializable {
     private String aircraftConfigName;
     @Column(nullable = false)
     private Integer numCabinClass;
+    
+    @OneToMany(mappedBy="aircraftConfig", fetch = FetchType.EAGER)
+    private List<Flight> flights;
     
     @ManyToOne(optional = false)
     private AircraftType aircraftType;
@@ -88,6 +92,16 @@ public class AircraftConfig implements Serializable {
     public void setCabinClassConfig(List<CabinClassConfig> cabinClassConfig) {
         this.cabinClassConfig = cabinClassConfig;
     }
+
+    public List<Flight> getFlights() {
+        return flights;
+    }
+
+    public void setFlights(List<Flight> flights) {
+        this.flights = flights;
+    }
+    
+    
 
     @Override
     public int hashCode() {

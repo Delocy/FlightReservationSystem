@@ -84,6 +84,7 @@ public class DataInitializationSessionBean {
             } catch (UnknownPersistenceException ex) {
                 Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
             }
+            
         }
         catch(EmployeeUsernameExistException ex)
         {
