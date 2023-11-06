@@ -7,8 +7,12 @@ package ejb.session.stateless;
 import entity.Flight;
 import java.util.List;
 import javax.ejb.Remote;
+import util.exception.AircraftConfigNotFoundException;
+import util.exception.FlightExistException;
 import util.exception.FlightNotFoundException;
 import util.exception.FlightNumberExistException;
+import util.exception.FlightRouteNotFoundException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -16,9 +20,18 @@ import util.exception.FlightNumberExistException;
  */
 @Remote
 public interface FlightSessionBeanRemote {
-    public Long createNewFlight(Flight newFlight) throws FlightNumberExistException;
+//    public Long createNewFlight(Flight newFlight) throws FlightExistException, UnknownPersistenceException;
+    public Long createNewFlight(Flight newFlight, Long configId, Long routeId) throws FlightExistException, UnknownPersistenceException, FlightRouteNotFoundException, AircraftConfigNotFoundException;
     
-    public Flight retrieveFlightByFlightNumber(Long flightNo) throws FlightNotFoundException;
+    public Flight retrieveFlightByFlightNumber(String flightNo) throws FlightNotFoundException;
     
-    // public List<Flight> viewAllFlights();
+    public Flight retrieveFlightByFlightID(Long id) throws FlightNotFoundException;
+    
+    public List<Flight> viewAllFlights();
+    
+    public void deleteFlight(Long flightId);
+    
+     public void updateFlight(Long existingFlightID, Flight newFlight);
+    
+    public void associateOriginalFlightWithReturnFlight(Long originalFlightID, Long returnFlightID) throws FlightNotFoundException;
 }
