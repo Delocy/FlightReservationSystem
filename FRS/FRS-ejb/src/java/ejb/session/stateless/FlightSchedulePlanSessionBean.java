@@ -84,7 +84,6 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
                     scheduleNew = flightScheduleSessionBeanLocal.createNewSchedule(scheduleNew, plan);
                     c.add(Calendar.DAY_OF_MONTH, recurrentDays);         
                     currentDate = c.getTime();                 
-
                 }
             }
 
@@ -101,6 +100,7 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
                 fareSessionBeanLocal.createFare(fare, plan);
             }
 
+            em.merge(plan);
             em.flush();
             return plan;
         } catch(PersistenceException ex) {

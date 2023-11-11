@@ -33,9 +33,7 @@ public class SeatInventory implements Serializable {
     
     @Column(nullable = false)
     private char[][] seats;
-    
-    @Column(nullable = false)
-    private boolean[][] seatsTaken;
+   
 
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
@@ -93,14 +91,6 @@ public class SeatInventory implements Serializable {
 
     public void setSeats(char[][] seats) {
         this.seats = seats;
-    }
-
-    public boolean[][] getSeatsTaken() {
-        return seatsTaken;
-    }
-
-    public void setSeatsTaken(boolean[][] seatsTaken) {
-        this.seatsTaken = seatsTaken;
     }
 
     public CabinClassConfig getCabinClass() {
