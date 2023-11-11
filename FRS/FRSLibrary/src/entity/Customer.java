@@ -28,15 +28,27 @@ public class Customer implements Serializable {
     private String lastName;
     @Column(nullable = false)
     private String email;
-    @Column(nullable = false)
-    private Long mobileNumber;
+    @Column(nullable = false, length = 8)
+    private String mobileNumber;
     @Column(nullable = false)
     private String address;
     @Column(nullable = false)
     private String username;
     @Column(nullable = false)
     private String password;
-    
+
+    public Customer() {
+    }
+
+    public Customer(String firstName, String lastName, String email, String mobileNumber, String address, String username, String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.mobileNumber = mobileNumber;
+        this.address = address;
+        this.username = username;
+        this.password = password;
+    }
 
     public Long getCustomerId() {
         return customerId;
@@ -70,11 +82,11 @@ public class Customer implements Serializable {
         this.email = email;
     }
 
-    public Long getMobileNumber() {
+    public String getMobileNumber() {
         return mobileNumber;
     }
 
-    public void setMobileNumber(Long mobileNumber) {
+    public void setMobileNumber(String mobileNumber) {
         this.mobileNumber = mobileNumber;
     }
 
