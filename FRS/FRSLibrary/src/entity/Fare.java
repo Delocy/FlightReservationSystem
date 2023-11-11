@@ -73,6 +73,24 @@ public class Fare implements Serializable {
         this.fare = fare;
     }
 
+    public CabinClassNameEnum getCabinClassName() {
+        return cabinClassName;
+    }
+
+    public void setCabinClassName(CabinClassNameEnum cabinClassName) {
+        this.cabinClassName = cabinClassName;
+    }
+
+    public FlightSchedulePlan getFlightSchedulePlan() {
+        return flightSchedulePlan;
+    }
+
+    public void setFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) {
+        this.flightSchedulePlan = flightSchedulePlan;
+    }
+    
+    
+
     @Override
     public int hashCode() {
         int hash = 0;

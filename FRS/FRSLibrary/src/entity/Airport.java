@@ -32,6 +32,8 @@ public class Airport implements Serializable {
     private String state;
     @Column(nullable = false)
     private String country;
+    @Column(nullable = false)
+    private int gmt;
 
     public Airport() {
     }
@@ -47,6 +49,16 @@ public class Airport implements Serializable {
         this.state = state;
         this.country = country;
     }
+
+    public Airport(String airportName, String airportCode, String city, String state, String country, int gmt) {
+        this.airportName = airportName;
+        this.airportCode = airportCode;
+        this.city = city;
+        this.state = state;
+        this.country = country;
+        this.gmt = gmt;
+    }
+    
 
     public Long getAirportId() {
         return airportId;
@@ -95,6 +107,16 @@ public class Airport implements Serializable {
     public void setCountry(String country) {
         this.country = country;
     }
+
+    public int getGmt() {
+        return gmt;
+    }
+
+    public void setGmt(int gmt) {
+        this.gmt = gmt;
+    }
+    
+    
 
     @Override
     public int hashCode() {

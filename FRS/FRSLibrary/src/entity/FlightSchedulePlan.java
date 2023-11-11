@@ -63,11 +63,11 @@ public class FlightSchedulePlan implements Serializable {
     @OneToMany(mappedBy = "flightSchedulePlan",  fetch = FetchType.EAGER)
     private List<Fare> fares;
     
-    @OneToOne(mappedBy = "returnSchedule")
-    private FlightSchedulePlan startSchedule;
+    @OneToOne(mappedBy = "returnSchedulePlan")
+    private FlightSchedulePlan originalSchedulePlan;
     
     @OneToOne
-    private FlightSchedulePlan returnSchedule;
+    private FlightSchedulePlan returnSchedulePlan;
     
     public FlightSchedulePlan() {
         flightSchedule = new ArrayList<>();
@@ -157,20 +157,20 @@ public class FlightSchedulePlan implements Serializable {
         this.fares = fares;
     }
 
-    public FlightSchedulePlan getStartSchedule() {
-        return startSchedule;
+    public FlightSchedulePlan getOriginalSchedulePlan() {
+        return originalSchedulePlan;
     }
 
-    public void setStartSchedule(FlightSchedulePlan startSchedule) {
-        this.startSchedule = startSchedule;
+    public void setOriginalSchedulePlan(FlightSchedulePlan originalSchedulePlan) {
+        this.originalSchedulePlan = originalSchedulePlan;
     }
 
-    public FlightSchedulePlan getReturnSchedule() {
-        return returnSchedule;
+    public FlightSchedulePlan getReturnSchedulePlan() {
+        return returnSchedulePlan;
     }
 
-    public void setReturnSchedule(FlightSchedulePlan returnSchedule) {
-        this.returnSchedule = returnSchedule;
+    public void setReturnSchedulePlan(FlightSchedulePlan returnSchedulePlan) {
+        this.returnSchedulePlan = returnSchedulePlan;
     }
 
     

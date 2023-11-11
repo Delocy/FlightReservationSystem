@@ -83,11 +83,12 @@ public class DataInitializationSessionBean {
             employeeSessionBeanLocal.createNewEmployee(new Employee("SalesManager", "Default", EmployeeAccessRightEnum.SALESMANAGER, "salesmanager", "password"));
             
             try {
-                airportSessionBeanLocal.createNewAirport(new Airport("Changi", "SIN", "Singapore", "Singapore", "Singapore"));
-                airportSessionBeanLocal.createNewAirport(new Airport("Adelaide", "ADL", "Adelaide", "Adelaide", "Australia"));
-                airportSessionBeanLocal.createNewAirport(new Airport("Narita", "NRT", "Tokyo", "Tokyo", "Japan"));
-                airportSessionBeanLocal.createNewAirport(new Airport("Kansai", "KIX", "Osaka", "Osaka", "Japan"));
-                airportSessionBeanLocal.createNewAirport(new Airport("Pudong", "PVG", "Shanghai", "Shanghai", "China"));
+                airportSessionBeanLocal.createNewAirport(new Airport("Changi", "SIN", "Singapore", "Singapore", "Singapore", 8));
+                airportSessionBeanLocal.createNewAirport(new Airport("Melbourne", "MEL", "Melbourne", "Melbourne", "Australia",11));
+                airportSessionBeanLocal.createNewAirport(new Airport("Narita", "NRT", "Tokyo", "Tokyo", "Japan", 9));
+                airportSessionBeanLocal.createNewAirport(new Airport("Kansai", "KIX", "Osaka", "Osaka", "Japan", 9));
+                airportSessionBeanLocal.createNewAirport(new Airport("Pudong", "PVG", "Shanghai", "Shanghai", "China", 8));
+                airportSessionBeanLocal.createNewAirport(new Airport("LosAngeles", "LAX", "LosAngeles", "California", "UnitedStates", -8));
             } catch (UnknownPersistenceException ex) {
                 Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
             }

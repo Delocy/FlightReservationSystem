@@ -25,11 +25,11 @@ public class SeatInventory implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long seatInventoryId;
     @Column(nullable = false, length = 5)
-    private Long availableSeats;
+    private int availableSeats;
     @Column(nullable = false, length = 5)
-    private Long reserveSeats;
+    private int reserveSeats;
     @Column(nullable = false, length = 5)
-    private Long balanceSeats;
+    private int balanceSeats;
     
     @Column(nullable = false)
     private char[][] seats;
@@ -48,7 +48,7 @@ public class SeatInventory implements Serializable {
     public SeatInventory() {
     }
 
-    public SeatInventory(Long availableSeats, Long reserveSeats, Long balanceSeats) {
+    public SeatInventory(int availableSeats, int reserveSeats, int balanceSeats) {
         this.availableSeats = availableSeats;
         this.reserveSeats = reserveSeats;
         this.balanceSeats = balanceSeats;
@@ -63,27 +63,27 @@ public class SeatInventory implements Serializable {
         this.seatInventoryId = seatInventoryId;
     }
 
-    public Long getAvailableSeats() {
+    public int getAvailableSeats() {
         return availableSeats;
     }
 
-    public void setAvailableSeats(Long availableSeats) {
+    public void setAvailableSeats(int availableSeats) {
         this.availableSeats = availableSeats;
     }
 
-    public Long getReserveSeats() {
+    public int getReserveSeats() {
         return reserveSeats;
     }
 
-    public void setReserveSeats(Long reserveSeats) {
+    public void setReserveSeats(int reserveSeats) {
         this.reserveSeats = reserveSeats;
     }
 
-    public Long getBalanceSeats() {
+    public int getBalanceSeats() {
         return balanceSeats;
     }
 
-    public void setBalanceSeats(Long balanceSeats) {
+    public void setBalanceSeats(int balanceSeats) {
         this.balanceSeats = balanceSeats;
     }
 
