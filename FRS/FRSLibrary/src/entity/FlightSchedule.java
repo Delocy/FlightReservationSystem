@@ -62,6 +62,7 @@ public class FlightSchedule implements Serializable {
     }
 
     public FlightSchedule(Date departureDateTime, Double flightDuration) {
+        this();
         this.departureDateTime = departureDateTime;
         this.flightDuration = flightDuration;
     }

@@ -29,10 +29,10 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
     public FlightSchedule createNewSchedule(FlightSchedule schedule, FlightSchedulePlan plan) {
         em.persist(schedule);
         
-        schedule.setFlightSchedulePlan(plan);
         if (!plan.getFlightSchedule().contains(schedule)) {
             plan.getFlightSchedule().add(schedule);
         }
+        schedule.setFlightSchedulePlan(plan);
 
         return schedule;
     }

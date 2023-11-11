@@ -769,7 +769,7 @@ public class MainApp {
     private Fare createFare(CabinClassConfig cabinclass) {
         Scanner sc = new Scanner(System.in);
         System.out.print("Enter fare basis code (2 to 6 numbers)> ");
-        String code = cabinclass.getCabinClassName() + sc.next().trim();
+        String code = sc.next().trim();
         System.out.print("Enter fare amount> ");
         BigDecimal cost = sc.nextBigDecimal();
         Fare fare = new Fare(code, cost, cabinclass.getCabinClassName());
@@ -929,6 +929,9 @@ public class MainApp {
                         listOfFlightScheduleInfoReturn.add(new Pair<>(newDeparture, fs.getFlightDuration()));
                     }
                     
+                    System.out.println("size of now: " + plan.getFlightSchedule().size());
+                    System.out.println("size of return: " + listOfFlightScheduleInfoReturn.size());
+                    
                     List<CabinClassConfig> returnCabinClass = returnFlight.getAircraftConfig().getCabinClassConfig();
                     System.out.println("Aircraft Configuration for flight " + returnFlight.getFlightNumber() + " contains " + returnCabinClass.size() + " cabins");
                     System.out.println("Please enter fares for each cabin class!\n");
@@ -957,7 +960,7 @@ public class MainApp {
                             faresReturn.add(createFare(cc));
                             System.out.print("Would you like to add more fares to this cabin class? (Y/N)> ");
                             String reply2 = scanner.nextLine().trim();
-                            if(!reply.equalsIgnoreCase("Y")) {
+                            if(!reply.equalsIgnoreCase("N")) {
                                 break;
                             }                         
                         }
