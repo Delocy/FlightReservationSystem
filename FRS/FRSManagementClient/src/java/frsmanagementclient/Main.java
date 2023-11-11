@@ -10,6 +10,7 @@ import ejb.session.stateless.AirportSessionBeanRemote;
 import ejb.session.stateless.CabinClassConfigSessionBeanRemote;
 import ejb.session.stateless.EmployeeSessionBeanRemote;
 import ejb.session.stateless.FlightRouteSessionBeanRemote;
+import ejb.session.stateless.FlightSchedulePlanSessionBeanRemote;
 import ejb.session.stateless.FlightSessionBeanRemote;
 import javax.ejb.EJB;
 import util.exception.AircraftConfigNotFoundException;
@@ -25,6 +26,9 @@ import util.exception.UnknownPersistenceException;
  * @author zares
  */
 public class Main {
+
+    @EJB
+    private static FlightSchedulePlanSessionBeanRemote flightSchedulePlanSessionBean;
 
     @EJB
     private static AircraftConfigSessionBeanRemote aircraftConfigSessionBeanRemote;
@@ -49,7 +53,7 @@ public class Main {
     
     
     public static void main(String[] args) throws AirportNotFoundException, FlightRouteExistException, UnknownPersistenceException, FlightRouteNotFoundException, AircraftConfigNotFoundException, FlightExistException, FlightNotFoundException {
-        MainApp mainApp = new MainApp(employeeSessionBeanRemote, flightSessionBeanRemote, flightRouteSessionBeanRemote , airportSessionBeanRemote, aircraftTypeSessionBeanRemote, cabinClassConfigSessionBeanRemote, aircraftConfigSessionBeanRemote);
+        MainApp mainApp = new MainApp(employeeSessionBeanRemote, flightSessionBeanRemote, flightRouteSessionBeanRemote , airportSessionBeanRemote, aircraftTypeSessionBeanRemote, cabinClassConfigSessionBeanRemote, aircraftConfigSessionBeanRemote, flightSchedulePlanSessionBean);
         mainApp.runApp();
     }
     
