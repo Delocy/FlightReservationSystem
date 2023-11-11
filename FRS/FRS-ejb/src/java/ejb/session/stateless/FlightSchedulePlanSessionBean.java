@@ -100,7 +100,7 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
                 fareSessionBeanLocal.createFare(fare, plan);
             }
 
-            em.merge(plan);
+            
             em.flush();
             return plan;
         } catch(PersistenceException ex) {
