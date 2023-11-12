@@ -4,7 +4,13 @@
  */
 package frsreservationclient;
 
+import ejb.session.stateless.CabinClassConfigSessionBeanRemote;
 import ejb.session.stateless.CustomerSessionBeanRemote;
+import ejb.session.stateless.FlightReservationSessionBeanRemote;
+import ejb.session.stateless.FlightScheduleSessionBeanRemote;
+import ejb.session.stateless.FlightSessionBeanRemote;
+import ejb.session.stateless.ItinerarySessionBeanRemote;
+import ejb.session.stateless.SeatInventorySessionBeanRemote;
 import javax.ejb.EJB;
 
 /**
@@ -14,6 +20,24 @@ import javax.ejb.EJB;
 public class Main {
 
     @EJB
+    private static FlightScheduleSessionBeanRemote flightScheduleSessionBeanRemote;
+
+    @EJB
+    private static ItinerarySessionBeanRemote itinerarySessionBeanRemote;
+
+    @EJB
+    private static FlightReservationSessionBeanRemote flightReservationSessionBeanRemote;
+
+    @EJB
+    private static SeatInventorySessionBeanRemote seatInventorySessionBeanRemote;
+
+    @EJB
+    private static FlightSessionBeanRemote flightSessionBeanRemote;
+
+    @EJB
+    private static CabinClassConfigSessionBeanRemote cabinClassConfigSessionBeanRemote;
+
+    @EJB
     private static CustomerSessionBeanRemote customerSessionBeanRemote;
 
     /**
@@ -21,7 +45,7 @@ public class Main {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        MainApp mainApp = new MainApp(customerSessionBeanRemote);
+        MainApp mainApp = new MainApp(customerSessionBeanRemote, cabinClassConfigSessionBeanRemote, flightSessionBeanRemote, flightScheduleSessionBeanRemote, seatInventorySessionBeanRemote, flightReservationSessionBeanRemote, itinerarySessionBeanRemote);
         mainApp.runApp();
     }
     
