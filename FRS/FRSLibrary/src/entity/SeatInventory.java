@@ -12,6 +12,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -25,13 +27,20 @@ public class SeatInventory implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long seatInventoryId;
     @Column(nullable = false, length = 5)
+    @Min(0)
+    @NotNull
     private int availableSeats;
     @Column(nullable = false, length = 5)
+    @Min(0)
+    @NotNull
     private int reserveSeats;
     @Column(nullable = false, length = 5)
+    @Min(0)
+    @NotNull
     private int balanceSeats;
     
     @Column(nullable = false)
+    @NotNull
     private char[][] seats;
    
 
