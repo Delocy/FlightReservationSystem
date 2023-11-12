@@ -37,5 +37,5 @@ public interface FlightSessionBeanRemote {
     
     public List<Flight> retrieveFlightsByFlightRoute(String origin, String destination) throws FlightNotFoundException;
 
-    public List<Flight> retrieveConnectingFlightsByFlightRoute(String origin, String destination) throws FlightNotFoundException;
+    public List<Flight[]> retrieveConnectingFlightsByFlightRoute(String origin, String destination) throws FlightNotFoundException;
 }

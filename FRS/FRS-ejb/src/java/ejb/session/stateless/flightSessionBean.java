@@ -233,7 +233,7 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
     }
     
     @Override
-    public List<Flight> retrieveConnectingFlightsByFlightRoute(String origin, String destination) throws FlightNotFoundException {
+    public List<Flight[]> retrieveConnectingFlightsByFlightRoute(String origin, String destination) throws FlightNotFoundException {
         Query query = em.createQuery("SELECT f1, f2 FROM Flight f1, Flight f2 "
             + "WHERE f1.flightRoute.originAirport.airportCode = :inOrigin "
             + "AND f2.flightRoute.destinationAirport.airportCode = :inDestination "
@@ -244,7 +244,7 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
         query.setParameter("inOrigin", origin);
         query.setParameter("inDestination", destination);
         
-        List<Flight> result = query.getResultList();
+        List<Flight[]> result = query.getResultList();
         if (result != null) {
             return result;
         } else {

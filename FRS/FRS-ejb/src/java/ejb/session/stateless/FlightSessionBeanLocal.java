@@ -43,6 +43,6 @@ public interface FlightSessionBeanLocal {
 
     public List<Flight> retrieveFlightsByFlightRoute(String origin, String destination) throws FlightNotFoundException;
 
-    public List<Flight> retrieveConnectingFlightsByFlightRoute(String origin, String destination) throws FlightNotFoundException;
+    public List<Flight[]> retrieveConnectingFlightsByFlightRoute(String origin, String destination) throws FlightNotFoundException;
     
 }
