@@ -9,8 +9,10 @@ import ejb.session.stateless.AircraftTypeSessionBeanRemote;
 import ejb.session.stateless.AirportSessionBeanRemote;
 import ejb.session.stateless.CabinClassConfigSessionBeanRemote;
 import ejb.session.stateless.EmployeeSessionBeanRemote;
+import ejb.session.stateless.FareSessionBeanRemote;
 import ejb.session.stateless.FlightRouteSessionBeanRemote;
 import ejb.session.stateless.FlightSchedulePlanSessionBeanRemote;
+import ejb.session.stateless.FlightScheduleSessionBeanRemote;
 import ejb.session.stateless.FlightSessionBeanRemote;
 import javax.ejb.EJB;
 import util.exception.AircraftConfigNotFoundException;
@@ -28,7 +30,13 @@ import util.exception.UnknownPersistenceException;
 public class Main {
 
     @EJB
-    private static FlightSchedulePlanSessionBeanRemote flightSchedulePlanSessionBean;
+    private static FareSessionBeanRemote fareSessionBeanRemote;
+
+    @EJB
+    private static FlightScheduleSessionBeanRemote flightScheduleSessionBeanRemote;
+
+    @EJB
+    private static FlightSchedulePlanSessionBeanRemote flightSchedulePlanSessionBeanRemote;
 
     @EJB
     private static AircraftConfigSessionBeanRemote aircraftConfigSessionBeanRemote;
@@ -53,7 +61,17 @@ public class Main {
     
     
     public static void main(String[] args) throws AirportNotFoundException, FlightRouteExistException, UnknownPersistenceException, FlightRouteNotFoundException, AircraftConfigNotFoundException, FlightExistException, FlightNotFoundException {
-        MainApp mainApp = new MainApp(employeeSessionBeanRemote, flightSessionBeanRemote, flightRouteSessionBeanRemote , airportSessionBeanRemote, aircraftTypeSessionBeanRemote, cabinClassConfigSessionBeanRemote, aircraftConfigSessionBeanRemote, flightSchedulePlanSessionBean);
+        MainApp mainApp = new MainApp(employeeSessionBeanRemote,
+                flightSessionBeanRemote,
+                flightRouteSessionBeanRemote,
+                airportSessionBeanRemote,
+                aircraftTypeSessionBeanRemote,
+                cabinClassConfigSessionBeanRemote,
+                aircraftConfigSessionBeanRemote,
+                flightSchedulePlanSessionBeanRemote,
+                flightScheduleSessionBeanRemote,
+                fareSessionBeanRemote
+        );
         mainApp.runApp();
     }
     

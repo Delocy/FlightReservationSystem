@@ -32,5 +32,9 @@ public interface FlightSchedulePlanSessionBeanLocal {
     public FlightSchedulePlan createNewFlightSchedulePlanWeekly(FlightSchedulePlan plan, List<Fare> fares, long flightID, Pair<Date, Double> pair, int recurrent) throws FareExistException, UnknownPersistenceException, FlightNotFoundException, FlightSchedulePlanExistException;
 
     public void associateExistingPlanToComplementaryPlan(Long sourcFlightSchedulePlanID, Long returnFlightSchedulePlanID) throws FlightSchedulePlanNotFoundException;
+
+    public List<FlightSchedulePlan> retrieveAllFlightSchedulePlan() throws FlightSchedulePlanNotFoundException;
+
+    public void deleteFlightSchedulePlan(Long planID) throws FlightSchedulePlanNotFoundException;
     
 }

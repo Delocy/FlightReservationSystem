@@ -13,6 +13,7 @@ import javafx.util.Pair;
 import javax.ejb.Remote;
 import util.enumeration.CabinClassNameEnum;
 import util.exception.FlightScheduleNotFoundException;
+import util.exception.UpdateFlightScheduleException;
 
 /**
  *
@@ -29,5 +30,11 @@ public interface FlightScheduleSessionBeanRemote {
     public Fare lowestFare(FlightSchedule fs, CabinClassNameEnum cabinClassName) throws FlightScheduleNotFoundException;
     
     public List<Pair<FlightSchedule, FlightSchedule>> retrieveConnectingFlightSchedules(String originAirport, String destAirport, Date departureDate, CabinClassNameEnum cabinClassName);
+    
+    public FlightSchedule updateFlightSchedule(long flightScheduleId, Date newDepartureDateTime, double newFlightDuration) throws FlightScheduleNotFoundException, UpdateFlightScheduleException;
+
+    public void deleteFlightSchedule(long flightScheduleId) throws FlightScheduleNotFoundException, UpdateFlightScheduleException;
+
+    public void deleteFlightSchedule(List<FlightSchedule> flightSchedule);
 
 }

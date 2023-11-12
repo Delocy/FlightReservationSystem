@@ -54,12 +54,12 @@ public class FlightSchedule implements Serializable {
     @OneToMany(mappedBy = "flightSchedule", fetch = FetchType.EAGER)
     private List<SeatInventory> seatInventory;
     
-//    @OneToMany(mappedBy = "flightSchedule", fetch = FetchType.EAGER)
-//    private List<FlightReservation> reservations;
+    @OneToMany(mappedBy = "flightSchedule", fetch = FetchType.EAGER)
+    private List<FlightReservation> reservations;
 
     public FlightSchedule() {
         this.seatInventory = new ArrayList<>();
-        //this.reservations = new ArrayList<>();
+        this.reservations = new ArrayList<>();
     }
 
     public FlightSchedule(Date departureDateTime, Double flightDuration) {
@@ -117,15 +117,13 @@ public class FlightSchedule implements Serializable {
         this.seatInventory = seatInventory;
     }
     
-    
+    public List<FlightReservation> getReservations() {
+        return reservations;
+    }
 
-//    public List<FlightReservation> getReservations() {
-//        return reservations;
-//    }
-//
-//    public void setReservations(List<FlightReservation> reservations) {
-//        this.reservations = reservations;
-//    }
+    public void setReservations(List<FlightReservation> reservations) {
+        this.reservations = reservations;
+    }
     
 
     @Override
