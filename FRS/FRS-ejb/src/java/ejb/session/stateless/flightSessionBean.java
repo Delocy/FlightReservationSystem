@@ -213,4 +213,42 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
         }
         
     }
+    
+    @Override
+    public List<Flight> retrieveFlightsByFlightRoute(String origin, String destination) throws FlightNotFoundException {
+        Query query = em.createQuery("SELECT f FROM Flight f "
+            + "WHERE f.flightRoute.originAirport.airportCode = :inOrigin "
+            + "AND f.flightRoute.destinationAirport.airportCode = :inDestination "
+            + "AND f.disabled = false "
+            + "ORDER BY SUBSTRING(f.flightNum, 3) ASC");
+        query.setParameter("inOrigin", origin);
+        query.setParameter("inDestination", destination);
+        
+        List<Flight> result = query.getResultList();
+        if (result != null) {
+            return result;
+        } else {
+            throw new FlightNotFoundException("Flights from " + origin + " to " + destination + " does not exist!");
+        }
+    }
+    
+    @Override
+    public List<Flight> retrieveConnectingFlightsByFlightRoute(String origin, String destination) throws FlightNotFoundException {
+        Query query = em.createQuery("SELECT f1, f2 FROM Flight f1, Flight f2 "
+            + "WHERE f1.flightRoute.originAirport.airportCode = :inOrigin "
+            + "AND f2.flightRoute.destinationAirport.airportCode = :inDestination "
+            + "AND f1.flightRoute.destinationAirport.airportCode = f2.flightRoute.originAirport.airportCode "
+            + "AND f1.disabled = false "
+            + "AND f2.disabled = false "
+            + "ORDER BY SUBSTRING(f.flightNum, 3) ASC");
+        query.setParameter("inOrigin", origin);
+        query.setParameter("inDestination", destination);
+        
+        List<Flight> result = query.getResultList();
+        if (result != null) {
+            return result;
+        } else {
+            throw new FlightNotFoundException("Flights from " + origin + " to " + destination + " does not exist!");
+        }
+    }
 }
