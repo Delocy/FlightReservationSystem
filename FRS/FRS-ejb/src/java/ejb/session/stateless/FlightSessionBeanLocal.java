@@ -40,5 +40,9 @@ public interface FlightSessionBeanLocal {
     public Long createNewFlight(Flight newFlight, Long configId, Long routeId) throws FlightExistException, UnknownPersistenceException, FlightRouteNotFoundException, AircraftConfigNotFoundException;
 
     public void associateOriginalFlightWithReturnFlight(Long originalFlightID, Long returnFlightID) throws FlightNotFoundException;
+
+    public List<Flight> retrieveFlightsByFlightRoute(String origin, String destination) throws FlightNotFoundException;
+
+    public List<Flight[]> retrieveConnectingFlightsByFlightRoute(String origin, String destination) throws FlightNotFoundException;
     
 }

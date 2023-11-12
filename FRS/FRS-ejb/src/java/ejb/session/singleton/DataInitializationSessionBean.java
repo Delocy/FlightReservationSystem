@@ -104,7 +104,7 @@ public class DataInitializationSessionBean {
             cabins.add(new CabinClassConfig(CabinClassNameEnum.BUSINESS, "2-2-2", 10, 2, 6));
             cabins.add(new CabinClassConfig(CabinClassNameEnum.ECONOMY, "3-4-3", 12, 2, 10));
             AircraftType at = aircraftTypeSessionBeanLocal.retrieveAircraftTypeByAircraftTypeId((long)1);
-            aircraftConfigSessionBeanLocal.createAircraftConfig(new AircraftConfig("SQ", 3, at), cabins, (long)1);
+            Long id = aircraftConfigSessionBeanLocal.createAircraftConfig(new AircraftConfig("SQ", 3, at), cabins, (long)1);
 
         }
         catch(EmployeeUsernameExistException ex)

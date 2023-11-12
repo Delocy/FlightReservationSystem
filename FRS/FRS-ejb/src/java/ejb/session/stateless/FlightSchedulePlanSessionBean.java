@@ -10,6 +10,7 @@ import entity.Flight;
 import entity.FlightSchedule;
 import entity.FlightSchedulePlan;
 import entity.SeatInventory;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -21,11 +22,14 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
+import javax.persistence.Query;
 import util.exception.FareExistException;
 import util.exception.FlightNotFoundException;
+import util.exception.FlightScheduleNotFoundException;
 import util.exception.FlightSchedulePlanExistException;
 import util.exception.FlightSchedulePlanNotFoundException;
 import util.exception.UnknownPersistenceException;
+import util.exception.UpdateFlightScheduleException;
 
 /**
  *
@@ -100,7 +104,7 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
                 fareSessionBeanLocal.createFare(fare, plan);
             }
 
-            em.merge(plan);
+            
             em.flush();
             return plan;
         } catch(PersistenceException ex) {
@@ -359,6 +363,64 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
         original.setReturnSchedulePlan(complementary);
         complementary.setOriginalSchedulePlan(original);
         
+    }
+    
+    @Override
+    public List<FlightSchedulePlan> retrieveAllFlightSchedulePlan() throws FlightSchedulePlanNotFoundException {
+        Query query = em.createQuery("SELECT DISTINCT p FROM FlightSchedule f, FlightSchedulePlan p WHERE f.flightSchedulePlan.flightSchedulePlanId = p.flightSchedulePlanId AND p.disabled = false ORDER BY p.flightNumber ASC, f.departureDateTime DESC");  
+        List<FlightSchedulePlan> result = query.getResultList();
+        if (result.isEmpty()) {
+            throw new FlightSchedulePlanNotFoundException("No flight schedule plans found");
+        }
+        List<FlightSchedulePlan> fResult = new ArrayList<>();
+        for (FlightSchedulePlan p : result) {
+            if (!fResult.contains(p)) {
+                fResult.add(p);
+                if (p.getReturnSchedulePlan()!= null) {
+                    for (FlightSchedulePlan r : result) {
+                        if (p.getReturnSchedulePlan().equals(r)) {
+                            fResult.add(r);
+                        }
+                    }
+                }
+            }
+        }
+        return fResult;
+    }
+    
+    @Override
+    public void deleteFlightSchedulePlan(Long planID) throws FlightSchedulePlanNotFoundException {
+        FlightSchedulePlan plan = retrieveFlightSchedulePlanById(planID);
+        
+        boolean haveReservation = false;
+        for (FlightSchedule schedule : plan.getFlightSchedule()) {
+            if (!schedule.getReservations().isEmpty()) {
+                haveReservation = true;
+                break;
+            }
+        }
+ 
+        if(haveReservation == false) {
+            flightScheduleSessionBeanLocal.deleteFlightSchedule(plan.getFlightSchedule());
+            
+            plan.getFlight().getFlightSchedulePlan().remove(plan);
+            
+            fareSessionBeanLocal.deleteFares(plan.getFares());
+            
+            if (plan.getOriginalSchedulePlan() != null) {
+                plan.getOriginalSchedulePlan().setReturnSchedulePlan(null);
+                plan.setOriginalSchedulePlan(null);
+            }
+            if (plan.getReturnSchedulePlan() != null) {
+                plan.getReturnSchedulePlan().setOriginalSchedulePlan(null);
+                plan.setReturnSchedulePlan(null);
+            }
+                       
+            em.remove(plan);
+            
+        } else {
+            plan.setDisabled(true);
+        }
     }
 
 }

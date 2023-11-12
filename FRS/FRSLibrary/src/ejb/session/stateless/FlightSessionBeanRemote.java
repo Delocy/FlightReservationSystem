@@ -31,7 +31,11 @@ public interface FlightSessionBeanRemote {
     
     public void deleteFlight(Long flightId);
     
-     public void updateFlight(Long existingFlightID, Flight newFlight);
+    public void updateFlight(Long existingFlightID, Flight newFlight);
     
     public void associateOriginalFlightWithReturnFlight(Long originalFlightID, Long returnFlightID) throws FlightNotFoundException;
+    
+    public List<Flight> retrieveFlightsByFlightRoute(String origin, String destination) throws FlightNotFoundException;
+
+    public List<Flight[]> retrieveConnectingFlightsByFlightRoute(String origin, String destination) throws FlightNotFoundException;
 }
