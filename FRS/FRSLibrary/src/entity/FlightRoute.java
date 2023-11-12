@@ -18,6 +18,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -30,7 +31,9 @@ public class FlightRoute implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightRouteId;
-    //private boolean hasComplementaryReturnRoute;
+    
+    @Column(nullable = false)
+    @NotNull
     private boolean isDisabled;
     
     @OneToMany(mappedBy="flightRoute", fetch = FetchType.EAGER)

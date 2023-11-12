@@ -23,6 +23,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import util.enumeration.ScheduleTypeEnum;
 
@@ -39,14 +40,17 @@ public class FlightSchedulePlan implements Serializable {
     private Long flightSchedulePlanId;
     
     @Column(nullable = false, length = 32)
+    @NotNull
     @Size(min=3, max=32)
     private String flightNumber;
     
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @NotNull
     private ScheduleTypeEnum scheduleType;
     
     @Column(nullable = false)
+    @NotNull
     private boolean disabled;
     
     @Temporal(TemporalType.TIMESTAMP)

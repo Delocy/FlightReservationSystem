@@ -15,6 +15,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotNull;
 import util.enumeration.CabinClassNameEnum;
 
 /**
@@ -29,12 +30,16 @@ public class Fare implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long fareId;
     @Column(nullable = false, length = 7)
+    @NotNull
     private String fareBasisCode;
     @Column(nullable = false)
+    @NotNull
     private BigDecimal fare;
     @Column(nullable = false)
+    @NotNull
     @Enumerated(EnumType.STRING)
     private CabinClassNameEnum cabinClassName;
+    
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private FlightSchedulePlan flightSchedulePlan;
