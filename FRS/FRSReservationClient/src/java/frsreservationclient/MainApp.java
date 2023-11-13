@@ -263,8 +263,52 @@ public class MainApp {
                     searchConnectingFlights(desAirport, depAirport, returnDate, cabinClassName, numPasengers);
                 }
             }
-            System.out.println("Enter any key to continue...");
-            scanner.nextLine();
+            System.out.println("\nDo you want to reserve a flight? (Y/N)> ");
+            response = scanner.nextLine().trim();
+            if (response.equalsIgnoreCase("N")) {
+                return;
+            }
+            
+            if (flightPreference == 2) { // no preference
+                while (flightPreference != 0 || flightPreference != 1) {
+                    System.out.print("Select type of flight (1. Direct, 2. Connecting)> ");
+                    flightPreference = scanner.nextInt();
+                }
+            }
+            Long o1, o2, i1, i2;
+            if (tripType == 0) { // round-trip
+                if (flightPreference == 0) { // direct
+                    System.out.print("Enter outbound flight ID to reserve> ");
+                    o1 = scanner.nextLong();
+                    
+                    System.out.print("Enter return flight ID to reserve> ");
+                    i1 = scanner.nextLong();
+                } else if (flightPreference == 1) { // connecting
+                    System.out.print("Enter 1st connecting outbound flight ID to reserve> ");
+                    o1 = scanner.nextLong();
+                    System.out.print("Enter 2nd connecting outbound flight ID to reserve> ");
+                    o2 = scanner.nextLong();
+                    
+                    System.out.print("Enter 1st connecting return flight ID to reserve> ");
+                    i1 = scanner.nextLong();
+                    System.out.print("Enter 2nd connecting return flight ID to reserve> ");
+                    i2 = scanner.nextLong();
+                    
+                }
+            } else if (tripType == 1) { // one-way trip
+                if (flightPreference == 0) { // direct
+                    System.out.print("Enter outbound flight ID to reserve> ");
+                    o1 = scanner.nextLong();
+                    
+                } else if (flightPreference == 1) { // connecting
+                    System.out.print("Enter 1st connecting outbound flight ID to reserve> ");
+                    o1 = scanner.nextLong();
+                    System.out.print("Enter 2nd connecting outbound flight ID to reserve> ");
+                    o2 = scanner.nextLong();
+                }
+            }
+            
+            doReserveFlight(o1, o2, i1, i2, cabinClassName, numPasengers);
 
         } catch (ParseException ex) {
             Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
