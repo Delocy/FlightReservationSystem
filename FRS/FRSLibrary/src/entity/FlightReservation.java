@@ -5,11 +5,18 @@
 package entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import util.enumeration.CabinClassNameEnum;
 
 /**
  *
@@ -22,13 +29,18 @@ public class FlightReservation implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightReservationId;
-    @Column(nullable = false)
-    private String seatNumber;
+    @Column(nullable = false, length = 7)
+    private String fareBasisCode;
+    @Column(nullable = false, precision = 11, scale = 2)
+    private BigDecimal fareAmount;
+    private CabinClassNameEnum cabinClassName;
+    //private Itinerary itinerary;
+//    @OneToMany(fetch = FetchType.EAGER)
+//    private List<Passenger> passenger; 
     
-    //need mapping
-    private Customer customer;
-    private Flight flight;
-    private Fare fare;
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
+    private FlightSchedule flightSchedule;
 
     public Long getFlightReservationId() {
         return flightReservationId;
@@ -37,6 +49,40 @@ public class FlightReservation implements Serializable {
     public void setFlightReservationId(Long flightReservationId) {
         this.flightReservationId = flightReservationId;
     }
+
+    public String getFareBasisCode() {
+        return fareBasisCode;
+    }
+
+    public void setFareBasisCode(String fareBasisCode) {
+        this.fareBasisCode = fareBasisCode;
+    }
+
+    public BigDecimal getFareAmount() {
+        return fareAmount;
+    }
+
+    public void setFareAmount(BigDecimal fareAmount) {
+        this.fareAmount = fareAmount;
+    }
+
+    public CabinClassNameEnum getCabinClassName() {
+        return cabinClassName;
+    }
+
+    public void setCabinClassName(CabinClassNameEnum cabinClassName) {
+        this.cabinClassName = cabinClassName;
+    }
+
+    public FlightSchedule getFlightSchedule() {
+        return flightSchedule;
+    }
+
+    public void setFlightSchedule(FlightSchedule flightSchedule) {
+        this.flightSchedule = flightSchedule;
+    }
+    
+    
 
     @Override
     public int hashCode() {

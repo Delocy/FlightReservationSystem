@@ -44,9 +44,7 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
 
     @PersistenceContext(unitName = "FRS-ejbPU")
     private EntityManager em;
-    
-    
-
+   
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
     

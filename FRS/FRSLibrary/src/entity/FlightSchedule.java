@@ -24,6 +24,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import util.enumeration.ScheduleTypeEnum;
 
 /**
@@ -37,6 +39,8 @@ public class FlightSchedule implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightScheduleId;
+    
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ScheduleTypeEnum scheduleType;
     
@@ -45,6 +49,8 @@ public class FlightSchedule implements Serializable {
     private Date departureDateTime;
     
     @Column(nullable = false)
+    @Min(0)
+    @Max(24)
     private Double flightDuration;
     
     @ManyToOne(optional = false)
@@ -54,12 +60,12 @@ public class FlightSchedule implements Serializable {
     @OneToMany(mappedBy = "flightSchedule", fetch = FetchType.EAGER)
     private List<SeatInventory> seatInventory;
     
-//    @OneToMany(mappedBy = "flightSchedule", fetch = FetchType.EAGER)
-//    private List<FlightReservation> reservations;
+    @OneToMany(mappedBy = "flightSchedule", fetch = FetchType.EAGER)
+    private List<FlightReservation> reservations;
 
     public FlightSchedule() {
         this.seatInventory = new ArrayList<>();
-        //this.reservations = new ArrayList<>();
+        this.reservations = new ArrayList<>();
     }
 
     public FlightSchedule(Date departureDateTime, Double flightDuration) {
@@ -117,15 +123,13 @@ public class FlightSchedule implements Serializable {
         this.seatInventory = seatInventory;
     }
     
-    
+    public List<FlightReservation> getReservations() {
+        return reservations;
+    }
 
-//    public List<FlightReservation> getReservations() {
-//        return reservations;
-//    }
-//
-//    public void setReservations(List<FlightReservation> reservations) {
-//        this.reservations = reservations;
-//    }
+    public void setReservations(List<FlightReservation> reservations) {
+        this.reservations = reservations;
+    }
     
 
     @Override

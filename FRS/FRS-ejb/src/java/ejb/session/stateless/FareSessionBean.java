@@ -6,6 +6,10 @@ package ejb.session.stateless;
 
 import entity.Fare;
 import entity.FlightSchedulePlan;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -13,6 +17,7 @@ import javax.persistence.PersistenceException;
 import util.exception.FareExistException;
 import util.exception.FareNotFoundException;
 import util.exception.UnknownPersistenceException;
+import util.exception.UpdateFareException;
 
 /**
  *
@@ -56,6 +61,31 @@ public class FareSessionBean implements FareSessionBeanRemote, FareSessionBeanLo
             return fare;
         } else {
             throw new FareNotFoundException("Fare " + fareID + " not found!");
+        }
+    }
+    
+    @Override
+    public Fare updateFare(long fareID, BigDecimal newCost) throws FareNotFoundException, UpdateFareException {
+        try {
+            Fare fare = retrieveFareByFareId(fareID);
+            fare.setFare(newCost);
+            em.flush();
+            return fare;
+        } catch (PersistenceException ex) {
+            throw new UpdateFareException("Invalid new cost input");
+        }
+    }
+    
+    @Override
+    public void deleteFares(List<Fare> fares) {
+        
+        for(Fare fare : fares) {
+            try {
+                Long id = fare.getFareId();
+                em.remove(retrieveFareByFareId(id));
+            } catch (FareNotFoundException ex) {
+                Logger.getLogger(FareSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 }

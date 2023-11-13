@@ -7,6 +7,7 @@ package ejb.session.stateless;
 import entity.CabinClassConfig;
 import entity.FlightSchedule;
 import entity.SeatInventory;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -54,6 +55,13 @@ public class SeatInventorySessionBean implements SeatInventorySessionBeanRemote,
             return seat;
         } else {
             throw new SeatInventoryNotFoundException("Seat Inventory does not exist!");
+        }
+    }
+    
+    @Override
+    public void deleteSeatInventory(List<SeatInventory> seatInventories) {
+        for (SeatInventory seat: seatInventories) {
+            em.remove(seat);
         }
     }
 }
