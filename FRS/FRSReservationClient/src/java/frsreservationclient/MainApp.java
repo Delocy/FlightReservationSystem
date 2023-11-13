@@ -12,11 +12,13 @@ import ejb.session.stateless.FlightSessionBeanRemote;
 import ejb.session.stateless.ItinerarySessionBeanRemote;
 import ejb.session.stateless.SeatInventorySessionBeanRemote;
 import entity.Customer;
+import entity.Flight;
 import entity.FlightSchedule;
 import entity.SeatInventory;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -28,6 +30,7 @@ import util.enumeration.CabinClassNameEnum;
 import util.exception.CabinClassNameNotFoundException;
 import util.exception.CustomerNotFoundException;
 import util.exception.CustomerUsernameExistException;
+import util.exception.FlightNotFoundException;
 import util.exception.FlightScheduleNotFoundException;
 import util.exception.InvalidLoginCredentialException;
 import util.exception.UnknownPersistenceException;
@@ -89,7 +92,7 @@ public class MainApp {
                     System.out.println("Invalid option, please try again!\n");
                 }
             }
-            if (response == 2) {
+            if (response == 3) {
                 break;
             }
         }
@@ -162,16 +165,17 @@ public class MainApp {
         Scanner sc = new Scanner(System.in);
         Integer response = 0;
         
-        System.out.println("*** Welcome to Flight Reservation System ***\n");
-        System.out.println("You are currently logged in as " + currentCustomer.getFirstName() + " " + currentCustomer.getLastName() + "!\n");
-        System.out.println();
-        System.out.println("1: Search for Flights");
-        System.out.println("2: View My Flight Reservations");
-        System.out.println("3: View My Flight Reservation Details");
-        System.out.println("4: Logout");
-
-        response = 0;
+        
         while (true) {
+            System.out.println("*** Welcome to Flight Reservation System ***\n");
+            System.out.println("You are currently logged in as " + currentCustomer.getFirstName() + " " + currentCustomer.getLastName() + "!\n");
+            System.out.println();
+            System.out.println("1: Search for Flights");
+            System.out.println("2: View My Flight Reservations");
+            System.out.println("3: View My Flight Reservation Details");
+            System.out.println("4: Logout");
+
+            response = 0;
             while(response < 1 || response > 4) {
                 System.out.print("> ");
                 response = sc.nextInt();
@@ -218,7 +222,7 @@ public class MainApp {
             String input = scanner.nextLine().trim();
             departureDate = formatter.parse(input);
             
-            Date returnDate;
+            Date returnDate = null;
             if (tripType == 0) {
                 System.out.print("Enter Return Date (dd/mm/yyyy)> ");
                 input = scanner.nextLine().trim();
@@ -248,71 +252,101 @@ public class MainApp {
                 searchDirectFlights(depAirport, desAirport, departureDate, cabinClassName, numPasengers);
                 searchConnectingFlights(depAirport, desAirport, departureDate, cabinClassName, numPasengers);
             }
+            
+            if (tripType == 0) {
+                if (flightPreference == 0) { // RETURN direct flight 
+                    searchDirectFlights(desAirport, depAirport, returnDate, cabinClassName, numPasengers);
+                } else if (flightPreference == 1) { // RETURN connecting flights
+                    searchConnectingFlights(desAirport, depAirport, returnDate, cabinClassName, numPasengers);
+                } else if (flightPreference == 2) { // RETURN any flights
+                    searchDirectFlights(desAirport, depAirport, returnDate, cabinClassName, numPasengers);
+                    searchConnectingFlights(desAirport, depAirport, returnDate, cabinClassName, numPasengers);
+                }
+            }
+            System.out.println("Enter any key to continue...");
+            scanner.nextLine();
 
         } catch (ParseException ex) {
             Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
         } catch (CabinClassNameNotFoundException ex) {
             Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+        return;
     }
     
     public void searchDirectFlights(String originAirport, String destinationAirport, Date departureDate, CabinClassNameEnum cabinClassName, int numPassenger) {
-        List<FlightSchedule> outboundActual = flightScheduleSessionBeanRemote.retrieveListOfFlightSchedule(originAirport, originAirport, departureDate, cabinClassName);
         
-        Calendar c = Calendar.getInstance();
-        c.setTime(departureDate);
-        c.add(Calendar.DATE, -1);
-        List<FlightSchedule> outbound1Before = flightScheduleSessionBeanRemote.retrieveListOfFlightSchedule(originAirport, originAirport, c.getTime(), cabinClassName);
-        c.add(Calendar.DATE, -1);
-        List<FlightSchedule> outbound2Before = flightScheduleSessionBeanRemote.retrieveListOfFlightSchedule(originAirport, originAirport, c.getTime(), cabinClassName);
-        c.add(Calendar.DATE, -1);
-        List<FlightSchedule> outbound3Before = flightScheduleSessionBeanRemote.retrieveListOfFlightSchedule(originAirport, originAirport, c.getTime(), cabinClassName);
-        c.add(Calendar.DATE, 1);
-        List<FlightSchedule> outbound1After = flightScheduleSessionBeanRemote.retrieveListOfFlightSchedule(originAirport, originAirport, c.getTime(), cabinClassName);
-        c.add(Calendar.DATE, 1);
-        List<FlightSchedule> outbound2After = flightScheduleSessionBeanRemote.retrieveListOfFlightSchedule(originAirport, originAirport, c.getTime(), cabinClassName);
-        c.add(Calendar.DATE, 1);
-        List<FlightSchedule> outbound3After = flightScheduleSessionBeanRemote.retrieveListOfFlightSchedule(originAirport, originAirport, c.getTime(), cabinClassName);
-        
-        System.out.println("************** DIRECT FLIGHTS FROM " + originAirport + " TO " + destinationAirport + " **************");
-        System.out.println("************** Flights On Selected Date **************");
-        printFlightSchedule(outboundActual, numPassenger, cabinClassName);
-        System.out.println("\n************** Flights 1 Day Before Selected Date **************");
-        printFlightSchedule(outbound1Before, numPassenger, cabinClassName);
-        System.out.println("\n************** Flights 2 Days Before Selected Date **************");
-        printFlightSchedule(outbound2Before, numPassenger, cabinClassName);
-        System.out.println("\n************** Flights 3 Days Before Selected Date **************");
-        printFlightSchedule(outbound2Before, numPassenger, cabinClassName);
-        System.out.println("\n************** Flights 1 Day After Selected Date **************");
-        printFlightSchedule(outbound1After, numPassenger, cabinClassName);
-        System.out.println("\n************** Flights 2 Days After Selected Date **************");
-        printFlightSchedule(outbound2After, numPassenger, cabinClassName);
-        System.out.println("\n************** Flights 3 Days After Selected Date **************");
-        printFlightSchedule(outbound3After, numPassenger, cabinClassName);
-        
+        try {
+            List<Flight> flight = flightSessionBeanRemote.retrieveFlightsByFlightRoute(originAirport, destinationAirport);
+            //System.out.println("MAIN: " + flight.size());
+            List<FlightSchedule> outboundActual = flightScheduleSessionBeanRemote.retrieveListOfFlightSchedule(originAirport, destinationAirport, departureDate, cabinClassName);
+            //System.out.println("SIZE: " + outboundActual.size());
+            Calendar c = Calendar.getInstance();
+            c.setTime(departureDate);
+            c.add(Calendar.DATE, -1);
+            //System.out.println("DATE: " + c.toString());
+            List<FlightSchedule> outbound1Before = flightScheduleSessionBeanRemote.retrieveListOfFlightSchedule(originAirport, destinationAirport, c.getTime(), cabinClassName);
+            c.add(Calendar.DATE, -1);
+            List<FlightSchedule> outbound2Before = flightScheduleSessionBeanRemote.retrieveListOfFlightSchedule(originAirport, destinationAirport, c.getTime(), cabinClassName);
+            c.add(Calendar.DATE, -1);
+            List<FlightSchedule> outbound3Before = flightScheduleSessionBeanRemote.retrieveListOfFlightSchedule(originAirport, destinationAirport, c.getTime(), cabinClassName);
+            c.setTime(departureDate);
+            c.add(Calendar.DATE, 1);
+            List<FlightSchedule> outbound1After = flightScheduleSessionBeanRemote.retrieveListOfFlightSchedule(originAirport, destinationAirport, c.getTime(), cabinClassName);
+            c.add(Calendar.DATE, 1);
+            List<FlightSchedule> outbound2After = flightScheduleSessionBeanRemote.retrieveListOfFlightSchedule(originAirport, destinationAirport, c.getTime(), cabinClassName);
+            c.add(Calendar.DATE, 1);
+            List<FlightSchedule> outbound3After = flightScheduleSessionBeanRemote.retrieveListOfFlightSchedule(originAirport, destinationAirport, c.getTime(), cabinClassName);
+            
+            System.out.println("=======================================================================================================");
+            System.out.println("************** DIRECT FLIGHTS FROM " + originAirport + " TO " + destinationAirport + " **************");
+            System.out.println("=======================================================================================================");
+            System.out.println("************** Flights On Selected Date **************");
+            printFlightSchedule(outboundActual, numPassenger, cabinClassName);
+            System.out.println("\n************** Flights 1 Day Before Selected Date **************");
+            printFlightSchedule(outbound1Before, numPassenger, cabinClassName);
+            System.out.println("\n************** Flights 2 Days Before Selected Date **************");
+            printFlightSchedule(outbound2Before, numPassenger, cabinClassName);
+            System.out.println("\n************** Flights 3 Days Before Selected Date **************");
+            printFlightSchedule(outbound3Before, numPassenger, cabinClassName);
+            System.out.println("\n************** Flights 1 Day After Selected Date **************");
+            printFlightSchedule(outbound1After, numPassenger, cabinClassName);
+            System.out.println("\n************** Flights 2 Days After Selected Date **************");
+            printFlightSchedule(outbound2After, numPassenger, cabinClassName);
+            System.out.println("\n************** Flights 3 Days After Selected Date **************");
+            printFlightSchedule(outbound3After, numPassenger, cabinClassName);
+            
+            System.out.println("");
+            
+        } catch (FlightNotFoundException ex) {
+            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     public void searchConnectingFlights(String originAirport, String destinationAirport, Date departureDate, CabinClassNameEnum cabinClassName, int numPassenger) {
         try {
-            List<Pair<FlightSchedule, FlightSchedule>> outboundActual = flightScheduleSessionBeanRemote.retrieveConnectingFlightSchedules(originAirport, originAirport, departureDate, cabinClassName);
+            List<Pair<FlightSchedule, FlightSchedule>> outboundActual = flightScheduleSessionBeanRemote.retrieveConnectingFlightSchedules(originAirport, destinationAirport, departureDate, cabinClassName);
             
             Calendar c = Calendar.getInstance();
             c.setTime(departureDate);
             c.add(Calendar.DATE, -1);
-            List<Pair<FlightSchedule, FlightSchedule>> outbound1Before = flightScheduleSessionBeanRemote.retrieveConnectingFlightSchedules(originAirport, originAirport, c.getTime(), cabinClassName);
+            //System.out.println("Date: " + c.toString());
+            List<Pair<FlightSchedule, FlightSchedule>> outbound1Before = flightScheduleSessionBeanRemote.retrieveConnectingFlightSchedules(originAirport, destinationAirport, c.getTime(), cabinClassName);
             c.add(Calendar.DATE, -1);
-            List<Pair<FlightSchedule, FlightSchedule>> outbound2Before = flightScheduleSessionBeanRemote.retrieveConnectingFlightSchedules(originAirport, originAirport, c.getTime(), cabinClassName);
+            List<Pair<FlightSchedule, FlightSchedule>> outbound2Before = flightScheduleSessionBeanRemote.retrieveConnectingFlightSchedules(originAirport, destinationAirport, c.getTime(), cabinClassName);
             c.add(Calendar.DATE, -1);
-            List<Pair<FlightSchedule, FlightSchedule>> outbound3Before = flightScheduleSessionBeanRemote.retrieveConnectingFlightSchedules(originAirport, originAirport, c.getTime(), cabinClassName);
+            List<Pair<FlightSchedule, FlightSchedule>> outbound3Before = flightScheduleSessionBeanRemote.retrieveConnectingFlightSchedules(originAirport, destinationAirport, c.getTime(), cabinClassName);
+            c.setTime(departureDate);
             c.add(Calendar.DATE, 1);
-            List<Pair<FlightSchedule, FlightSchedule>> outbound1After = flightScheduleSessionBeanRemote.retrieveConnectingFlightSchedules(originAirport, originAirport, c.getTime(), cabinClassName);
+            List<Pair<FlightSchedule, FlightSchedule>> outbound1After = flightScheduleSessionBeanRemote.retrieveConnectingFlightSchedules(originAirport, destinationAirport, c.getTime(), cabinClassName);
             c.add(Calendar.DATE, 1);
-            List<Pair<FlightSchedule, FlightSchedule>> outbound2After = flightScheduleSessionBeanRemote.retrieveConnectingFlightSchedules(originAirport, originAirport, c.getTime(), cabinClassName);
+            List<Pair<FlightSchedule, FlightSchedule>> outbound2After = flightScheduleSessionBeanRemote.retrieveConnectingFlightSchedules(originAirport, destinationAirport, c.getTime(), cabinClassName);
             c.add(Calendar.DATE, 1);
-            List<Pair<FlightSchedule, FlightSchedule>> outbound3After = flightScheduleSessionBeanRemote.retrieveConnectingFlightSchedules(originAirport, originAirport, c.getTime(), cabinClassName);
+            List<Pair<FlightSchedule, FlightSchedule>> outbound3After = flightScheduleSessionBeanRemote.retrieveConnectingFlightSchedules(originAirport, destinationAirport, c.getTime(), cabinClassName);
             
+            System.out.println("=======================================================================================================");
             System.out.println("************** CONNECTING FLIGHTS FROM " + originAirport + " TO " + destinationAirport + " **************");
+            System.out.println("=======================================================================================================");
             System.out.println("************** Flights On Selected Date **************");
             printFlightScheduleWithConnecting(outboundActual, numPassenger, cabinClassName);
             System.out.println("\n************** Flights 1 Day Before Selected Date **************");
@@ -327,7 +361,11 @@ public class MainApp {
             printFlightScheduleWithConnecting(outbound2After, numPassenger, cabinClassName);
             System.out.println("\n************** Flights 3 Days After Selected Date **************");
             printFlightScheduleWithConnecting(outbound3After, numPassenger, cabinClassName);
+            
+            System.out.println("");
         } catch (FlightScheduleNotFoundException ex) {
+            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FlightNotFoundException ex) {
             Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
         }
         
@@ -359,23 +397,24 @@ public class MainApp {
             Date arrivalDate = c.getTime();
             
             for (SeatInventory s : fs.getSeatInventory()) {
-                
-                try {
-                    System.out.printf("%15s%20s%30s%30s%40s%20s%20s%20s%30s%25s%25s\n", fs.getFlightScheduleId(),
-                        fs.getFlightSchedulePlan().getFlightNumber(),
-                        fs.getFlightSchedulePlan().getFlight().getFlightRoute().getOriginAirport().getAirportName(),
-                        fs.getFlightSchedulePlan().getFlight().getFlightRoute().getDestinationAirport().getAirportName(),
-                        fs.getDepartureDateTime().toString().substring(0, 19),
-                        fs.getFlightDuration(),
-                        arrivalDate.toString().substring(0, 19),
-                        cabinClassName,
-                        s.getBalanceSeats(),
-                        flightScheduleSessionBeanRemote.lowestFare(fs, cabinClassName).getFare(),
-                        flightScheduleSessionBeanRemote.lowestFare(fs, s.getCabinClass().getCabinClassName()).getFare().multiply(BigDecimal.valueOf(numPassenger))
-                    );
-                        
-                    } catch (FlightScheduleNotFoundException ex) {
-                    Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
+                if (s.getCabinClass().getCabinClassName().equals(cabinClassName) || cabinClassName == null)  {
+                    try {
+                        System.out.printf("%15s%20s%30s%30s%40s%20s%20s%20s%30s%25s%25s\n", fs.getFlightScheduleId(),
+                            fs.getFlightSchedulePlan().getFlightNumber(),
+                            fs.getFlightSchedulePlan().getFlight().getFlightRoute().getOriginAirport().getAirportName(),
+                            fs.getFlightSchedulePlan().getFlight().getFlightRoute().getDestinationAirport().getAirportName(),
+                            fs.getDepartureDateTime().toString().substring(0, 19),
+                            fs.getFlightDuration(),
+                            arrivalDate.toString().substring(0, 19),
+                            s.getCabinClass().getCabinClassName(),
+                            s.getBalanceSeats(),
+                            flightScheduleSessionBeanRemote.lowestFare(fs, cabinClassName).getFare(),
+                            flightScheduleSessionBeanRemote.lowestFare(fs, s.getCabinClass().getCabinClassName()).getFare().multiply(BigDecimal.valueOf(numPassenger))
+                        );
+
+                        } catch (FlightScheduleNotFoundException ex) {
+                        Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
                 
             }
@@ -432,7 +471,9 @@ public class MainApp {
             Date arrival2 = c2.getTime();
             for (SeatInventory seats1 : fs1.getSeatInventory()) {
                 for (SeatInventory seats2 : fs2.getSeatInventory()) {
-                    
+                    // DO ON BOTH SIDES
+                    if ((seats1.getCabinClass().getCabinClassName().equals(cabinClassName) || cabinClassName == null) 
+                        && (seats2.getCabinClass().getCabinClassName().equals(cabinClassName) || cabinClassName == null)) {
                     System.out.printf("%15s%20s%40s%40s%30s%20s%30s%30s%30s%25s%25s%25s%30s%45s%45s%40s%20s%30s%30s%30s%25s%25s\n", fs1.getFlightScheduleId(), 
                         fs1.getFlightSchedulePlan().getFlightNumber(), 
                         fs1.getFlightSchedulePlan().getFlight().getFlightRoute().getOriginAirport().getAirportName(), 
@@ -440,7 +481,7 @@ public class MainApp {
                         fs1.getDepartureDateTime().toString().substring(0, 19), 
                         fs1.getFlightDuration(), 
                         arrival1.toString().substring(0, 19), 
-                        cabinClassName, 
+                        seats1.getCabinClass().getCabinClassName(), 
                         seats1.getBalanceSeats(), 
                         flightScheduleSessionBeanRemote.lowestFare(fs1, seats1.getCabinClass().getCabinClassName()).getFare(), 
                         flightScheduleSessionBeanRemote.lowestFare(fs1, seats1.getCabinClass().getCabinClassName()).getFare().multiply(BigDecimal.valueOf(numPassengers)),
@@ -451,12 +492,13 @@ public class MainApp {
                         fs2.getDepartureDateTime().toString().substring(0, 19), 
                         fs2.getFlightDuration(), 
                         arrival2.toString().substring(0, 19), 
-                        cabinClassName, 
+                        seats2.getCabinClass().getCabinClassName(), 
                         seats2.getBalanceSeats(), 
                         flightScheduleSessionBeanRemote.lowestFare(fs2, seats1.getCabinClass().getCabinClassName()).getFare(), 
                         flightScheduleSessionBeanRemote.lowestFare(fs2, seats1.getCabinClass().getCabinClassName()).getFare().multiply(BigDecimal.valueOf(numPassengers))
                  
                     );
+                    }
                 }
             }
         }

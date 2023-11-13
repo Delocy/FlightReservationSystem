@@ -24,6 +24,8 @@ import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.ejb.LocalBean;
 import javax.ejb.Startup;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import util.enumeration.CabinClassNameEnum;
 import util.enumeration.EmployeeAccessRightEnum;
 import util.exception.AircraftTypeNotFoundException;
@@ -38,7 +40,6 @@ import util.exception.UnknownPersistenceException;
 @Singleton
 @LocalBean
 @Startup
-
 public class DataInitializationSessionBean {
 
     @EJB
@@ -52,6 +53,9 @@ public class DataInitializationSessionBean {
 
     @EJB
     private EmployeeSessionBeanLocal employeeSessionBeanLocal;
+    
+    @PersistenceContext(unitName = "FRS-ejbPU")
+    private EntityManager em;
     
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
@@ -88,32 +92,47 @@ public class DataInitializationSessionBean {
                 airportSessionBeanLocal.createNewAirport(new Airport("Narita", "NRT", "Tokyo", "Tokyo", "Japan", 9));
                 airportSessionBeanLocal.createNewAirport(new Airport("Kansai", "KIX", "Osaka", "Osaka", "Japan", 9));
                 airportSessionBeanLocal.createNewAirport(new Airport("Pudong", "PVG", "Shanghai", "Shanghai", "China", 8));
-                airportSessionBeanLocal.createNewAirport(new Airport("LosAngeles", "LAX", "LosAngeles", "California", "UnitedStates", -8));
+                airportSessionBeanLocal.createNewAirport(new Airport("Los Angeles", "LAX", "Los Angeles", "California", "UnitedStates", -8));
+                airportSessionBeanLocal.createNewAirport(new Airport("Chek Lap Kok", "HKG", "Hong Kong", "Hong Kong", "China", 8));
+                airportSessionBeanLocal.createNewAirport(new Airport("Taoyuan", "TPE", "Taoyuan", "Taipei", "Taiwan R.O.C", 8));
+                airportSessionBeanLocal.createNewAirport(new Airport("Sydney", "SYD", "Sydney", "New South Wales", "Australia", 11));
+                
             } catch (UnknownPersistenceException ex) {
                 Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
             }
             
             try {
-                aircraftTypeSessionBeanLocal.createNewAircraftType(new AircraftType("Boeing-737", (long) 204));
+                aircraftTypeSessionBeanLocal.createNewAircraftType(new AircraftType("Boeing-737", (long) 200));
+                aircraftTypeSessionBeanLocal.createNewAircraftType(new AircraftType("Boeing-747", (long) 400));
             } catch (UnknownPersistenceException ex) {
                 Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
             }
             // CabinClassNameEnum cabinClassName, String seatConfiguration, int numRows, int numAisles, int numSeatsAbreast, int maxSeatCapacity
-            List<CabinClassConfig> cabins = new ArrayList<>();
-            cabins.add(new CabinClassConfig(CabinClassNameEnum.FIRST, "1-2-1", 2, 2, 4));
-            cabins.add(new CabinClassConfig(CabinClassNameEnum.BUSINESS, "2-2-2", 10, 2, 6));
-            cabins.add(new CabinClassConfig(CabinClassNameEnum.ECONOMY, "3-4-3", 12, 2, 10));
-            AircraftType at = aircraftTypeSessionBeanLocal.retrieveAircraftTypeByAircraftTypeId((long)1);
-            Long id = aircraftConfigSessionBeanLocal.createAircraftConfig(new AircraftConfig("SQ", 3, at), cabins, (long)1);
-
+            /*
+            try {
+                List<CabinClassConfig> cabins = new ArrayList<>();
+                cabins.add(new CabinClassConfig(CabinClassNameEnum.ECONOMY, "3-3", 30, 1, 6));
+                aircraftConfigSessionBeanLocal.createAircraftConfig(new AircraftConfig("All Economy", 1), cabins, (long)1);
+                cabins = new ArrayList<>();
+                cabins.add(new CabinClassConfig(CabinClassNameEnum.FIRST, "1-1", 5, 1, 2));
+                cabins.add(new CabinClassConfig(CabinClassNameEnum.BUSINESS, "2-2", 5, 1, 4));
+                cabins.add(new CabinClassConfig(CabinClassNameEnum.ECONOMY, "3-3", 25, 1, 6));
+                aircraftConfigSessionBeanLocal.createAircraftConfig(new AircraftConfig("Three Classes", 3), cabins, (long)1);
+                cabins = new ArrayList<>();
+                cabins.add(new CabinClassConfig(CabinClassNameEnum.ECONOMY, "3-4-3", 38, 2, 10));
+                aircraftConfigSessionBeanLocal.createAircraftConfig(new AircraftConfig("All Economy 2", 1), cabins, (long)2);
+                cabins = new ArrayList<>();
+                cabins.add(new CabinClassConfig(CabinClassNameEnum.FIRST, "1-1", 5, 1, 2));
+                cabins.add(new CabinClassConfig(CabinClassNameEnum.BUSINESS, "2-2-2", 5, 2, 6));
+                cabins.add(new CabinClassConfig(CabinClassNameEnum.ECONOMY, "3-4-3", 32, 1, 10));
+                aircraftConfigSessionBeanLocal.createAircraftConfig(new AircraftConfig("All Economy 2", 3), cabins, (long)2);
+            } catch (UnknownPersistenceException ex) {
+                Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+            } */
         }
         catch(EmployeeUsernameExistException ex)
         {
             ex.printStackTrace();
-        } catch (AircraftTypeNotFoundException ex) {
-            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (UnknownPersistenceException ex) {
-            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

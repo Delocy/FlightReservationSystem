@@ -12,6 +12,7 @@ import java.util.List;
 import javafx.util.Pair;
 import javax.ejb.Local;
 import util.enumeration.CabinClassNameEnum;
+import util.exception.FlightNotFoundException;
 import util.exception.FlightScheduleNotFoundException;
 
 /**
@@ -25,10 +26,10 @@ public interface FlightScheduleSessionBeanLocal {
 
     public FlightSchedule createNewSchedule(FlightSchedule schedule, FlightSchedulePlan plan);
 
-    public List<FlightSchedule> retrieveListOfFlightSchedule(String originAirport, String destAirport, Date departureDate, CabinClassNameEnum cabinClassName);
+    public List<FlightSchedule> retrieveListOfFlightSchedule(String originAirport, String destAirport, Date departureDate, CabinClassNameEnum cabinClassName) throws FlightNotFoundException;
 
     public Fare lowestFare(FlightSchedule fs, CabinClassNameEnum cabinClassName) throws FlightScheduleNotFoundException;
 
-    public List<Pair<FlightSchedule, FlightSchedule>> retrieveConnectingFlightSchedules(String originAirport, String destAirport, Date departureDate, CabinClassNameEnum cabinClassName);
+    public List<Pair<FlightSchedule, FlightSchedule>> retrieveConnectingFlightSchedules(String originAirport, String destAirport, Date departureDate, CabinClassNameEnum cabinClassName) throws FlightNotFoundException;
     
 }
