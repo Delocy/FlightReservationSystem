@@ -22,14 +22,21 @@ public class Partner implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long partnerId;
-    @Column(nullable = false, length = 32)
-    private String firstName;
-    @Column(nullable = false, length = 32)
-    private String lastName;
+    @Column(nullable = false, length = 64)
+    private String partnerName;
     @Column(nullable = false, length = 32)
     private String username;
     @Column(nullable = false, length = 32)
     private String password;
+
+    public Partner() {
+    }
+
+    public Partner(String partnerName, String username, String password) {
+        this.partnerName = partnerName;
+        this.username = username;
+        this.password = password;
+    }
 
     public Long getPartnerId() {
         return partnerId;
@@ -64,20 +71,12 @@ public class Partner implements Serializable {
         return "entity.Partner[ id=" + partnerId + " ]";
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getPartnerName() {
+        return partnerName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setPartnerName(String partnerName) {
+        this.partnerName = partnerName;
     }
 
     public String getUsername() {
