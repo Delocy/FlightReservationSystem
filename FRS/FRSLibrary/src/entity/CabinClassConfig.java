@@ -15,6 +15,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import util.enumeration.CabinClassNameEnum;
 
 /**
@@ -31,21 +34,32 @@ public class CabinClassConfig implements Serializable {
     
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @NotNull
     private CabinClassNameEnum cabinClassName;
     
     @Column(nullable = false)
+    @NotNull
     private String seatConfiguration;
     
     @Column(nullable = false)
+    @Min(1)
+    @NotNull
     private int numRows;
     
     @Column(nullable = false)
+    @Min(0)
+    @Max(2)
+    @NotNull
     private int numAisles;
     
     @Column(nullable = false)
+    @Min(1)
+    @NotNull
     private int numSeatsAbreast;
     
     @Column(nullable = false)
+    @Min(1)
+    @NotNull
     private int maxSeatCapacity;
     
     @ManyToOne(optional = false, cascade = CascadeType.DETACH)

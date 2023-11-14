@@ -12,6 +12,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import util.exception.SeatInventoryNotFoundException;
+import util.exception.SeatsBookedException;
 
 /**
  *
@@ -64,4 +65,41 @@ public class SeatInventorySessionBean implements SeatInventorySessionBeanRemote,
             em.remove(seat);
         }
     }
+    
+    @Override
+    public boolean checkAvailability(SeatInventory seatInventory, String seatNumber) {
+        try {
+            SeatInventory latestSeatInv = retrieveSeatsBySeatId(seatInventory.getSeatInventoryId());
+            char[][] mtx = latestSeatInv.getSeats();
+            int col = seatNumber.charAt(0) - 'A';
+            int row = Integer.parseInt(seatNumber.substring(1)) - 1;
+            
+            if(mtx[row][col] == 'X') {
+                return true;
+            } 
+        } catch (SeatInventoryNotFoundException ex) {
+            System.out.println(ex.getMessage());        
+        }
+        return false;
+    }
+    
+    @Override
+    public void bookSeat(long seatInventoryId, String seatNumber) throws SeatInventoryNotFoundException, SeatsBookedException {
+             
+        SeatInventory seatInventory = retrieveSeatsBySeatId(seatInventoryId);
+        
+        int col = seatNumber.charAt(0) - 'A';
+        int row = Integer.parseInt(seatNumber.substring(1)) - 1;
+        
+        char[][] seats = seatInventory.getSeats();
+        if (seats[row][col] == '-' ){
+            seats[row][col] = 'X';
+            seatInventory.setSeats(seats);
+        } else {
+            throw new SeatsBookedException("Seat already booked");
+        }
+        seatInventory.setReserveSeats(seatInventory.getReserveSeats() + 1);
+        seatInventory.setBalanceSeats(seatInventory.getBalanceSeats() - 1);       
+    }
+    
 }

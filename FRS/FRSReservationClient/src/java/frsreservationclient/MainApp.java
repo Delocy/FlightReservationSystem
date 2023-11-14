@@ -13,12 +13,17 @@ import ejb.session.stateless.ItinerarySessionBeanRemote;
 import ejb.session.stateless.SeatInventorySessionBeanRemote;
 import entity.Customer;
 import entity.Flight;
+import entity.Fare;
+import entity.FlightReservation;
 import entity.FlightSchedule;
+import entity.Itinerary;
+import entity.Passenger;
 import entity.SeatInventory;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -31,8 +36,13 @@ import util.exception.CabinClassNameNotFoundException;
 import util.exception.CustomerNotFoundException;
 import util.exception.CustomerUsernameExistException;
 import util.exception.FlightNotFoundException;
+import util.exception.FlightReservationExistException;
 import util.exception.FlightScheduleNotFoundException;
 import util.exception.InvalidLoginCredentialException;
+import util.exception.ItineraryExistException;
+import util.exception.ItineraryNotFoundException;
+import util.exception.SeatInventoryNotFoundException;
+import util.exception.SeatsBookedException;
 import util.exception.UnknownPersistenceException;
 
 /**
@@ -48,6 +58,7 @@ public class MainApp {
     private FlightReservationSessionBeanRemote flightReservationSessionBeanRemote;
     private ItinerarySessionBeanRemote itinerarySessionBeanRemote;
     private Customer currentCustomer;
+    private boolean isLogin;
 
     public MainApp() {
     }
@@ -71,16 +82,19 @@ public class MainApp {
             System.out.println("*** Welcome to FRS Reservation Portal ***\n");
             System.out.println("1: Login");
             System.out.println("2: Register for an account");
-            System.out.println("3: Exit\n");
+            System.out.println("3: Search Flight");
+            System.out.println("4: Exit\n");
             response = 0;
-            while (response < 1 || response > 3) {
+            while (response < 1 || response > 4) {
                 System.out.print("> ");
                 response = scanner.nextInt();
                 if (response == 1) {
                     try {
                         doLogin();
-                        System.out.println("Login successful!\n");
-                        menuMain();
+                        if (isLogin) {
+                            System.out.println("Login successful!\n");
+                            menuMain();
+                        }
                     } catch (InvalidLoginCredentialException ex) {
                         System.out.println("Invalid login credentials " + ex.getMessage());
                     }
@@ -545,6 +559,228 @@ public class MainApp {
                     }
                 }
             }
+        }
+    }
+                
+    }
+    
+    private List<String> getSeatBookings(SeatInventory seatInventory, int noOfPassengers) {
+        Scanner sc = new Scanner(System.in);
+        int totalAvailSeats = seatInventory.getAvailableSeats();
+        int totalReservedSeats = seatInventory.getReserveSeats();
+        int totalBalanceSeats = seatInventory.getBalanceSeats();
+
+        char[][] seats = seatInventory.getSeats();
+        String cabinClassConfig = seatInventory.getCabinClass().getSeatConfiguration();
+
+        //Display Seats
+        String type = "";
+        if (seatInventory.getCabinClass().getCabinClassName() != null)
+            switch (seatInventory.getCabinClass().getCabinClassName()) {
+                case FIRST:
+                    type = "First Class";
+                    break;
+                case BUSINESS:
+                    type = "Business Class";
+                    break;
+                case PREMIUM_ECONOMY:
+                    type = "Premium Economy Class";
+                    break;
+                case ECONOMY:
+                    type = "Economy Class";
+                    break;
+                default:
+                    break;
+            }
+
+        System.out.println(" -- " + type + " -- ");
+        System.out.print("Row  ");
+        int count = 0;
+        int no = 0;
+        for (int i = 0; i < cabinClassConfig.length(); i++) {
+            if (Character.isDigit(cabinClassConfig.charAt(i))) {
+                no += Integer.parseInt(String.valueOf(cabinClassConfig.charAt(i)));
+                while (count < no) {
+                    System.out.print((char)('A' + count) + "  ");
+                    count++;
+                }
+            } else {
+                System.out.print("   ");
+            }
+        }
+        System.out.println();
+
+        for (int j = 0; j < seats.length; j++) {
+            System.out.printf("%-5s", String.valueOf(j+1));
+            int count2 = 0;
+            int no2 = 0;
+            for (int i = 0; i < cabinClassConfig.length(); i++) {
+                if (Character.isDigit(cabinClassConfig.charAt(i))) {
+                    no2 += Integer.parseInt(String.valueOf(cabinClassConfig.charAt(i)));
+                    while (count2 < no2) {
+                        System.out.print(seats[j][count2] + "  ");
+                        count2++;
+                    }
+                } else {
+                    System.out.print("   ");
+                }
+            }
+            System.out.println();
+        }
+        System.out.println(" --- Total --- ");
+        System.out.println("Number of available seats: " + totalAvailSeats);
+        System.out.println("Number of reserved seats: " + totalReservedSeats);
+        System.out.println("Number of balance seats: " + totalBalanceSeats);
+
+        List<String> seatSelection = new ArrayList<>();
+//        while (true) {        
+            for (int i = 0; i < noOfPassengers; i++) {                   
+                String seatNumber;
+                //int a = 0;
+                while (true) {
+                    System.out.print("\nEnter seat to reserve for Passenger " +  (i + 1) + "(Eg. A1)> ");
+                    seatNumber = sc.nextLine().trim();    
+//                    System.out.println(a);
+//                    a++;
+                    boolean booked = seatInventorySessionBeanRemote.checkAvailability(seatInventory, seatNumber);
+                    System.out.println(booked);
+                    if (booked) {
+                        System.out.println("Seat taken!\nPlease select another seat");
+                    } else if (seatSelection.contains(seatNumber)) {
+                        System.out.println("Duplicate seats detected!\\nPlease try again");
+                    } else {
+                        break;
+                    }
+                }
+                seatSelection.add(seatNumber);
+                
+            }
+            return seatSelection;
+//            boolean distinct = seatSelection.stream().distinct().count() ==  seatSelection.size();
+//            if (distinct) {
+//                return seatSelection;
+//            } else {
+//                System.out.println("Duplicate seats detected!\nPlease try again");
+//            }
+        
+//        while (true) {        
+//            for (int i = 0; i < noOfPassengers; i++) {                   
+//                String seatNumber;
+//                while (true) {
+//                    System.out.print("\nEnter seat to reserve for Passenger " +  (i + 1) + "(Eg. A5)> ");
+//                    seatNumber = sc.nextLine().trim();  
+//                    System.out.println("enter");
+//                    boolean booked = seatInventorySessionBeanRemote.checkAvailability(seatInventory, seatNumber);
+//                    if (booked) {
+//                        System.out.println("Seat already taken!\nPlease choose another seat");
+//                    } else {
+//                        break;
+//                    }
+//                }    
+//                seatSelection.add(seatNumber);
+//            }
+//            boolean distinct = seatSelection.stream().distinct().count() ==  seatSelection.size();
+//            if (distinct) {
+//                return seatSelection;
+//            } else {
+//                System.out.println("Duplicate seats detected!\nPlease try again");
+//            }
+//        }
+    }
+    
+    private void doViewFlightReservation() {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("*** View Flight Reservations ***\n");
+        List<Itinerary> list = itinerarySessionBeanRemote.retrieveItinerariesByCustomerId(currentCustomer.getCustomerId());
+        System.out.printf("%-20s%-30s%-20s%-20s%-30s%-25s\n", "Itinerary ID", "Flight Reservation ID", "Flight Number", "Trip", "Departure Date Time", "Flight Duration");
+        
+        for (Itinerary itinerary : list) {
+//            System.out.println("Itinerary Reservation ID: " + itinerary.getItineraryID());
+        
+            for (FlightReservation reservation: itinerary.getReservations()) {
+                String trip = reservation.getFlightSchedule().getFlightSchedulePlan().getFlight().getFlightRoute().getOriginAirport().getAirportCode() + " -> " + reservation.getFlightSchedule().getFlightSchedulePlan().getFlight().getFlightRoute().getDestinationAirport().getAirportCode();
+                String departureDateTime = reservation.getFlightSchedule().getDepartureDateTime().toString().substring(0, 19);
+                String duration = String.valueOf(reservation.getFlightSchedule().getFlightDuration()) + " Hrs";
+                String flightNumber = reservation.getFlightSchedule().getFlightSchedulePlan().getFlightNumber();
+               
+                System.out.printf("%-20s%-30s%-20s%-20s%-30s%-25s\n",
+                        itinerary.getItineraryID(),
+                        reservation.getFlightReservationId(),
+                        flightNumber,
+                        trip,
+                        departureDateTime,
+                        duration
+                        );
+            }
+            System.out.println();          
+        }
+        System.out.print("Press any key to continue...> ");
+        sc.nextLine();
+    }
+    
+    private void doViewFlightReservationDetails() {
+        try {
+            Scanner sc = new Scanner(System.in);
+            System.out.println("*** View Flight Reservations Details ***\n");     
+            
+            System.out.print("Enter ID of Itinerary reservation to view in detail> ");
+            long id = sc.nextLong();
+            sc.nextLine();
+            System.out.println();
+            Itinerary itinerary = itinerarySessionBeanRemote.retrieveItineraryByID(id);
+            
+            BigDecimal totalPaid = new BigDecimal(0);
+            int idx = 1;
+//            System.out.printf("%-10s%-20s%-20s%-25s\n","Flight Number", "Trip", "Departure Date Time", "Flight Duration");
+            for (FlightReservation reservation: itinerary.getReservations()) {
+                totalPaid = totalPaid.add(reservation.getFareAmount().multiply(new BigDecimal(reservation.getPassengers().size())));
+                String trip = reservation.getFlightSchedule().getFlightSchedulePlan().getFlight().getFlightRoute().getOriginAirport().getAirportCode() + " -> " + reservation.getFlightSchedule().getFlightSchedulePlan().getFlight().getFlightRoute().getDestinationAirport().getAirportCode();
+                String departureDateTime = reservation.getFlightSchedule().getDepartureDateTime().toString().substring(0, 19);
+                String duration = String.valueOf(reservation.getFlightSchedule().getFlightDuration()) + " Hrs";
+                String flightNumber = reservation.getFlightSchedule().getFlightSchedulePlan().getFlightNumber();
+                String cabinClass;
+                if (reservation.getCabinClassName() == CabinClassNameEnum.FIRST) {
+                    cabinClass = "First Class";
+                } else if (reservation.getCabinClassName() == CabinClassNameEnum.BUSINESS) {
+                    cabinClass = "Business Class";
+                } else if (reservation.getCabinClassName() == CabinClassNameEnum.PREMIUM_ECONOMY) {
+                    cabinClass = "Premium Economy Class";
+                } else {
+                    cabinClass = "Economy Class";
+                }
+                System.out.println("** Reservation " + idx + " **");
+                idx++;
+                System.out.printf("%-20s%-20s%-30s%-25s\n","Flight Number", "Trip", "Departure Date Time", "Flight Duration");
+                System.out.printf("%-20s%-20s%-30s%-25s\n",
+                        flightNumber,
+                        trip,
+                        departureDateTime,
+                        duration
+                        );
+                
+                System.out.println();
+                System.out.printf("%-20s%-20s%-20s\n","Passenger Name", "Cabin Class", "Seat Number");
+                for (Passenger passenger: reservation.getPassengers()) {                  
+                    String name = passenger.getFirstName() + " " + passenger.getLastName();           
+                    String seatNumber = passenger.getSeatNumber();
+                    System.out.printf("%-20s%-20s%-20s\n",
+                        name,
+                        cabinClass,
+                        seatNumber
+                        );
+                }
+                System.out.println();
+                BigDecimal totalForThisReservation = new BigDecimal(0);
+                totalForThisReservation = totalForThisReservation.add(reservation.getFareAmount()).multiply(new BigDecimal(reservation.getPassengers().size()));
+                System.out.println("Total amount paid for this schedule: $" + totalForThisReservation.toString());
+                System.out.println();
+            }
+            System.out.println("Total amount paid: $" + totalPaid.toString());
+            System.out.print("Press any key to continue...> ");
+            sc.nextLine();
+                
+        } catch (ItineraryNotFoundException ex) {
+            System.out.println("Error: " + ex.getMessage() + "\nPlease try again!\n");
         }
     }
 }

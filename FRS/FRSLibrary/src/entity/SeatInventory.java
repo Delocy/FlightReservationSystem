@@ -43,7 +43,6 @@ public class SeatInventory implements Serializable {
     @NotNull
     private char[][] seats;
    
-
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private CabinClassConfig cabinClass;

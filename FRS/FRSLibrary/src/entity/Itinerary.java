@@ -5,10 +5,22 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -19,32 +31,108 @@ public class Itinerary implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long itineraryID;
+    
+    @Column(nullable = false, length = 32)
+    @NotNull
+    @Size(min = 1, max = 32)
+    private String creditCardNumber;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false)
+    @NotNull
+    private Date expiryDate;
+    
+    @Column(nullable = false, length = 3)
+    @NotNull
+    @Size(min = 3, max = 3)
+    private String cvv;
+    
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
+    private Customer customer;
+    
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "itinerary")
+    private List<FlightReservation> reservations;
 
-    public Long getId() {
-        return id;
+    public Itinerary() {
+        this.reservations = new ArrayList<>();
+    }
+    
+    public Itinerary(String creditCardNumber, Date expiryDate, String cvv) {
+        this();
+        this.creditCardNumber = creditCardNumber;
+        this.expiryDate = expiryDate;
+        this.cvv = cvv;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Long getItineraryID() {
+        return itineraryID;
     }
+
+    public void setItineraryID(Long itineraryID) {
+        this.itineraryID = itineraryID;
+    }
+
+    public String getCreditCardNumber() {
+        return creditCardNumber;
+    }
+
+    public void setCreditCardNumber(String creditCardNumber) {
+        this.creditCardNumber = creditCardNumber;
+    }
+
+    public Date getExpiryDate() {
+        return expiryDate;
+    }
+
+    public void setExpiryDate(Date expiryDate) {
+        this.expiryDate = expiryDate;
+    }
+
+    public String getCvv() {
+        return cvv;
+    }
+
+    public void setCvv(String cvv) {
+        this.cvv = cvv;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
+    public List<FlightReservation> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(List<FlightReservation> reservations) {
+        this.reservations = reservations;
+    }
+    
+    
+    
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        hash += (itineraryID != null ? itineraryID.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
+        // TODO: Warning - this method won't work in the case the itineraryID fields are not set
         if (!(object instanceof Itinerary)) {
             return false;
         }
         Itinerary other = (Itinerary) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.itineraryID == null && other.itineraryID != null) || (this.itineraryID != null && !this.itineraryID.equals(other.itineraryID))) {
             return false;
         }
         return true;
@@ -52,7 +140,7 @@ public class Itinerary implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.Itinerary[ id=" + id + " ]";
+        return "entity.Itinerary[ id=" + itineraryID + " ]";
     }
     
 }

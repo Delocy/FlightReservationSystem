@@ -35,7 +35,6 @@ import util.exception.UnknownPersistenceException;
  */
 @Stateless
 public class FlightSessionBean implements FlightSessionBeanRemote, FlightSessionBeanLocal {
-
     @EJB
     private FlightRouteSessionBeanLocal flightRouteSessionBeanLocal;
 

@@ -40,6 +40,7 @@ public class FlightSchedule implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightScheduleId;
     
+    //need remove next time cuz i lazy delete table again
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ScheduleTypeEnum scheduleType;
