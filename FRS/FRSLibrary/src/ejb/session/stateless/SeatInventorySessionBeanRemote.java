@@ -10,6 +10,7 @@ import entity.SeatInventory;
 import java.util.List;
 import javax.ejb.Remote;
 import util.exception.SeatInventoryNotFoundException;
+import util.exception.SeatsBookedException;
 
 /**
  *
@@ -22,4 +23,8 @@ public interface SeatInventorySessionBeanRemote {
     public SeatInventory retrieveSeatsBySeatId(Long seatInventoryID) throws SeatInventoryNotFoundException;
 
     public void deleteSeatInventory(List<SeatInventory> seats);
+
+    public boolean checkAvailability(SeatInventory seatInventory, String seatNumber);
+
+    public void bookSeat(long seatInventoryId, String seatNumber) throws SeatInventoryNotFoundException, SeatsBookedException;
 }

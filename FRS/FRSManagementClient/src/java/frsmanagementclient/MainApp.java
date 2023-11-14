@@ -364,19 +364,14 @@ public class MainApp {
         System.out.println("Enter origin IATA airport code");
         String origin = scanner.nextLine().trim();
         Airport originAirport = airportSessionBeanRemote.retrieveAirportByAirportCode(origin);
-        //System.out.println(airportSessionBeanRemote.retrieveAirportByAirportId(originAirport.getAirportId()).toString());
-        //System.out.println(originAirport.getAirportId());
         System.out.println("Enter destination IATA airport code");
         String destination = scanner.nextLine().trim();
         Airport destinationAirport = airportSessionBeanRemote.retrieveAirportByAirportCode(destination);
-        //System.out.println(airportSessionBeanRemote.retrieveAirportByAirportId(destinationAirport.getAirportId()).toString());
-        //System.out.println(destinationAirport.getAirportId());
         
         FlightRoute newFlightRoute = flightRouteSessionBeanRemote.createFlightRoute(originAirport.getAirportId(), destinationAirport.getAirportId());
         System.out.println("** Flight Route: from Origin " + newFlightRoute.getOriginAirport().getAirportName() + " to Destination " + newFlightRoute.getDestinationAirport().getAirportName() + " has been successfully created **");
         System.out.println("Would you like to create a complementary return route? (Y/N)");
         if (scanner.nextLine().trim().equalsIgnoreCase("Y")) {
-//            FlightRoute newReturnRoute = new FlightRoute();
               FlightRoute compFlightRoute = flightRouteSessionBeanRemote.createFlightRoute(destinationAirport.getAirportId(), originAirport.getAirportId());
               System.out.println("** Flight Route: from Origin " + compFlightRoute.getOriginAirport().getAirportName() + " to Destination " + compFlightRoute.getDestinationAirport().getAirportName() + " has been successfully created **");
         }
@@ -407,11 +402,11 @@ public class MainApp {
 
         //if want to set flight configurations and routes at this time:
         System.out.println("Select Aircraft Configuration");
-        System.out.printf("%30s%40s%25s%20s\n", "Aircraft Configuration ID", "Name", "Number of Cabin Classes", "Aircraft Type");
+        System.out.printf("%-30s%-40s%-25s%-20s\n", "Aircraft Configuration ID", "Name", "Number of Cabin Classes", "Aircraft Type");
         List<AircraftConfig> aircraftConfigs = aircraftConfigSessionBeanRemote.retrieveAllAircraftConfig();
         
         for (AircraftConfig a : aircraftConfigs) {
-            System.out.printf("%30s%40s%25s%20s\n", a.getAircraftConfigId(), a.getAircraftConfigName(), a.getNumCabinClass(), a.getAircraftType().getAircraftTypeName());
+            System.out.printf("%-30s%-40s%-25s%-20s\n", a.getAircraftConfigId(), a.getAircraftConfigName(), a.getNumCabinClass(), a.getAircraftType().getAircraftTypeName());
         }
 
         System.out.println("");
@@ -424,7 +419,10 @@ public class MainApp {
         List<FlightRoute> allFlightRoutes = flightRouteSessionBeanRemote.viewAllFlightRoutes();
         
         for (FlightRoute flightRoute : allFlightRoutes) {
-            System.out.printf("%4s%16s%24s\n", flightRoute.getFlightRouteId(), flightRoute.getOriginAirport().getAirportName(), flightRoute.getDestinationAirport().getAirportName());
+            System.out.printf("%-8s%-16s%-24s\n",
+                    flightRoute.getFlightRouteId(),
+                    flightRoute.getOriginAirport().getAirportCode(),
+                    flightRoute.getDestinationAirport().getAirportCode());
         }   
         FlightRoute selectedFlightRoute = flightRouteSessionBeanRemote.retrieveFlightRouteByRouteID(scanner.nextLong());
         scanner.nextLine();
@@ -545,7 +543,12 @@ public class MainApp {
         
         System.out.printf("%20s%40s%20s%40s%25s\n", "Flight Route ID", "Origin Airport Name", "Origin Airport IATA", "Destination Airport Name", "Destination Airport IATA");
         for (FlightRoute route : routes) {
-            System.out.printf("%20s%40s%20s%40s%25s\n", route.getFlightRouteId(), route.getOriginAirport().getAirportName() ,route.getOriginAirport().getAirportCode(), route.getDestinationAirport().getAirportName() ,route.getDestinationAirport().getAirportCode());
+            System.out.printf("%20s%40s%20s%40s%25s\n",
+                    route.getFlightRouteId(),
+                    route.getOriginAirport().getAirportName(),
+                    route.getOriginAirport().getAirportCode(),
+                    route.getDestinationAirport().getAirportName(),
+                    route.getDestinationAirport().getAirportCode());
         }
         System.out.print("Enter ID of the flight route you want this flight to change to) (Press 0 if no change)>  ");
         Long chosenRouteId = sc.nextLong();

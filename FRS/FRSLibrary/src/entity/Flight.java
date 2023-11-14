@@ -61,6 +61,11 @@ public class Flight implements Serializable {
         this.isDisabled = false;
     }
 
+    public Flight(String flightNumber) {
+        this();
+        this.flightNumber = flightNumber;
+    }
+    
     public Long getFlightId() {
         return flightId;
     }

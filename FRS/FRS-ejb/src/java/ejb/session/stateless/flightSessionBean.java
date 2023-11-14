@@ -35,7 +35,6 @@ import util.exception.UnknownPersistenceException;
  */
 @Stateless
 public class FlightSessionBean implements FlightSessionBeanRemote, FlightSessionBeanLocal {
-
     @EJB
     private FlightRouteSessionBeanLocal flightRouteSessionBeanLocal;
 
@@ -217,8 +216,8 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
         Query query = em.createQuery("SELECT f FROM Flight f "
             + "WHERE f.flightRoute.originAirport.airportCode = :inOrigin "
             + "AND f.flightRoute.destinationAirport.airportCode = :inDestination "
-            + "AND f.disabled = false "
-            + "ORDER BY SUBSTRING(f.flightNum, 3) ASC");
+            + "AND f.isDisabled = false "
+            + "ORDER BY SUBSTRING(f.flightNumber, 3) ASC");
         query.setParameter("inOrigin", origin);
         query.setParameter("inDestination", destination);
         
@@ -230,15 +229,15 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
         }
     }
     
+    
     @Override
     public List<Flight[]> retrieveConnectingFlightsByFlightRoute(String origin, String destination) throws FlightNotFoundException {
         Query query = em.createQuery("SELECT f1, f2 FROM Flight f1, Flight f2 "
             + "WHERE f1.flightRoute.originAirport.airportCode = :inOrigin "
             + "AND f2.flightRoute.destinationAirport.airportCode = :inDestination "
             + "AND f1.flightRoute.destinationAirport.airportCode = f2.flightRoute.originAirport.airportCode "
-            + "AND f1.disabled = false "
-            + "AND f2.disabled = false "
-            + "ORDER BY SUBSTRING(f.flightNum, 3) ASC");
+            + "AND f1.isDisabled = false "
+            + "AND f2.isDisabled = false");
         query.setParameter("inOrigin", origin);
         query.setParameter("inDestination", destination);
         

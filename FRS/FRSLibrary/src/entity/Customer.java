@@ -5,11 +5,14 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 /**
  *
@@ -36,6 +39,9 @@ public class Customer implements Serializable {
     private String username;
     @Column(nullable = false)
     private String password;
+    
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "customer")
+    private List<Itinerary> itineraries;   
 
     public Customer() {
     }
@@ -113,6 +119,16 @@ public class Customer implements Serializable {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public List<Itinerary> getItineraries() {
+        return itineraries;
+    }
+
+    public void setItineraries(List<Itinerary> itineraries) {
+        this.itineraries = itineraries;
+    }
+    
+    
 
     @Override
     public int hashCode() {
