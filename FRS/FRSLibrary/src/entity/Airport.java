@@ -47,8 +47,8 @@ public class Airport implements Serializable {
     @NotNull
     private String country;
     @Column(nullable = false)
-    @Min(0)
-    @Max(24)
+    @Min(-12)
+    @Max(12)
     @NotNull
     private int gmt;
 
