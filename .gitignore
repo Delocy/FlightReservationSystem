@@ -46,3 +46,6 @@
 hs_err_pid*
 /FRS/dist/
 /FRS/build/
+/FRS/HolidayReservationSystemJavaSeClient/nbproject/private/
+/FRS/HolidayReservationSystemJavaSeClient/dist/
+/FRS/HolidayReservationSystemJavaSeClient/build/

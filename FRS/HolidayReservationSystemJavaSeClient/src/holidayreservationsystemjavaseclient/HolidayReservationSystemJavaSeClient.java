@@ -2,15 +2,14 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
  */
-package holidayreservationsystemclient;
+package holidayreservationsystemjavaseclient;
 
 /**
  *
- * @author zares
+ * @author xinni
  */
-public class Main {
+public class HolidayReservationSystemJavaSeClient {
 
-    
     /**
      * @param args the command line arguments
      */

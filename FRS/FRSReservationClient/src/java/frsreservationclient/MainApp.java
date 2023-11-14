@@ -275,7 +275,7 @@ public class MainApp {
                     flightPreference = scanner.nextInt();
                 }
             }
-            Long o1, o2, i1, i2;
+            Long o1 = null, o2 = null, i1 = null, i2 = null;
             if (tripType == 0) { // round-trip
                 if (flightPreference == 0) { // direct
                     System.out.print("Enter outbound flight ID to reserve> ");
@@ -546,5 +546,9 @@ public class MainApp {
                 }
             }
         }
+    }
+
+    private void doReserveFlight(Long o1, Long o2, Long i1, Long i2, CabinClassNameEnum cabinClassName, int numPasengers) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
