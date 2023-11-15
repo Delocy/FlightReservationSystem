@@ -24,11 +24,8 @@ public class HolidayReservationSystemWebService {
     @EJB
     private PartnerSessionBeanLocal partnerSessionBeanLocal;
 
-    /**
-     * This is a sample web service operation
-     */
     @WebMethod(operationName = "doLogin")
-    public Partner doLogin(@WebParam(name = "username") String username,
+    public Long doLogin(@WebParam(name = "username") String username,
                         @WebParam(name = "password") String password) throws InvalidLoginCredentialException {
         return partnerSessionBeanLocal.partnerLogin(username, password);
     }

@@ -41,14 +41,14 @@ public class PartnerSessionBean implements PartnerSessionBeanRemote, PartnerSess
     }
     
     @Override
-    public Partner partnerLogin(String username, String password) throws InvalidLoginCredentialException {
+    public Long partnerLogin(String username, String password) throws InvalidLoginCredentialException {
         try
         {
             Partner p = retrievePartnerByPartnerUsername(username);
             
             if(p.getPassword().equals(password))
             {     
-                return p;
+                return p.getPartnerId();
             }
             else
             {

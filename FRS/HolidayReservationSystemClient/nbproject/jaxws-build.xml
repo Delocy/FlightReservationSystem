@@ -19,7 +19,7 @@
     <target name="wsimport-client-HolidayReservationSystemWebService" depends="wsimport-init">
         <mkdir dir="${build.generated.dir}/jax-wsCache/HolidayReservationSystemWebService"/>
         <property name="wsdl-HolidayReservationSystemWebService" location="xml-resources/web-service-references/HolidayReservationSystemWebService/wsdl/localhost_8080/HolidayReservationSystemWebService/HolidayReservationSystemWebService.wsdl"/>
-        <wsimport sourcedestdir="${build.generated.dir}/jax-wsCache/HolidayReservationSystemWebService" destdir="${build.generated.dir}/jax-wsCache/HolidayReservationSystemWebService" wsdl="${wsdl-HolidayReservationSystemWebService}" catalog="catalog.xml" encoding="${source.encoding}" extension="true" verbose="true" fork="false" wsdlLocation="http://localhost:8080/HolidayReservationSystemWebService/HolidayReservationSystemWebService?wsdl" xnocompile="true" xendorsed="true" package="ws.partner">
+        <wsimport sourcedestdir="${build.generated.dir}/jax-wsCache/HolidayReservationSystemWebService" destdir="${build.generated.dir}/jax-wsCache/HolidayReservationSystemWebService" wsdl="${wsdl-HolidayReservationSystemWebService}" catalog="catalog.xml" encoding="${source.encoding}" extension="true" verbose="true" fork="false" wsdlLocation="http://localhost:8080/HolidayReservationSystemWebService/HolidayReservationSystemWebService?wsdl" xnocompile="true" xendorsed="true" package="ws.holiday">
             <depends file="${wsdl-HolidayReservationSystemWebService}"/>
             <produces dir="${build.generated.dir}/jax-wsCache/HolidayReservationSystemWebService"/>
         </wsimport>
@@ -31,7 +31,7 @@
     </target>
     <target name="wsimport-client-clean-HolidayReservationSystemWebService" depends="-init-project">
         <delete dir="${build.generated.dir}/jax-wsCache/HolidayReservationSystemWebService"/>
-        <delete dir="${build.generated.sources.dir}/jax-ws/ws/partner"/>
+        <delete dir="${build.generated.sources.dir}/jax-ws/ws/holiday"/>
     </target>
     <target name="wsimport-client-generate" depends="wsimport-client-HolidayReservationSystemWebService"/>
 </project>

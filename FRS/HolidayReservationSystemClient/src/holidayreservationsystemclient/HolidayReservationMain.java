@@ -8,6 +8,10 @@ package holidayreservationsystemclient;
  *
  * @author xinni
  */
-public class MainApp {
+public class HolidayReservationMain {
     
+    public static void main(String[] args) {
+        HolidayReservationSystemClient mainApp = new HolidayReservationSystemClient();
+        mainApp.runApp();
+    }
 }
