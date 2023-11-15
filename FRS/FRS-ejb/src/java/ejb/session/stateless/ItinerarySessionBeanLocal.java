@@ -4,7 +4,13 @@
  */
 package ejb.session.stateless;
 
+import entity.Itinerary;
+import java.util.List;
 import javax.ejb.Local;
+import util.exception.CustomerNotFoundException;
+import util.exception.ItineraryExistException;
+import util.exception.ItineraryNotFoundException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -12,5 +18,11 @@ import javax.ejb.Local;
  */
 @Local
 public interface ItinerarySessionBeanLocal {
+
+    public Itinerary createNewItinerary(Itinerary itinerary, long userId) throws UnknownPersistenceException, CustomerNotFoundException, ItineraryExistException;
+
+    public Itinerary retrieveItineraryByID(long itineraryId) throws ItineraryNotFoundException;
+
+    public List<Itinerary> retrieveItinerariesByCustomerId(Long customerId);
     
 }

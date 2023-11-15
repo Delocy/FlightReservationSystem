@@ -25,6 +25,7 @@ import entity.FlightReservation;
 import entity.FlightRoute;
 import entity.FlightSchedule;
 import entity.FlightSchedulePlan;
+import entity.Passenger;
 import entity.SeatInventory;
 import static java.awt.SystemColor.info;
 import java.awt.color.ColorSpace;
@@ -307,7 +308,7 @@ public class MainApp {
                     if (response == 1) {
                         doViewSeatsInventory();
                     } else if (response == 2) {
-                        //doViewFlightReservations(); 
+                        doViewFlightReservations(); 
                     } else if (response == 3) {
                         break;
                     } else {
@@ -402,11 +403,11 @@ public class MainApp {
 
         //if want to set flight configurations and routes at this time:
         System.out.println("Select Aircraft Configuration");
-        System.out.printf("%30s%40s%25s%20s\n", "Aircraft Configuration ID", "Name", "Number of Cabin Classes", "Aircraft Type");
+        System.out.printf("%-30s%-40s%-25s%-20s\n", "Aircraft Configuration ID", "Name", "Number of Cabin Classes", "Aircraft Type");
         List<AircraftConfig> aircraftConfigs = aircraftConfigSessionBeanRemote.retrieveAllAircraftConfig();
         
         for (AircraftConfig a : aircraftConfigs) {
-            System.out.printf("%30s%40s%25s%20s\n", a.getAircraftConfigId(), a.getAircraftConfigName(), a.getNumCabinClass(), a.getAircraftType().getAircraftTypeName());
+            System.out.printf("%-30s%-40s%-25s%-20s\n", a.getAircraftConfigId(), a.getAircraftConfigName(), a.getNumCabinClass(), a.getAircraftType().getAircraftTypeName());
         }
 
         System.out.println("");
@@ -419,7 +420,10 @@ public class MainApp {
         List<FlightRoute> allFlightRoutes = flightRouteSessionBeanRemote.viewAllFlightRoutes();
         
         for (FlightRoute flightRoute : allFlightRoutes) {
-            System.out.printf("%4s%16s%24s\n", flightRoute.getFlightRouteId(), flightRoute.getOriginAirport().getAirportName(), flightRoute.getDestinationAirport().getAirportName());
+            System.out.printf("%-8s%-16s%-24s\n",
+                    flightRoute.getFlightRouteId(),
+                    flightRoute.getOriginAirport().getAirportCode(),
+                    flightRoute.getDestinationAirport().getAirportCode());
         }   
         FlightRoute selectedFlightRoute = flightRouteSessionBeanRemote.retrieveFlightRouteByRouteID(scanner.nextLong());
         scanner.nextLine();
@@ -540,7 +544,12 @@ public class MainApp {
         
         System.out.printf("%20s%40s%20s%40s%25s\n", "Flight Route ID", "Origin Airport Name", "Origin Airport IATA", "Destination Airport Name", "Destination Airport IATA");
         for (FlightRoute route : routes) {
-            System.out.printf("%20s%40s%20s%40s%25s\n", route.getFlightRouteId(), route.getOriginAirport().getAirportName() ,route.getOriginAirport().getAirportCode(), route.getDestinationAirport().getAirportName() ,route.getDestinationAirport().getAirportCode());
+            System.out.printf("%20s%40s%20s%40s%25s\n",
+                    route.getFlightRouteId(),
+                    route.getOriginAirport().getAirportName(),
+                    route.getOriginAirport().getAirportCode(),
+                    route.getDestinationAirport().getAirportName(),
+                    route.getDestinationAirport().getAirportCode());
         }
         System.out.print("Enter ID of the flight route you want this flight to change to) (Press 0 if no change)>  ");
         Long chosenRouteId = sc.nextLong();
@@ -1312,113 +1321,118 @@ public class MainApp {
         } 
     }
     
-//    private void doViewFlightReservations() {
-//        try {
-//            Scanner sc = new Scanner(System.in);
-//            System.out.println("*** View Flight Reservations ***");
-//            System.out.print("Enter Flight Number> ");
-//            String flightNumber = sc.nextLine().trim();
-//            Flight flight = flightSessionBeanRemote.retrieveFlightByFlightNumber(flightNumber);
-//            if (flight.getFlightSchedulePlan().isEmpty()) {
-//                System.out.println("Error: The selected flight has no flight schedule plans associated with it\n");
-//                return;
-//            }
-//            System.out.println("Displaying all flight schedules for Flight " + flightNumber + ": " + flight.getFlightRoute().getOriginAirport().getAirportCode() + " -> " + flight.getFlightRoute().getDestinationAirport().getAirportCode());
-//            System.out.printf("%-25s%-30s%-20s\n", "Flight Schedule ID", "Departure Date Time", "Duration (HRS)");
-//            for (FlightSchedulePlan fsp: flight.getFlightSchedulePlan()) {
-//                for (FlightSchedule fs: fsp.getFlightSchedule()) {
-//                    System.out.printf("%-25s%-30s%-20s\n", fs.getFlightScheduleId().toString(), fs.getDepartureDateTime().toString().substring(0, 19), String.valueOf(fs.getFlightDuration()));
-//                }
-//            }
-//            System.out.print("Enter ID of flight schedule >  ");
-//            Long chosenFlightScheduleId = sc.nextLong();
-//            sc.nextLine();
-//        
-////            FlightScheduleEntity flightSchedule = null;
-////            for (FlightSchedulePlanEntity fsp: flight.getFlightSchedulePlan()) {
-////                for (FlightScheduleEntity fs: fsp.getFlightSchedule()) {
-////                    if (Objects.equals(fs.getFlightScheduleID(), chosenFlightScheduleId)) {
-////                        flightSchedule = fs;
-////                    }
-////                }
-////            }
-//    
-//            FlightSchedule flightSchedule = flightScheduleSessionBeanRemote.retrieveFlightScheduleById(chosenFlightScheduleId);
-//            
-//            //available cabin class types that is booked for this schedule
-//            List<CabinClassNameEnum> cabinTypes = new ArrayList<>();
-//            for (FlightReservation reservation: flightSchedule.getReservations()) {
-//                if (!cabinTypes.contains(reservation.getCabinClassType())) {
-//                    cabinTypes.add(reservation.getCabinClassType());
-//                }
-//            }
-//            
-//            List<List<Pair<Passenger, String>>> passengerInfoForEachCabinType = new ArrayList<>();
-//            for (int i = 0; i < cabinTypes.size(); i++) {
-//                passengerInfoForEachCabinType.add(new ArrayList<>());
-//                for (FlightReservation reservation: flightSchedule.getReservations()) {
-//                    if (reservation.getCabinClassType() == cabinTypes.get(i)) {
-//                        String fareBasisCode = reservation.getFareBasisCode();
-//                        for (Passenger passenger: reservation.getPassenger()) {
-//                            passengerInfoForEachCabinType.get(i).add(new Pair<>(passenger, fareBasisCode));
-//                        }
+    private void doViewFlightReservations() {
+        try {
+            Scanner sc = new Scanner(System.in);
+            System.out.println("*** View Flight Reservations ***");
+            System.out.print("Enter Flight Number (No. only) > ");
+            String flightNumber = sc.nextLine().trim();
+            Flight flight = flightSessionBeanRemote.retrieveFlightByFlightNumber(flightNumber);
+            if (flight.getFlightSchedulePlan().isEmpty()) {
+                System.out.println("Error: The selected flight has no flight schedule plans associated with it\n");
+                return;
+            }
+            System.out.println("Displaying all flight schedules for Flight " + flightNumber + ": " + flight.getFlightRoute().getOriginAirport().getAirportCode() + " -> " + flight.getFlightRoute().getDestinationAirport().getAirportCode());
+            
+            System.out.printf("%-25s%-30s%-20s\n", "Flight Schedule ID", "Departure Date Time", "Flight Duration");
+            for (FlightSchedulePlan fsp: flight.getFlightSchedulePlan()) {
+                for (FlightSchedule fs: fsp.getFlightSchedule()) {
+                    System.out.printf("%-25s%-30s%-20s\n", fs.getFlightScheduleId().toString(), fs.getDepartureDateTime().toString().substring(0, 19), String.valueOf(fs.getFlightDuration()));
+                }
+            }
+            System.out.print("Enter ID of flight schedule>  ");
+            Long chosenFlightScheduleId = sc.nextLong();
+            sc.nextLine();
+        
+//            FlightScheduleEntity flightSchedule = null;
+//            for (FlightSchedulePlanEntity fsp: flight.getFlightSchedulePlan()) {
+//                for (FlightScheduleEntity fs: fsp.getFlightSchedule()) {
+//                    if (Objects.equals(fs.getFlightScheduleID(), chosenFlightScheduleId)) {
+//                        flightSchedule = fs;
 //                    }
 //                }
 //            }
-//            
-//            for (int i = 0; i < cabinTypes.size(); i++) {
-//                Collections.sort(passengerInfoForEachCabinType.get(i), (Pair<Passenger, String> p1, Pair<PassengerEntity, String> p2) -> {
-//                    if (p1.getKey().getSeatNumber().compareTo(p2.getKey().getSeatNumber()) > 0) {
-//                        return 1;
-//                    } else if (p1.getKey().getSeatNumber().compareTo(p2.getKey().getSeatNumber()) < 0) {
-//                        return -1;
-//                    } else {
-//                        return 0;
-//                    }
-//                });
-//            }
-//            
-//            System.out.println("\n +++ All Reservations for Flight Schedule (ID: " + chosenFlightScheduleId + " +++\n");
-//            if (cabinTypes.isEmpty()) {
-//                System.out.println("No existing reservations for this flight schedule\n");
-//            } else {
-//                for (int i = 0; i < cabinTypes.size(); i++) {
-//                    String type;
-//                    switch (cabinTypes.get(i)) {
-//                    case FIRST:
-//                        type = "First Class";
-//                        break;
-//                    case BUSINESS:
-//                        type = "Business Class";
-//                        break;
-//                    case PREMIUM_ECONOMY:
-//                        type = "Premium Economy Class";
-//                        break;
-//                    default:
-//                        type = "Economy Class";
-//                        break;
-//                    }
-//                    System.out.println(" -- " + type + " -- ");
-//                    System.out.println();
-//                    for (Pair<Passenger, String> pair: passengerInfoForEachCabinType.get(i)) {
-//                        Passenger pass = pair.getKey();
-//                        String fareCode = pair.getValue();
-//                        System.out.println(pass.getFirstName() + " " + pass.getLastName() + ", Seat " + pass.getSeatNumber() + ", " + fareCode);
-//                    }
-//                    System.out.println();
-//                }
-//            }
-//            
-//            System.out.print("Press any key to continue...> ");
-//            sc.nextLine();
-//            
-//            
-//        } catch (FlightNotFoundException ex) {
-//            System.out.println("Error: " + ex.getMessage() + "\nPlease try again!\n");
-//        } catch (FlightScheduleNotFoundException ex) {
-//            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//    }
+    
+            FlightSchedule flightSchedule = flightScheduleSessionBeanRemote.retrieveFlightScheduleById(chosenFlightScheduleId);
+            
+            //available cabin class types that is booked for this schedule
+            List<CabinClassNameEnum> cabinTypes = new ArrayList<>();
+            for (FlightReservation reservation: flightSchedule.getReservations()) {
+                if (!cabinTypes.contains(reservation.getCabinClassName())) {
+                    cabinTypes.add(reservation.getCabinClassName());
+                }
+            }
+            
+            List<List<Pair<Passenger, String>>> passengerInfoForEachCabinType = new ArrayList<>();
+            for (int i = 0; i < cabinTypes.size(); i++) {
+                passengerInfoForEachCabinType.add(new ArrayList<>());
+                for (FlightReservation reservation: flightSchedule.getReservations()) {
+                    if (reservation.getCabinClassName()== cabinTypes.get(i)) {
+                        String fareBasisCode = reservation.getFareBasisCode();
+                        for (Passenger passenger: reservation.getPassengers()) {
+                            passengerInfoForEachCabinType.get(i).add(new Pair<>(passenger, fareBasisCode));
+                        }
+                    }
+                }
+            }
+            
+            for (int i = 0; i < cabinTypes.size(); i++) {
+                Collections.sort(passengerInfoForEachCabinType.get(i), (Pair<Passenger, String> p1, Pair<Passenger, String> p2) -> {
+                    if (p1.getKey().getSeatNumber().compareTo(p2.getKey().getSeatNumber()) > 0) {
+                        return 1;
+                    } else if (p1.getKey().getSeatNumber().compareTo(p2.getKey().getSeatNumber()) < 0) {
+                        return -1;
+                    } else {
+                        return 0;
+                    }
+                });
+            }
+            
+            System.out.println("\n ** All Reservations for Flight Schedule ID: " + chosenFlightScheduleId + " **\n");
+            if (cabinTypes.isEmpty()) {
+                System.out.println("No existing reservations for this flight schedule\n");
+            } else {
+                for (int i = 0; i < cabinTypes.size(); i++) {
+                    String type;
+                    switch (cabinTypes.get(i)) {
+                    case FIRST:
+                        type = "First Class";
+                        break;
+                    case BUSINESS:
+                        type = "Business Class";
+                        break;
+                    case PREMIUM_ECONOMY:
+                        type = "Premium Economy Class";
+                        break;
+                    default:
+                        type = "Economy Class";
+                        break;
+                    }
+                    System.out.println(" -- " + type + " -- ");
+                    System.out.println();
+                    System.out.printf("%-20s%-20s%-30s\n", "Passenger Name", "Seat Number", "Fare Basis Code");
+                    for (Pair<Passenger, String> pair: passengerInfoForEachCabinType.get(i)) {
+                        Passenger pass = pair.getKey();
+                        String fareCode = pair.getValue();
+                        System.out.printf("%-30s%-20s%-30s\n",
+                                pass.getFirstName() + pass.getLastName(),
+                                pass.getSeatNumber(),
+                                fareCode);
+                    }
+                    System.out.println();
+                }
+            }
+            
+            System.out.print("Press any key to continue...> ");
+            sc.nextLine();
+            
+            
+        } catch (FlightNotFoundException ex) {
+            System.out.println("Error: " + ex.getMessage() + "\nPlease try again!\n");
+        } catch (FlightScheduleNotFoundException ex) {
+            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     
     
 }

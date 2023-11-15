@@ -28,8 +28,10 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import util.enumeration.CabinClassNameEnum;
+import util.enumeration.ScheduleTypeEnum;
 import util.exception.FlightNotFoundException;
 import util.exception.FlightScheduleNotFoundException;
+import util.exception.SeatInventoryNotFoundException;
 import util.exception.UpdateFlightScheduleException;
 
 /**
@@ -55,9 +57,15 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
     @Override
     public FlightSchedule createNewSchedule(FlightSchedule schedule, FlightSchedulePlan plan) {
         em.persist(schedule);
+
+        //need remove next time cuz i lazy delete table again
+        ScheduleTypeEnum scheduleType = plan.getScheduleType();
+        schedule.setScheduleType(scheduleType);
         
+        // original
         plan.getFlightSchedule().add(schedule);
 
+        schedule.setScheduleType(scheduleType);
         schedule.setFlightSchedulePlan(plan);
 
         return schedule;
@@ -348,5 +356,16 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
            seatInventorySessionBeanLocal.deleteSeatInventory(schedule.getSeatInventory()); 
            em.remove(schedule);
        }
+    }
+    
+    @Override
+    public SeatInventory getValidSeatInventory(FlightSchedule schedule, CabinClassNameEnum cabinClassType) throws FlightScheduleNotFoundException, SeatInventoryNotFoundException {
+        FlightSchedule latestSchedule = retrieveFlightScheduleById(schedule.getFlightScheduleId());
+        for (SeatInventory seatInventory : latestSchedule.getSeatInventory()) {
+            if (seatInventory.getCabinClass().getCabinClassName() == cabinClassType) {
+                return seatInventory;
+            }
+        }
+        throw new SeatInventoryNotFoundException("Seat inventory not found");
     }
 }

@@ -10,6 +10,7 @@ import entity.SeatInventory;
 import java.util.List;
 import javax.ejb.Local;
 import util.exception.SeatInventoryNotFoundException;
+import util.exception.SeatsBookedException;
 
 /**
  *
@@ -23,5 +24,9 @@ public interface SeatInventorySessionBeanLocal {
     public SeatInventory retrieveSeatsBySeatId(Long seatInventoryID) throws SeatInventoryNotFoundException;
 
     public void deleteSeatInventory(List<SeatInventory> seats);
+
+    public boolean checkAvailability(SeatInventory seatInventory, String seatNumber);
+
+    public void bookSeat(long seatInventoryId, String seatNumber) throws SeatInventoryNotFoundException, SeatsBookedException;
     
 }

@@ -6,6 +6,7 @@ package entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -34,14 +35,29 @@ public class FlightReservation implements Serializable {
     @Column(nullable = false, precision = 11, scale = 2)
     private BigDecimal fareAmount;
     private CabinClassNameEnum cabinClassName;
-    //private Itinerary itinerary;
-//    @OneToMany(fetch = FetchType.EAGER)
-//    private List<Passenger> passenger; 
+    
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
+    private Itinerary itinerary;
+    
+    @OneToMany(fetch = FetchType.EAGER)
+    private List<Passenger> passengers; 
     
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private FlightSchedule flightSchedule;
 
+    public FlightReservation() {
+        passengers = new ArrayList<>();
+    }
+
+    public FlightReservation(String fareBasisCode, BigDecimal fareAmount, CabinClassNameEnum cabinClassName) {
+        this();
+        this.fareBasisCode = fareBasisCode;
+        this.fareAmount = fareAmount;
+        this.cabinClassName = cabinClassName;
+    }
+    
     public Long getFlightReservationId() {
         return flightReservationId;
     }
@@ -81,8 +97,23 @@ public class FlightReservation implements Serializable {
     public void setFlightSchedule(FlightSchedule flightSchedule) {
         this.flightSchedule = flightSchedule;
     }
-    
-    
+
+    public Itinerary getItinerary() {
+        return itinerary;
+    }
+
+    public void setItinerary(Itinerary itinerary) {
+        this.itinerary = itinerary;
+    }
+
+    public List<Passenger> getPassengers() {
+        return passengers;
+    }
+
+    public void setPassengers(List<Passenger> passengers) {
+        this.passengers = passengers;
+    }
+   
 
     @Override
     public int hashCode() {

@@ -210,7 +210,7 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
                 for(int i = 0; i < size; i++) {
                     FlightSchedule schedule = new FlightSchedule(info.get(i).getKey(), info.get(i).getValue());
                     flightScheduleSessionBeanLocal.createNewSchedule(schedule, plan);
-                    //plan.getFlightSchedule().add(schedule); //association done on schedule session bean
+              
                 }
                 
                 associateFlightToPlan(flightID, plan);
