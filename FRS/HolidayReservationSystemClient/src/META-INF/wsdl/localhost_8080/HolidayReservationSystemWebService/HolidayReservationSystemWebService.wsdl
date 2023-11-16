@@ -7,15 +7,6 @@
 <xsd:import namespace="http://jaxb.dev.java.net/array" schemaLocation="http://localhost:8080/HolidayReservationSystemWebService/HolidayReservationSystemWebService?xsd=2"/>
 </xsd:schema>
 </types>
-<message name="doLogin">
-<part name="parameters" element="tns:doLogin"/>
-</message>
-<message name="doLoginResponse">
-<part name="parameters" element="tns:doLoginResponse"/>
-</message>
-<message name="InvalidLoginCredentialException">
-<part name="fault" element="tns:InvalidLoginCredentialException"/>
-</message>
 <message name="getListOfFlightSchedules">
 <part name="parameters" element="tns:getListOfFlightSchedules"/>
 </message>
@@ -28,21 +19,83 @@
 <message name="FlightNotFoundException">
 <part name="fault" element="tns:FlightNotFoundException"/>
 </message>
+<message name="highestFare">
+<part name="parameters" element="tns:highestFare"/>
+</message>
+<message name="highestFareResponse">
+<part name="parameters" element="tns:highestFareResponse"/>
+</message>
+<message name="FlightScheduleNotFoundException">
+<part name="fault" element="tns:FlightScheduleNotFoundException"/>
+</message>
+<message name="doLogin">
+<part name="parameters" element="tns:doLogin"/>
+</message>
+<message name="doLoginResponse">
+<part name="parameters" element="tns:doLoginResponse"/>
+</message>
+<message name="InvalidLoginCredentialException">
+<part name="fault" element="tns:InvalidLoginCredentialException"/>
+</message>
+<message name="getListOfConnectingFlightSchedules">
+<part name="parameters" element="tns:getListOfConnectingFlightSchedules"/>
+</message>
+<message name="getListOfConnectingFlightSchedulesResponse">
+<part name="parameters" element="tns:getListOfConnectingFlightSchedulesResponse"/>
+</message>
 <portType name="HolidayReservationSystemWebService">
-<operation name="doLogin">
-<input wsam:Action="http://ws.session.ejb/HolidayReservationSystemWebService/doLoginRequest" message="tns:doLogin"/>
-<output wsam:Action="http://ws.session.ejb/HolidayReservationSystemWebService/doLoginResponse" message="tns:doLoginResponse"/>
-<fault message="tns:InvalidLoginCredentialException" name="InvalidLoginCredentialException" wsam:Action="http://ws.session.ejb/HolidayReservationSystemWebService/doLogin/Fault/InvalidLoginCredentialException"/>
-</operation>
 <operation name="getListOfFlightSchedules">
 <input wsam:Action="http://ws.session.ejb/HolidayReservationSystemWebService/getListOfFlightSchedulesRequest" message="tns:getListOfFlightSchedules"/>
 <output wsam:Action="http://ws.session.ejb/HolidayReservationSystemWebService/getListOfFlightSchedulesResponse" message="tns:getListOfFlightSchedulesResponse"/>
 <fault message="tns:ParseException" name="ParseException" wsam:Action="http://ws.session.ejb/HolidayReservationSystemWebService/getListOfFlightSchedules/Fault/ParseException"/>
 <fault message="tns:FlightNotFoundException" name="FlightNotFoundException" wsam:Action="http://ws.session.ejb/HolidayReservationSystemWebService/getListOfFlightSchedules/Fault/FlightNotFoundException"/>
 </operation>
+<operation name="highestFare">
+<input wsam:Action="http://ws.session.ejb/HolidayReservationSystemWebService/highestFareRequest" message="tns:highestFare"/>
+<output wsam:Action="http://ws.session.ejb/HolidayReservationSystemWebService/highestFareResponse" message="tns:highestFareResponse"/>
+<fault message="tns:FlightScheduleNotFoundException" name="FlightScheduleNotFoundException" wsam:Action="http://ws.session.ejb/HolidayReservationSystemWebService/highestFare/Fault/FlightScheduleNotFoundException"/>
+</operation>
+<operation name="doLogin">
+<input wsam:Action="http://ws.session.ejb/HolidayReservationSystemWebService/doLoginRequest" message="tns:doLogin"/>
+<output wsam:Action="http://ws.session.ejb/HolidayReservationSystemWebService/doLoginResponse" message="tns:doLoginResponse"/>
+<fault message="tns:InvalidLoginCredentialException" name="InvalidLoginCredentialException" wsam:Action="http://ws.session.ejb/HolidayReservationSystemWebService/doLogin/Fault/InvalidLoginCredentialException"/>
+</operation>
+<operation name="getListOfConnectingFlightSchedules">
+<input wsam:Action="http://ws.session.ejb/HolidayReservationSystemWebService/getListOfConnectingFlightSchedulesRequest" message="tns:getListOfConnectingFlightSchedules"/>
+<output wsam:Action="http://ws.session.ejb/HolidayReservationSystemWebService/getListOfConnectingFlightSchedulesResponse" message="tns:getListOfConnectingFlightSchedulesResponse"/>
+<fault message="tns:ParseException" name="ParseException" wsam:Action="http://ws.session.ejb/HolidayReservationSystemWebService/getListOfConnectingFlightSchedules/Fault/ParseException"/>
+<fault message="tns:FlightNotFoundException" name="FlightNotFoundException" wsam:Action="http://ws.session.ejb/HolidayReservationSystemWebService/getListOfConnectingFlightSchedules/Fault/FlightNotFoundException"/>
+</operation>
 </portType>
 <binding name="HolidayReservationSystemWebServicePortBinding" type="tns:HolidayReservationSystemWebService">
 <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+<operation name="getListOfFlightSchedules">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+<fault name="ParseException">
+<soap:fault name="ParseException" use="literal"/>
+</fault>
+<fault name="FlightNotFoundException">
+<soap:fault name="FlightNotFoundException" use="literal"/>
+</fault>
+</operation>
+<operation name="highestFare">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+<fault name="FlightScheduleNotFoundException">
+<soap:fault name="FlightScheduleNotFoundException" use="literal"/>
+</fault>
+</operation>
 <operation name="doLogin">
 <soap:operation soapAction=""/>
 <input>
@@ -55,7 +108,7 @@
 <soap:fault name="InvalidLoginCredentialException" use="literal"/>
 </fault>
 </operation>
-<operation name="getListOfFlightSchedules">
+<operation name="getListOfConnectingFlightSchedules">
 <soap:operation soapAction=""/>
 <input>
 <soap:body use="literal"/>

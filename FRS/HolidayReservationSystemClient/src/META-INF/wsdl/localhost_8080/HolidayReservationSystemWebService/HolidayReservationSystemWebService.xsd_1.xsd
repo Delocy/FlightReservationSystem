@@ -4,6 +4,8 @@
 
 <xs:element name="FlightNotFoundException" type="tns:FlightNotFoundException"/>
 
+<xs:element name="FlightScheduleNotFoundException" type="tns:FlightScheduleNotFoundException"/>
+
 <xs:element name="InvalidLoginCredentialException" type="tns:InvalidLoginCredentialException"/>
 
 <xs:element name="ParseException" type="tns:ParseException"/>
@@ -12,30 +14,19 @@
 
 <xs:element name="doLoginResponse" type="tns:doLoginResponse"/>
 
+<xs:element name="getListOfConnectingFlightSchedules" type="tns:getListOfConnectingFlightSchedules"/>
+
+<xs:element name="getListOfConnectingFlightSchedulesResponse" type="tns:getListOfConnectingFlightSchedulesResponse"/>
+
 <xs:element name="getListOfFlightSchedules" type="tns:getListOfFlightSchedules"/>
 
 <xs:element name="getListOfFlightSchedulesResponse" type="tns:getListOfFlightSchedulesResponse"/>
 
-<xs:complexType name="doLogin">
-<xs:sequence>
-<xs:element name="username" type="xs:string" minOccurs="0"/>
-<xs:element name="password" type="xs:string" minOccurs="0"/>
-</xs:sequence>
-</xs:complexType>
+<xs:element name="highestFare" type="tns:highestFare"/>
 
-<xs:complexType name="doLoginResponse">
-<xs:sequence>
-<xs:element name="return" type="xs:long" minOccurs="0"/>
-</xs:sequence>
-</xs:complexType>
+<xs:element name="highestFareResponse" type="tns:highestFareResponse"/>
 
-<xs:complexType name="InvalidLoginCredentialException">
-<xs:sequence>
-<xs:element name="message" type="xs:string" minOccurs="0"/>
-</xs:sequence>
-</xs:complexType>
-
-<xs:complexType name="getListOfFlightSchedules">
+<xs:complexType name="getListOfConnectingFlightSchedules">
 <xs:sequence>
 <xs:element name="origin" type="xs:string" minOccurs="0"/>
 <xs:element name="destination" type="xs:string" minOccurs="0"/>
@@ -44,9 +35,16 @@
 </xs:sequence>
 </xs:complexType>
 
-<xs:complexType name="getListOfFlightSchedulesResponse">
+<xs:complexType name="getListOfConnectingFlightSchedulesResponse">
 <xs:sequence>
-<xs:element name="return" type="tns:flightSchedule" minOccurs="0" maxOccurs="unbounded"/>
+<xs:element name="return" type="tns:fsPair" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="fsPair">
+<xs:sequence>
+<xs:element name="fs1" type="tns:flightSchedule" minOccurs="0"/>
+<xs:element name="fs2" type="tns:flightSchedule" minOccurs="0"/>
 </xs:sequence>
 </xs:complexType>
 
@@ -223,6 +221,59 @@
 <xs:complexType name="FlightNotFoundException">
 <xs:sequence>
 <xs:element name="message" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="highestFare">
+<xs:sequence>
+<xs:element name="flightschedule" type="tns:flightSchedule" minOccurs="0"/>
+<xs:element name="cabinclassname" type="tns:cabinClassNameEnum" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="highestFareResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:fare" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="FlightScheduleNotFoundException">
+<xs:sequence>
+<xs:element name="message" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="doLogin">
+<xs:sequence>
+<xs:element name="username" type="xs:string" minOccurs="0"/>
+<xs:element name="password" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="doLoginResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:long" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="InvalidLoginCredentialException">
+<xs:sequence>
+<xs:element name="message" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="getListOfFlightSchedules">
+<xs:sequence>
+<xs:element name="origin" type="xs:string" minOccurs="0"/>
+<xs:element name="destination" type="xs:string" minOccurs="0"/>
+<xs:element name="date" type="xs:string" minOccurs="0"/>
+<xs:element name="cabinclassname" type="tns:cabinClassNameEnum" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="getListOfFlightSchedulesResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:flightSchedule" minOccurs="0" maxOccurs="unbounded"/>
 </xs:sequence>
 </xs:complexType>
 

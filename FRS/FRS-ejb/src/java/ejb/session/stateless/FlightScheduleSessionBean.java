@@ -293,6 +293,29 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
         
         return lowest;
     }
+    
+    @Override
+    public Fare highestFare(FlightSchedule fs, CabinClassNameEnum cabinClassName) throws FlightScheduleNotFoundException {
+        FlightSchedule schedule = retrieveFlightScheduleById(fs.getFlightScheduleId());
+        List<Fare> fares = schedule.getFlightSchedulePlan().getFares();
+        
+        Fare highest = fares.get(0);
+        
+        for (Fare f : fares) {
+            if (f.getCabinClassName().equals(cabinClassName)) {
+                if (highest == null) {
+                    highest = f;
+                    continue;
+                } else if (f.getFare().compareTo(highest.getFare()) > 0) {
+                    highest = f;
+                }
+            }
+            
+           
+        }
+        
+        return highest;
+    }
 
     public FlightSchedule updateFlightSchedule(long flightScheduleId, Date newDepartureDateTime, double newFlightDuration) throws FlightScheduleNotFoundException, UpdateFlightScheduleException {
         FlightSchedule flightSchedule = retrieveFlightScheduleById(flightScheduleId);

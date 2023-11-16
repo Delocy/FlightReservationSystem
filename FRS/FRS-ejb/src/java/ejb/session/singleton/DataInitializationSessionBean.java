@@ -7,6 +7,7 @@ package ejb.session.singleton;
 import ejb.session.stateless.AircraftConfigSessionBeanLocal;
 import ejb.session.stateless.AircraftTypeSessionBeanLocal;
 import ejb.session.stateless.AirportSessionBeanLocal;
+import ejb.session.stateless.CabinClassConfigSessionBeanLocal;
 import ejb.session.stateless.EmployeeSessionBeanLocal;
 import ejb.session.stateless.FlightRouteSessionBeanLocal;
 import ejb.session.stateless.FlightSchedulePlanSessionBeanLocal;
@@ -67,6 +68,9 @@ import util.exception.UnknownPersistenceException;
 @LocalBean
 @Startup
 public class DataInitializationSessionBean {
+
+    @EJB
+    private CabinClassConfigSessionBeanLocal cabinClassConfigSessionBeanLocal;
 
     @EJB
     private FlightSchedulePlanSessionBeanLocal flightSchedulePlanSessionBeanLocal;
@@ -147,13 +151,30 @@ public class DataInitializationSessionBean {
             } catch (UnknownPersistenceException ex) {
                 Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
+            /*
             //CabinClassNameEnum cabinClassName, String seatConfiguration, int numRows, int numAisles, int numSeatsAbreast
             CabinClassConfig c = new CabinClassConfig(CabinClassNameEnum.ECONOMY, "3-3", 30, 1, 6);
             AircraftConfig config = new AircraftConfig("Boeing 737 All Economy", 1);
             List<CabinClassConfig> cabins = new ArrayList<>();
             cabins.add(c);
-            aircraftConfigSessionBeanLocal.createAircraftConfig(config, cabins, 1l);
+            //aircraftConfigSessionBeanLocal.createAircraftConfig(config, cabins, 1l);
+            
+            em.persist(config);
+            
+            AircraftType type = aircraftTypeSessionBeanLocal.retrieveAircraftTypeByAircraftTypeId(1l);
+            config.setAircraftType(type);
+            type.getAircraftConfig().add(config);
+            
+            
+            int seatCapacity = 0;
+            for (CabinClassConfig cab : cabins) {
+                seatCapacity += cab.getMaxSeatCapacity();
+                cabinClassConfigSessionBeanLocal.createCabinClass(cab, config);
+            }
+            
+            if (seatCapacity <= type.getMaxCapacity())  {
+                em.flush();
+            }
             
             cabins.clear();
             c = new CabinClassConfig(CabinClassNameEnum.FIRST, "1-1", 5, 1, 2);
@@ -163,13 +184,47 @@ public class DataInitializationSessionBean {
             c = new CabinClassConfig(CabinClassNameEnum.ECONOMY, "3-3", 25, 1, 6);
             cabins.add(c);
             config = new AircraftConfig("Boeing 737 Three Classes", 3);
-            aircraftConfigSessionBeanLocal.createAircraftConfig(config, cabins, 1l);
+            //aircraftConfigSessionBeanLocal.createAircraftConfig(config, cabins, 1l);
+            
+            em.persist(config);
+            
+            type = aircraftTypeSessionBeanLocal.retrieveAircraftTypeByAircraftTypeId(1l);
+            config.setAircraftType(type);
+            type.getAircraftConfig().add(config);
+            
+            
+            seatCapacity = 0;
+            for (CabinClassConfig cab : cabins) {
+                seatCapacity += cab.getMaxSeatCapacity();
+                cabinClassConfigSessionBeanLocal.createCabinClass(cab, config);
+            }
+            
+            if (seatCapacity <= type.getMaxCapacity())  {
+                em.flush();
+            }
             
             cabins.clear();
             c = new CabinClassConfig(CabinClassNameEnum.ECONOMY, "3-4-3", 38, 2, 10);
             cabins.add(c);
             config = new AircraftConfig("Boeing 747 All Economy", 1);
-            aircraftConfigSessionBeanLocal.createAircraftConfig(config, cabins, 2l);
+            //aircraftConfigSessionBeanLocal.createAircraftConfig(config, cabins, 2l);
+            
+            em.persist(config);
+            
+            type = aircraftTypeSessionBeanLocal.retrieveAircraftTypeByAircraftTypeId(1l);
+            config.setAircraftType(type);
+            type.getAircraftConfig().add(config);
+            
+            
+            seatCapacity = 0;
+            for (CabinClassConfig cab : cabins) {
+                seatCapacity += cab.getMaxSeatCapacity();
+                cabinClassConfigSessionBeanLocal.createCabinClass(cab, config);
+            }
+            
+            if (seatCapacity <= type.getMaxCapacity())  {
+                em.flush();
+            }
             
             cabins.clear();
             c = new CabinClassConfig(CabinClassNameEnum.FIRST, "1-1", 5, 1, 2);
@@ -180,6 +235,23 @@ public class DataInitializationSessionBean {
             cabins.add(c);
             config = new AircraftConfig("Boeing 747 Three Classes", 3);
             aircraftConfigSessionBeanLocal.createAircraftConfig(config, cabins, 2l);
+            
+            em.persist(config);
+            
+            type = aircraftTypeSessionBeanLocal.retrieveAircraftTypeByAircraftTypeId(1l);
+            config.setAircraftType(type);
+            type.getAircraftConfig().add(config);
+            
+            
+            seatCapacity = 0;
+            for (CabinClassConfig cab : cabins) {
+                seatCapacity += cab.getMaxSeatCapacity();
+                cabinClassConfigSessionBeanLocal.createCabinClass(cab, config);
+            }
+            
+            if (seatCapacity <= type.getMaxCapacity())  {
+                em.flush();
+            }
             
             flightRouteSessionBeanLocal.createFlightRoute(airportSessionBeanLocal.retrieveAirportByAirportCode("SIN").getAirportId(), airportSessionBeanLocal.retrieveAirportByAirportCode("HKG").getAirportId());
             flightRouteSessionBeanLocal.createFlightRoute(airportSessionBeanLocal.retrieveAirportByAirportCode("HKG").getAirportId(), airportSessionBeanLocal.retrieveAirportByAirportCode("SIN").getAirportId());
@@ -443,32 +515,36 @@ public class DataInitializationSessionBean {
             flightSchedulePlanSessionBeanLocal.associateExistingPlanToComplementaryPlan(fsp.getFlightSchedulePlanId(), fsp2.getFlightSchedulePlanId());
             
             // left the mL511
+            */
         }
         catch(EmployeeUsernameExistException ex)
         {
             ex.printStackTrace();
         } catch (UnknownPersistenceException ex) {
             Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (AirportNotFoundException ex) {
-            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (FlightRouteExistException ex) {
-            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (AircraftConfigNotFoundException ex) {
-            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (FlightRouteNotFoundException ex) {
-            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (FlightExistException ex) {
-            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (FlightNotFoundException ex) {
-            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ParseException ex) {
-            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (FareExistException ex) {
-            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (FlightSchedulePlanExistException ex) {
-            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (FlightSchedulePlanNotFoundException ex) {
-            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
         }
+//        } catch (AirportNotFoundException ex) {
+//            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+//        } catch (FlightRouteExistException ex) {
+//            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+//        } catch (AircraftConfigNotFoundException ex) {
+//            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+//        } catch (FlightRouteNotFoundException ex) {
+//            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+//        } catch (FlightExistException ex) {
+//            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+//        } catch (FlightNotFoundException ex) {
+//            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+//        } catch (ParseException ex) {
+//            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+//        } catch (FareExistException ex) {
+//            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+//        } catch (FlightSchedulePlanExistException ex) {
+//            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+//        } catch (FlightSchedulePlanNotFoundException ex) {
+//            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+//        } catch (AircraftTypeNotFoundException ex) {
+//            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+//        }
     }
 }
