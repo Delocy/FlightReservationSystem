@@ -62,7 +62,7 @@ public class CabinClassConfig implements Serializable {
     @NotNull
     private int maxSeatCapacity;
     
-    @ManyToOne(optional = false, cascade = CascadeType.DETACH)
+    @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private AircraftConfig aircraftConfig;
 
