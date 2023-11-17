@@ -45,6 +45,7 @@ public class AircraftConfigSessionBean implements AircraftConfigSessionBeanRemot
     public Long createAircraftConfig(AircraftConfig aircraftConfig, List<CabinClassConfig> cabins, Long aircraftTypeId) throws UnknownPersistenceException {
         try {
             em.persist(aircraftConfig);
+       
             
             AircraftType type = aircraftTypeSessionBeanLocal.retrieveAircraftTypeByAircraftTypeId(aircraftTypeId);
             aircraftConfig.setAircraftType(type);
@@ -54,6 +55,7 @@ public class AircraftConfigSessionBean implements AircraftConfigSessionBeanRemot
             int seatCapacity = 0;
             for (CabinClassConfig c : cabins) {
                 seatCapacity += c.getMaxSeatCapacity();
+                em.persist(c);
                 cabinClassConfigSessionBeanLocal.createCabinClass(c, aircraftConfig);
             }
             

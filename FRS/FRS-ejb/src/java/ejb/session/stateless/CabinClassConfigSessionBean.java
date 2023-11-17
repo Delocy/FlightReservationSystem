@@ -30,7 +30,7 @@ public class CabinClassConfigSessionBean implements CabinClassConfigSessionBeanR
     @Override
     public Long createCabinClass(CabinClassConfig c, AircraftConfig aircraftConfig) throws UnknownPersistenceException {
         try {
-            em.persist(c);
+            //em.persist(c);
             c.setAircraftConfig(aircraftConfig);
             aircraftConfig.getCabinClassConfig().add(c);
             //em.flush();

@@ -54,6 +54,7 @@ public class AircraftConfig implements Serializable {
 
     public AircraftConfig() {
         this.cabinClassConfig = new ArrayList<>();
+        this.flights = new ArrayList<>();
     }
 
     public AircraftConfig(String aircraftConfigName, Integer numCabinClass) {
