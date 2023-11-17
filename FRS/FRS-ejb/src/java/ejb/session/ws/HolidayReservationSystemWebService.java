@@ -32,6 +32,7 @@ import util.enumeration.CabinClassNameEnum;
 import util.exception.CustomerNotFoundException;
 import util.exception.FlightNotFoundException;
 import util.exception.FlightReservationExistException;
+import util.exception.FlightReservationNotFoundException;
 import util.exception.FlightScheduleNotFoundException;
 import util.exception.InvalidLoginCredentialException;
 import util.exception.ItineraryExistException;
@@ -169,24 +170,28 @@ public class HolidayReservationSystemWebService {
     @WebMethod(operationName = "retrieveFlightScheduleById")
     public FlightSchedule retrieveFlightScheduleById(@WebParam(name = "flightscheduleid") long flightscheduleid) throws FlightScheduleNotFoundException {
         FlightSchedule fs = flightScheduleSessionBeanLocal.retrieveFlightScheduleByIdDetached(flightscheduleid);
-        fs.getFlightSchedulePlan().getFlight().getFlightRoute().setFlights(null);
+//        fs.getFlightSchedulePlan().getFlight().getFlightRoute().setFlights(null);
 //        fs.getFlightSchedulePlan().getFlight().getFlightRoute().setComplementaryRoute(null);
 //        fs.getFlightSchedulePlan().getFlight().getFlightRoute().setSourceRoute(null);
-        fs.getFlightSchedulePlan().getFlight().setFlightSchedulePlan(null);
-        fs.getFlightSchedulePlan().getFlight().setOriginalFlight(null);
-        fs.getFlightSchedulePlan().getFlight().setReturningFlight(null);
-        fs.getFlightSchedulePlan().getFlight().setAircraftConfig(null);
-        for (Fare fare: fs.getFlightSchedulePlan().getFares()) {
-            fare.setFlightSchedulePlan(null);
+//        fs.getFlightSchedulePlan().getFlight().setFlightSchedulePlan(null);
+//        fs.getFlightSchedulePlan().getFlight().setOriginalFlight(null);
+//        fs.getFlightSchedulePlan().getFlight().setReturningFlight(null);
+//        fs.getFlightSchedulePlan().getFlight().setAircraftConfig(null);
+//        for (Fare fare: fs.getFlightSchedulePlan().getFares()) {
+//            fare.setFlightSchedulePlan(null);
+//        }
+//        fs.getFlightSchedulePlan().setReturnSchedulePlan(null);
+//        fs.getFlightSchedulePlan().setOriginalSchedulePlan(null);
+//        fs.getFlightSchedulePlan().setFlightSchedule(null);
+        for (FlightReservation fr : fs.getReservations()) {
+            fr.setFlightSchedule(null);
         }
-        fs.getFlightSchedulePlan().setReturnSchedulePlan(null);
-        fs.getFlightSchedulePlan().setOriginalSchedulePlan(null);
-        fs.getFlightSchedulePlan().setFlightSchedule(null);
-        fs.setReservations(null);
         for (SeatInventory seats: fs.getSeatInventory()) {
-            if (seats.getCabinClass()!= null) {seats.getCabinClass().setAircraftConfig(null);}
+            //if (seats.getCabinClass()!= null) {seats.getCabinClass().setAircraftConfig(null);}
             seats.setFlightSchedule(null);
         }
+        
+        fs.setFlightSchedulePlan(null);
         return fs;   
     }
     
@@ -196,7 +201,8 @@ public class HolidayReservationSystemWebService {
             FlightScheduleNotFoundException, 
             SeatInventoryNotFoundException {
         SeatInventory seats = flightScheduleSessionBeanLocal.getValidSeatInventoryDetached(flightschedule, cabinclasstype);
-        if (seats.getCabinClass()!= null) {seats.getCabinClass().setAircraftConfig(null);}
+        //if (seats.getCabinClass()!= null) {seats.getCabinClass().setAircraftConfig(null);}
+        seats.setCabinClass(null);
         seats.setFlightSchedule(null);
         return seats;
     }
@@ -217,9 +223,15 @@ public class HolidayReservationSystemWebService {
             FlightScheduleNotFoundException,
             SeatInventoryNotFoundException,
             SeatsBookedException,
-            ItineraryNotFoundException {
-            
-        return flightReservationSessionBeanLocal.createNewReservation(flightreservation, passengers, flightscheduleid, itineraryid);
+            ItineraryNotFoundException,
+            FlightReservationNotFoundException {
+        
+        Long id = flightReservationSessionBeanLocal.createNewReservation(flightreservation, passengers, flightscheduleid, itineraryid);
+        FlightReservation fr = flightReservationSessionBeanLocal.retrieveFlightReservationByReserverationId(id);
+        fr.setFlightSchedule(null);
+        fr.setItinerary(null);
+
+        return id;
     }
     
     @WebMethod(operationName = "createNewItinerary")
@@ -234,7 +246,13 @@ public class HolidayReservationSystemWebService {
             {
 //        SimpleDateFormat formatter = new SimpleDateFormat("dd/M/yyyy");
 //        Date expiryDate = formatter.parse(date);
-        return itinerarySessionBeanLocal.createNewItinerary(itinerary, userid);
+        
+        Itinerary i = itinerarySessionBeanLocal.createNewItinerary(itinerary, userid);
+        i.setPerson(null);
+        for (FlightReservation fr : i.getReservations()) {
+            fr.setItinerary(null);
+        }
+        return i;
     }
     
     @WebMethod(operationName = "retrieveItinerariesByPartnerId")
