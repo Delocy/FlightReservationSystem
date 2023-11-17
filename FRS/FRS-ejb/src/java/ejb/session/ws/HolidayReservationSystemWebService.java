@@ -54,7 +54,7 @@ public class HolidayReservationSystemWebService {
                                                         @WebParam(name = "cabinclassname")CabinClassNameEnum cabinclassname) throws ParseException, FlightNotFoundException {
         SimpleDateFormat dateTimeFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
         Date departureDate = dateTimeFormat.parse(date);
-        List<FlightSchedule> schedules = flightScheduleSessionBeanLocal.retrieveListOfFlightSchedule(origin, destination, departureDate, cabinclassname);
+        List<FlightSchedule> schedules = flightScheduleSessionBeanLocal.retrieveListOfFlightScheduleDetach(origin, destination, departureDate, cabinclassname);
         for (FlightSchedule fs : schedules) {
             fs.getFlightSchedulePlan().getFlight().getFlightRoute().setFlights(null);
             fs.getFlightSchedulePlan().getFlight().setFlightSchedulePlan(null);
@@ -82,7 +82,7 @@ public class HolidayReservationSystemWebService {
                                                         @WebParam(name = "date")String date, 
                                                         @WebParam(name = "cabinclassname")CabinClassNameEnum cabinclassname) throws ParseException, FlightNotFoundException {        SimpleDateFormat inputFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
         Date departureDate = inputFormat.parse(date);
-        List<Pair<FlightSchedule, FlightSchedule>> list = flightScheduleSessionBeanLocal.retrieveConnectingFlightSchedules(origin, destination, departureDate, cabinclassname);
+        List<Pair<FlightSchedule, FlightSchedule>> list = flightScheduleSessionBeanLocal.retrieveConnectingFlightSchedulesDetach(origin, destination, departureDate, cabinclassname);
         List<FsPair> schedules = new ArrayList<>();
         
         List<Pair<FlightSchedule, FlightSchedule>> newList = new ArrayList<>();

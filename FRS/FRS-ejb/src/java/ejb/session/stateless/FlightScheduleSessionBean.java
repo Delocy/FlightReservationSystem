@@ -133,142 +133,222 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
            
     }
     
+    @Override
+    public List<FlightSchedule> retrieveListOfFlightScheduleDetach(String originAirport, String destAirport, Date departureDate, CabinClassNameEnum cabinClassName) throws FlightNotFoundException {
+        List<FlightSchedule> schedules;
+        schedules = new ArrayList<>();
+        List<Flight> flight = flightSessionBeanLocal.retrieveFlightsByFlightRoute(originAirport, destAirport);
+        for (Flight f : flight) {
+            for (FlightSchedulePlan fsp : f.getFlightSchedulePlan()) {
+                if (fsp.isDisabled()) {
+                    continue;
+                }
+                
+                for (FlightSchedule fs : fsp.getFlightSchedule()) {
+                    boolean include = false;
+                    if (cabinClassName == null) {
+                        include = true;
+                    } else {
+                        for (SeatInventory seatInventory: fs.getSeatInventory()) {
+                            if (seatInventory.getCabinClass().getCabinClassName().equals(cabinClassName)) {
+                                include = true;
+                            }
+                        }
+                    }
+                    Calendar c1 = Calendar.getInstance();
+                    Calendar c2 = Calendar.getInstance();
+                    c1.setTime(fs.getDepartureDateTime());
+                    c2.setTime(departureDate);
+                    if (c1.get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR) && c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR)) {
+                        include = true;
+                    } else {
+                        include = false;
+                    }
+                    
+                    if (include) {
+                        em.detach(fs);
+                        schedules.add(fs);
+                    }
+                }
+            }
+        }
+           
+                
+        Collections.sort(schedules, new Comparator<FlightSchedule>() {
+            @Override
+            public int compare(FlightSchedule f1, FlightSchedule f2) {
+                return f1.getDepartureDateTime().compareTo(f2.getDepartureDateTime());
+            }
+        });
+        return schedules;
+           
+    }
+    
+    @Override
     public List<Pair<FlightSchedule, FlightSchedule>> retrieveConnectingFlightSchedules(String originAirport, String destAirport, Date departureDate, CabinClassNameEnum cabinClassName) throws FlightNotFoundException {
             
         List<Pair<FlightSchedule, FlightSchedule>> schedules = new ArrayList<>();
         List<Flight[]> flights = flightSessionBeanLocal.retrieveConnectingFlightsByFlightRoute(originAirport, destAirport);
-            
-        /*
-            for (Object[] cf : flights) {
-                Flight f1 = (Flight) cf[0];
-                Flight f2 = (Flight) cf[1];
-                for (FlightSchedulePlan fsp : f1.getFlightSchedulePlan()) {
-                    if (fsp.isDisabled() == true) {
-                        continue;
-                    }
-                    
-                    for (FlightSchedule fs : fsp.getFlightSchedule()) {
-                        for (FlightSchedulePlan fsp2 : f2.getFlightSchedulePlan()) {
-                            if (fsp2.isDisabled() == true) {
-                                continue;
-                            }
-                            for (FlightSchedule fs2 : fsp2.getFlightSchedule()) {
-                                Calendar desiredDate = Calendar.getInstance();
-                                Calendar fsDate = Calendar.getInstance();
-                                desiredDate.setTime(departureDate);
-                                fsDate.setTime(fs.getDepartureDateTime());
-                                
-                                Calendar c = Calendar.getInstance();
-                                c.setTime(fs.getDepartureDateTime());
-                                double duration = fs.getFlightDuration();
-                                int hour = (int) duration;
-                                int min = (int) (duration % 1 * 60);
-                                c.add(Calendar.HOUR_OF_DAY, hour);
-                                c.add(Calendar.MINUTE, min);
-                                int diff1 = fs.getFlightSchedulePlan().getFlight().getFlightRoute().getDestinationAirport().getGmt() -
-                                    fs.getFlightSchedulePlan().getFlight().getFlightRoute().getOriginAirport().getGmt();
-                                c.add(Calendar.HOUR_OF_DAY, diff1);
-                                
-                                Calendar c2 = Calendar.getInstance();
-                                c2.setTime(fs2.getDepartureDateTime());
-                                long layoverTime = Duration.between(c.toInstant(), c2.toInstant()).toHours();
-                                
-                                if (desiredDate.DAY_OF_YEAR == fsDate.DAY_OF_YEAR && desiredDate.YEAR == fsDate.YEAR && !(layoverTime < 2l || layoverTime > 12l)) {
-                                    if (cabinClassName == null) {
-                                        schedules.add(new Pair(fs, fs2));
-                                    } else {
-                                        for (SeatInventory seatInventory : fs.getSeatInventory()) {
-                                            if (seatInventory.getCabinClass().getCabinClassName().equals(cabinClassName)) {
-                                                schedules.add(new Pair(fs, fs2));
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+
+        for (Object[] cf : flights) {
+            Flight f1 = (Flight) cf[0];
+            Flight f2 = (Flight) cf[1];
+            for (FlightSchedulePlan fsp: f1.getFlightSchedulePlan()) {
+                if (fsp.isDisabled() == true) {
+                    continue;
                 }
-            } */
-        
-
-            for (Object[] cf : flights) {
-                Flight f1 = (Flight) cf[0];
-                Flight f2 = (Flight) cf[1];
-                for (FlightSchedulePlan fsp: f1.getFlightSchedulePlan()) {
-                    if (fsp.isDisabled() == true) {
-                        continue;
-                    }
-                    for (FlightSchedule fs: fsp.getFlightSchedule()) {
-                        for (FlightSchedulePlan fsp2: f2.getFlightSchedulePlan()) {
-                            if (fsp2.isDisabled()) {
-                                continue;
+                for (FlightSchedule fs: fsp.getFlightSchedule()) {
+                    for (FlightSchedulePlan fsp2: f2.getFlightSchedulePlan()) {
+                        if (fsp2.isDisabled()) {
+                            continue;
+                        }
+                        for (FlightSchedule fs2 : fsp2.getFlightSchedule()) {
+                            boolean include = false;
+                            if (cabinClassName == null) {
+                                include = true;
+                            } else {
+                                for (SeatInventory seats: fs.getSeatInventory()) {
+                                    for (SeatInventory seats2: fs2.getSeatInventory()) {
+                                        if (seats.getCabinClass().getCabinClassName().equals(cabinClassName) && seats2.getCabinClass().getCabinClassName().equals(cabinClassName)) {
+                                        include = true;
+                                        }
+                                    }                           
+                                }
                             }
-                            for (FlightSchedule fs2 : fsp2.getFlightSchedule()) {
-                                boolean include = false;
-                                if (cabinClassName == null) {
-                                    include = true;
-                                } else {
-                                    for (SeatInventory seats: fs.getSeatInventory()) {
-                                        for (SeatInventory seats2: fs2.getSeatInventory()) {
-                                            if (seats.getCabinClass().getCabinClassName().equals(cabinClassName) && seats2.getCabinClass().getCabinClassName().equals(cabinClassName)) {
-                                            include = true;
-                                            }
-                                        }                           
-                                    }
-                                }
 
-                                Calendar c1 = Calendar.getInstance();
-                                Calendar c2 = Calendar.getInstance();
-                                c1.setTime(fs.getDepartureDateTime());
-                                c2.setTime(departureDate);
-                       
-                                if (c1.get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR) &&
-                                                  c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR)){
-                                    include = true;
-                                } else {
-                                    include = false;
-                                }
+                            Calendar c1 = Calendar.getInstance();
+                            Calendar c2 = Calendar.getInstance();
+                            c1.setTime(fs.getDepartureDateTime());
+                            c2.setTime(departureDate);
 
-                                System.out.println(include + " HERE");
-                                Calendar c3 = Calendar.getInstance();
-                                c3.setTime(fs.getDepartureDateTime());
-                                double duration = fs.getFlightDuration();
-                                int hour = (int) duration;
-                                int min = (int) (duration % 1 * 60);
-                                c3.add(Calendar.HOUR_OF_DAY, hour);
-                                c3.add(Calendar.MINUTE, min);               
-                                int diff1 = fs.getFlightSchedulePlan().getFlight().getFlightRoute().getDestinationAirport().getGmt() - 
-                                fs.getFlightSchedulePlan().getFlight().getFlightRoute().getOriginAirport().getGmt();
-                                c3.add(Calendar.HOUR_OF_DAY, diff1);
-
-                                Calendar c4 = Calendar.getInstance();
-                                c4.setTime(fs2.getDepartureDateTime());
-                                long layover = Duration.between(c3.toInstant(), c4.toInstant()).toHours();
-                                if (layover < 2l || layover > 12l) {
-                                    include = false;
-                                }
-
-                                
-                                if (include) {
-                                    System.out.println("adddddded");
-                                    schedules.add(new Pair(fs, fs2));
-                                }
-
+                            if (c1.get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR) &&
+                                              c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR)){
+                                include = true;
+                            } else {
+                                include = false;
                             }
+
+                            Calendar c3 = Calendar.getInstance();
+                            c3.setTime(fs.getDepartureDateTime());
+                            double duration = fs.getFlightDuration();
+                            int hour = (int) duration;
+                            int min = (int) (duration % 1 * 60);
+                            c3.add(Calendar.HOUR_OF_DAY, hour);
+                            c3.add(Calendar.MINUTE, min);               
+                            int diff1 = fs.getFlightSchedulePlan().getFlight().getFlightRoute().getDestinationAirport().getGmt() - 
+                            fs.getFlightSchedulePlan().getFlight().getFlightRoute().getOriginAirport().getGmt();
+                            c3.add(Calendar.HOUR_OF_DAY, diff1);
+
+                            Calendar c4 = Calendar.getInstance();
+                            c4.setTime(fs2.getDepartureDateTime());
+                            long layover = Duration.between(c3.toInstant(), c4.toInstant()).toHours();
+                            if (layover < 2l || layover > 12l) {
+                                include = false;
+                            }
+
+
+                            if (include) {
+                                schedules.add(new Pair(fs, fs2));
+                            }
+
                         }
                     }
                 }
             }
+        }
 
+        Collections.sort(schedules, new Comparator<Pair<FlightSchedule, FlightSchedule>>() {
+            @Override
+            public int compare(Pair<FlightSchedule, FlightSchedule> p1, Pair<FlightSchedule, FlightSchedule> p2) {
+                return p1.getKey().getDepartureDateTime().compareTo(p2.getKey().getDepartureDateTime());
+            }
+        });
+        return schedules;
+    }
+    
+    @Override
+    public List<Pair<FlightSchedule, FlightSchedule>> retrieveConnectingFlightSchedulesDetach(String originAirport, String destAirport, Date departureDate, CabinClassNameEnum cabinClassName) throws FlightNotFoundException {
             
-            Collections.sort(schedules, new Comparator<Pair<FlightSchedule, FlightSchedule>>() {
-                @Override
-                public int compare(Pair<FlightSchedule, FlightSchedule> p1, Pair<FlightSchedule, FlightSchedule> p2) {
-                    return p1.getKey().getDepartureDateTime().compareTo(p2.getKey().getDepartureDateTime());
+        List<Pair<FlightSchedule, FlightSchedule>> schedules = new ArrayList<>();
+        List<Flight[]> flights = flightSessionBeanLocal.retrieveConnectingFlightsByFlightRoute(originAirport, destAirport);
+
+        for (Object[] cf : flights) {
+            Flight f1 = (Flight) cf[0];
+            Flight f2 = (Flight) cf[1];
+            for (FlightSchedulePlan fsp: f1.getFlightSchedulePlan()) {
+                if (fsp.isDisabled() == true) {
+                    continue;
                 }
-            });
-            return schedules;
+                for (FlightSchedule fs: fsp.getFlightSchedule()) {
+                    for (FlightSchedulePlan fsp2: f2.getFlightSchedulePlan()) {
+                        if (fsp2.isDisabled()) {
+                            continue;
+                        }
+                        for (FlightSchedule fs2 : fsp2.getFlightSchedule()) {
+                            boolean include = false;
+                            if (cabinClassName == null) {
+                                include = true;
+                            } else {
+                                for (SeatInventory seats: fs.getSeatInventory()) {
+                                    for (SeatInventory seats2: fs2.getSeatInventory()) {
+                                        if (seats.getCabinClass().getCabinClassName().equals(cabinClassName) && seats2.getCabinClass().getCabinClassName().equals(cabinClassName)) {
+                                        include = true;
+                                        }
+                                    }                           
+                                }
+                            }
+
+                            Calendar c1 = Calendar.getInstance();
+                            Calendar c2 = Calendar.getInstance();
+                            c1.setTime(fs.getDepartureDateTime());
+                            c2.setTime(departureDate);
+
+                            if (c1.get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR) &&
+                                              c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR)){
+                                include = true;
+                            } else {
+                                include = false;
+                            }
+
+                            System.out.println(include + " HERE");
+                            Calendar c3 = Calendar.getInstance();
+                            c3.setTime(fs.getDepartureDateTime());
+                            double duration = fs.getFlightDuration();
+                            int hour = (int) duration;
+                            int min = (int) (duration % 1 * 60);
+                            c3.add(Calendar.HOUR_OF_DAY, hour);
+                            c3.add(Calendar.MINUTE, min);               
+                            int diff1 = fs.getFlightSchedulePlan().getFlight().getFlightRoute().getDestinationAirport().getGmt() - 
+                            fs.getFlightSchedulePlan().getFlight().getFlightRoute().getOriginAirport().getGmt();
+                            c3.add(Calendar.HOUR_OF_DAY, diff1);
+
+                            Calendar c4 = Calendar.getInstance();
+                            c4.setTime(fs2.getDepartureDateTime());
+                            long layover = Duration.between(c3.toInstant(), c4.toInstant()).toHours();
+                            if (layover < 2l || layover > 12l) {
+                                include = false;
+                            }
+
+
+                            if (include) {
+                                em.detach(fs);
+                                em.detach(fs2);
+                                schedules.add(new Pair(fs, fs2));
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+        
+        Collections.sort(schedules, new Comparator<Pair<FlightSchedule, FlightSchedule>>() {
+            @Override
+            public int compare(Pair<FlightSchedule, FlightSchedule> p1, Pair<FlightSchedule, FlightSchedule> p2) {
+                return p1.getKey().getDepartureDateTime().compareTo(p2.getKey().getDepartureDateTime());
+            }
+        });
+        return schedules;
     }
     
     @Override
@@ -313,10 +393,11 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
             
            
         }
-        
+        em.detach(highest);
         return highest;
     }
 
+    @Override
     public FlightSchedule updateFlightSchedule(long flightScheduleId, Date newDepartureDateTime, double newFlightDuration) throws FlightScheduleNotFoundException, UpdateFlightScheduleException {
         FlightSchedule flightSchedule = retrieveFlightScheduleById(flightScheduleId);
     

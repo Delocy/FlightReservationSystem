@@ -229,6 +229,26 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
         }
     }
     
+    @Override
+    public List<Flight> retrieveFlightsByFlightRouteDetach(String origin, String destination) throws FlightNotFoundException {
+        Query query = em.createQuery("SELECT f FROM Flight f "
+            + "WHERE f.flightRoute.originAirport.airportCode = :inOrigin "
+            + "AND f.flightRoute.destinationAirport.airportCode = :inDestination "
+            + "AND f.isDisabled = false "
+            + "ORDER BY SUBSTRING(f.flightNumber, 3) ASC");
+        query.setParameter("inOrigin", origin);
+        query.setParameter("inDestination", destination);
+        
+        List<Flight> result = query.getResultList();
+        if (result != null) {
+            for (Flight f : result) {
+                em.detach(f);
+            }
+            return result;
+        } else {
+            throw new FlightNotFoundException("Flights from " + origin + " to " + destination + " does not exist!");
+        }
+    }
     
     @Override
     public List<Flight[]> retrieveConnectingFlightsByFlightRoute(String origin, String destination) throws FlightNotFoundException {
