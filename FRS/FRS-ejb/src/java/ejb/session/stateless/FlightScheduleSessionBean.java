@@ -95,7 +95,7 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
             em.detach(schedule);
             em.detach(plan);
             for (SeatInventory seat : seats) {
-                em.detach(seats);
+                em.detach(seat);
             }
             for (FlightReservation res : reservations) {
                 em.detach(res);

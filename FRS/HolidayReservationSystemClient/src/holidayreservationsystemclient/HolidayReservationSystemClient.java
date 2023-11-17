@@ -24,6 +24,7 @@ import ws.holiday.FlightNotFoundException_Exception;
 import ws.holiday.FlightReservation;
 import ws.holiday.FlightReservationExistException;
 import ws.holiday.FlightReservationExistException_Exception;
+import ws.holiday.FlightReservationNotFoundException_Exception;
 import ws.holiday.FlightSchedule;
 import ws.holiday.FlightScheduleNotFoundException;
 import ws.holiday.FlightScheduleNotFoundException_Exception;
@@ -531,6 +532,7 @@ public class HolidayReservationSystemClient {
         return port.highestFare(flightschedule, cabinclassname);
     }
     
+    
     private void doReserveFlight(Long outbound1, Long outbound2, Long inbound1, Long inbound2, CabinClassNameEnum cabinClassType, int noOfPassengers) {
         //try {
             Scanner scanner = new Scanner(System.in);
@@ -633,6 +635,8 @@ public class HolidayReservationSystemClient {
         } catch (PersonNotFoundException_Exception ex) {
             Logger.getLogger(HolidayReservationSystemClient.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ItineraryExistException_Exception ex) {
+            Logger.getLogger(HolidayReservationSystemClient.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FlightReservationNotFoundException_Exception ex) {
             Logger.getLogger(HolidayReservationSystemClient.class.getName()).log(Level.SEVERE, null, ex);
         }
         return itinerary;
@@ -920,7 +924,8 @@ public class HolidayReservationSystemClient {
             FlightScheduleNotFoundException_Exception,
             SeatInventoryNotFoundException_Exception,
             SeatsBookedException_Exception,
-            ItineraryNotFoundException_Exception {
+            ItineraryNotFoundException_Exception,
+            FlightReservationNotFoundException_Exception {
         HolidayReservationSystemWebService_Service service = new HolidayReservationSystemWebService_Service();
         HolidayReservationSystemWebService port = service.getHolidayReservationSystemWebServicePort();
         return port.createNewReservation(flightreservation, passengers, flightscheduleid, itineraryid);
@@ -961,6 +966,7 @@ public class HolidayReservationSystemClient {
         HolidayReservationSystemWebService port = service.getHolidayReservationSystemWebServicePort();
         return port.checkAvailability(seatinventory, seatnumber);
     }
+
     
 
 }
