@@ -8,6 +8,7 @@ import entity.Fare;
 import entity.FlightSchedule;
 import entity.FlightSchedulePlan;
 import entity.Flight;
+import entity.FlightReservation;
 import entity.SeatInventory;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -86,9 +87,19 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
     @Override
     public FlightSchedule retrieveFlightScheduleByIdDetached(Long flightScheduleID) throws FlightScheduleNotFoundException {
         FlightSchedule schedule = em.find(FlightSchedule.class, flightScheduleID);
+        FlightSchedulePlan plan = schedule.getFlightSchedulePlan();
+        List<SeatInventory> seats = schedule.getSeatInventory();
+        List<FlightReservation> reservations = schedule.getReservations();
         
         if(schedule != null) {
             em.detach(schedule);
+            em.detach(plan);
+            for (SeatInventory seat : seats) {
+                em.detach(seats);
+            }
+            for (FlightReservation res : reservations) {
+                em.detach(res);
+            }
             return schedule;
         } else {
             throw new FlightScheduleNotFoundException("Flight Schedule " + flightScheduleID + " not found!");      
@@ -180,6 +191,15 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
                     
                     if (include) {
                         em.detach(fs);
+                        em.detach(fs.getFlightSchedulePlan());
+                        List<FlightReservation> reservations = fs.getReservations();
+                        for (FlightReservation res : reservations) {
+                            em.detach(res);
+                        }
+                        List<SeatInventory> seats = fs.getSeatInventory();
+                        for (SeatInventory seat : seats) {
+                            em.detach(seat);
+                        }
                         schedules.add(fs);
                     }
                 }
@@ -345,7 +365,26 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
 
                             if (include) {
                                 em.detach(fs);
+                                em.detach(fs.getFlightSchedulePlan());
+                                List<FlightReservation> reservations = fs.getReservations();
+                                for (FlightReservation res : reservations) {
+                                    em.detach(res);
+                                }
+                                List<SeatInventory> seats = fs.getSeatInventory();
+                                for (SeatInventory seat : seats) {
+                                    em.detach(seat);
+                                }
+                                
                                 em.detach(fs2);
+                                em.detach(fs2.getFlightSchedulePlan());
+                                List<FlightReservation> r2 = fs2.getReservations();
+                                for (FlightReservation res : r2) {
+                                    em.detach(res);
+                                }
+                                List<SeatInventory> seats2 = fs2.getSeatInventory();
+                                for (SeatInventory seat : seats2) {
+                                    em.detach(seat);
+                                }
                                 schedules.add(new Pair(fs, fs2));
                             }
 
@@ -489,12 +528,24 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
     @Override
     public SeatInventory getValidSeatInventoryDetached(FlightSchedule schedule, CabinClassNameEnum cabinClassType) throws FlightScheduleNotFoundException, SeatInventoryNotFoundException {
         FlightSchedule latestSchedule = retrieveFlightScheduleById(schedule.getFlightScheduleId());
+        em.detach(latestSchedule);
+        em.detach(latestSchedule.getFlightSchedulePlan());
+        List<FlightReservation> reservations = latestSchedule.getReservations();
+        for (FlightReservation res : reservations) {
+            em.detach(res);
+        }
+        List<SeatInventory> seats = latestSchedule.getSeatInventory();
+        for (SeatInventory seat : seats) {
+            em.detach(seat);
+        }
+        
         for (SeatInventory seatInventory : latestSchedule.getSeatInventory()) {
             if (seatInventory.getCabinClass().getCabinClassName() == cabinClassType) {
                 em.detach(seatInventory);
                 return seatInventory;
             }
         }
+        
         throw new SeatInventoryNotFoundException("Seat inventory not found");
     }
    

@@ -242,7 +242,18 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
         List<Flight> result = query.getResultList();
         if (result != null) {
             for (Flight f : result) {
+                
                 em.detach(f);
+                em.detach(f.getFlightRoute());
+                em.detach(f.getFlightSchedulePlan());
+                em.detach(f.getAircraftConfig());
+                if (f.getOriginalFlight() != null) {
+                    em.detach(f.getOriginalFlight());
+                }
+                if (f.getReturningFlight() != null) {
+                    em.detach(f.getReturningFlight());
+                }
+                
             }
             return result;
         } else {

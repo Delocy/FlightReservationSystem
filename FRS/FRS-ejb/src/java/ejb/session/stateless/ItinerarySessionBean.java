@@ -5,6 +5,7 @@
 package ejb.session.stateless;
 
 import entity.Customer;
+import entity.FlightReservation;
 import entity.Itinerary;
 import entity.Person;
 import java.util.List;
@@ -85,6 +86,11 @@ public class ItinerarySessionBean implements ItinerarySessionBeanRemote, Itinera
             throw new ItineraryNotFoundException("Itinerary does not exist");
         } else {
             em.detach(itinerary);
+            if (!itinerary.getReservations().isEmpty()) {
+                for (FlightReservation res : itinerary.getReservations()) {
+                    em.detach(res);
+                }
+            }
             return itinerary;
         }
     }
@@ -105,6 +111,11 @@ public class ItinerarySessionBean implements ItinerarySessionBeanRemote, Itinera
         List<Itinerary> list =  query.getResultList();
         for (Itinerary itinerary: list) {
             em.detach(itinerary);
+            if (!itinerary.getReservations().isEmpty()) {
+                for (FlightReservation res : itinerary.getReservations()) {
+                    em.detach(res);
+                }
+            }
         }
         return list;
     }
