@@ -493,58 +493,338 @@ public class DataInitializationSessionBean {
                 Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
             }
             
-//            SimpleDateFormat recurrentFormat = new SimpleDateFormat("dd/M/yyyy");
-//            SimpleDateFormat scheduleFormat = new SimpleDateFormat("dd/M/yyyy hh:mm:ss a");
-//            // Schedule Plan
-//            Date recurrentEnd = recurrentFormat.parse("31/12/2023");
-//            Flight f1 = flightSessionBeanLocal.retrieveFlightByFlightNumber("ML711");
-//            Date startDateTime = scheduleFormat.parse("1/12/2023 9:00:00 AM");
-//            Pair<Date, Double> pair = new Pair<>(startDateTime, 14.0);
-//            FlightSchedulePlan fsp = new FlightSchedulePlan(ScheduleTypeEnum.RECURRENTWEEK, recurrentEnd, f1);
-//            
-//            List<Fare> fares = new ArrayList<>();
-//            fares.add(new Fare("HA", BigDecimal.valueOf(6000), CabinClassNameEnum.FIRST));
-//            fares.add(new Fare("HA", BigDecimal.valueOf(3000), CabinClassNameEnum.BUSINESS));
-//            fares.add(new Fare("HA", BigDecimal.valueOf(1000), CabinClassNameEnum.ECONOMY));
-//            
-//            fsp = flightSchedulePlanSessionBeanLocal.createNewFlightSchedulePlanWeekly(fsp, fares, f1.getFlightId(), pair, 2);
-//            
-//            Flight f2 = flightSessionBeanLocal.retrieveFlightByFlightNumber("ML712");
-//            FlightSchedulePlan fsp2 = new FlightSchedulePlan(ScheduleTypeEnum.RECURRENTWEEK, recurrentEnd, f2);
-//            List<Pair<Date,Double>> info = new ArrayList<>();
-//            int diff = f1.getFlightRoute().getDestinationAirport().getGmt() - f1.getFlightRoute().getOriginAirport().getGmt();
-//            for(FlightSchedule fs : fsp.getFlightSchedule()) {
-//            Calendar cal = Calendar.getInstance();
-//            
-//            cal.setTime(fs.getDepartureDateTime());
-//            double duration = fs.getFlightDuration();
-//            int hour = (int) duration;
-//            int min = (int) (duration % 1 * 60);
-//            cal.add(Calendar.HOUR_OF_DAY, hour);
-//            cal.add(Calendar.MINUTE, min);
-//            cal.add(Calendar.HOUR_OF_DAY, 2 + diff);
-//            Date date = cal.getTime();
-//            info.add(new Pair<>(date, fs.getFlightDuration()));
-//            }
-//            
-//            List<Fare> fares2 = new ArrayList<>();
-//            fares2.add(new Fare("HA", BigDecimal.valueOf(6000), CabinClassNameEnum.FIRST));
-//            fares2.add(new Fare("HA", BigDecimal.valueOf(3000), CabinClassNameEnum.BUSINESS));
-//            fares2.add(new Fare("HA", BigDecimal.valueOf(1000), CabinClassNameEnum.ECONOMY));
-//            
-//            try {
-//                fsp2 = flightSchedulePlanSessionBeanLocal.createNewFlightSchedulePlanMultiple(fsp2, fares2, f2.getFlightId(), info);
-//                flightSchedulePlanSessionBeanLocal.associateExistingPlanToComplementaryPlan(fsp.getFlightSchedulePlanId(), fsp2.getFlightSchedulePlanId());
-//            } catch (FareExistException ex) {
-//                Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
-//            } catch (UnknownPersistenceException ex) {
-//                Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
-//            } catch (FlightNotFoundException ex) {
-//                Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
-//            } catch (FlightSchedulePlanExistException ex) {
-//                Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
-//            }
+            SimpleDateFormat recurrentFormat = new SimpleDateFormat("dd/M/yyyy");
+            SimpleDateFormat scheduleFormat = new SimpleDateFormat("dd/M/yyyy hh:mm:ss a");
+            // Schedule Plan 
+            // 1
+            try {
+                Date recurrentEnd = recurrentFormat.parse("31/12/2023");
+                Flight f1 = flightSessionBeanLocal.retrieveFlightByFlightNumber("711");
+                Date startDateTime = scheduleFormat.parse("1/12/2023 9:00:00 AM");
+                Pair<Date, Double> pair = new Pair<>(startDateTime, 14.0);
+                FlightSchedulePlan fsp = new FlightSchedulePlan(ScheduleTypeEnum.RECURRENTWEEK, recurrentEnd, f1);
+
+                List<Fare> fares = new ArrayList<>();
+                fares.add(new Fare("HA", BigDecimal.valueOf(6000), CabinClassNameEnum.FIRST));
+                fares.add(new Fare("HA", BigDecimal.valueOf(3000), CabinClassNameEnum.BUSINESS));
+                fares.add(new Fare("HA", BigDecimal.valueOf(1000), CabinClassNameEnum.ECONOMY));
+                
+                fsp = flightSchedulePlanSessionBeanLocal.createNewFlightSchedulePlanWeekly(fsp, fares, f1.getFlightId(), pair, 2);
+
+                Flight f2 = flightSessionBeanLocal.retrieveFlightByFlightNumber("712");
+                FlightSchedulePlan fsp2 = new FlightSchedulePlan(ScheduleTypeEnum.RECURRENTWEEK, recurrentEnd, f2);
+                List<Pair<Date,Double>> info = new ArrayList<>();
+                int diff = f1.getFlightRoute().getDestinationAirport().getGmt() - f1.getFlightRoute().getOriginAirport().getGmt();
+                for(FlightSchedule fs : fsp.getFlightSchedule()) {
+                Calendar cal = Calendar.getInstance();
+
+                cal.setTime(fs.getDepartureDateTime());
+                double duration = fs.getFlightDuration();
+                int hour = (int) duration;
+                int min = (int) (duration % 1 * 60);
+                cal.add(Calendar.HOUR_OF_DAY, hour);
+                cal.add(Calendar.MINUTE, min);
+                cal.add(Calendar.HOUR_OF_DAY, 2 + diff);
+                Date date = cal.getTime();
+                info.add(new Pair<>(date, fs.getFlightDuration()));
+                }
+
+                List<Fare> fares2 = new ArrayList<>();
+                fares2.add(new Fare("F", BigDecimal.valueOf(6000), CabinClassNameEnum.FIRST));
+                fares2.add(new Fare("J", BigDecimal.valueOf(3000), CabinClassNameEnum.BUSINESS));
+                fares2.add(new Fare("Y", BigDecimal.valueOf(1000), CabinClassNameEnum.ECONOMY));
             
+                fsp2 = flightSchedulePlanSessionBeanLocal.createNewFlightSchedulePlanMultiple(fsp2, fares2, f2.getFlightId(), info);
+                flightSchedulePlanSessionBeanLocal.associateExistingPlanToComplementaryPlan(fsp.getFlightSchedulePlanId(), fsp2.getFlightSchedulePlanId());
+            } catch (FareExistException ex) {
+                Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (UnknownPersistenceException ex) {
+                Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (FlightNotFoundException ex) {
+                Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (FlightSchedulePlanExistException ex) {
+                Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (FlightSchedulePlanNotFoundException ex) {
+                Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ParseException ex) {
+                Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        // 2
+        try {
+            Date recurrentEnd = recurrentFormat.parse("31/12/2023");
+            Flight f1 = flightSessionBeanLocal.retrieveFlightByFlightNumber("611");
+            Date startDateTime = scheduleFormat.parse("1/12/2023 12:00:00 PM");
+            Pair<Date, Double> pair = new Pair<>(startDateTime, 8.0);
+            FlightSchedulePlan fsp = new FlightSchedulePlan(ScheduleTypeEnum.RECURRENTWEEK, recurrentEnd, f1);
+            
+            List<Fare> fares = new ArrayList<>();
+            fares.add(new Fare("HA", BigDecimal.valueOf(3000), CabinClassNameEnum.FIRST));
+            fares.add(new Fare("HA", BigDecimal.valueOf(1500), CabinClassNameEnum.BUSINESS));
+            fares.add(new Fare("HA", BigDecimal.valueOf(500), CabinClassNameEnum.ECONOMY));
+            
+            fsp = flightSchedulePlanSessionBeanLocal.createNewFlightSchedulePlanWeekly(fsp, fares, f1.getFlightId(), pair, 1);
+            
+            Flight f2 = flightSessionBeanLocal.retrieveFlightByFlightNumber("612");
+            FlightSchedulePlan fsp2 = new FlightSchedulePlan(ScheduleTypeEnum.RECURRENTWEEK, recurrentEnd, f2);
+            List<Pair<Date,Double>> info = new ArrayList<>();
+            int diff = f1.getFlightRoute().getDestinationAirport().getGmt() - f1.getFlightRoute().getOriginAirport().getGmt();
+            for(FlightSchedule fs : fsp.getFlightSchedule()) {
+            Calendar cal = Calendar.getInstance();
+            
+            cal.setTime(fs.getDepartureDateTime());
+            double duration = fs.getFlightDuration();
+            int hour = (int) duration;
+            int min = (int) (duration % 1 * 60);
+            cal.add(Calendar.HOUR_OF_DAY, hour);
+            cal.add(Calendar.MINUTE, min);
+            cal.add(Calendar.HOUR_OF_DAY, 2 + diff);
+            Date date = cal.getTime();
+            info.add(new Pair<>(date, fs.getFlightDuration()));
+            }
+            
+            List<Fare> fares2 = new ArrayList<>();
+            fares2.add(new Fare("HA", BigDecimal.valueOf(3000), CabinClassNameEnum.FIRST));
+            fares2.add(new Fare("HA", BigDecimal.valueOf(1500), CabinClassNameEnum.BUSINESS));
+            fares2.add(new Fare("HA", BigDecimal.valueOf(500), CabinClassNameEnum.ECONOMY));
+ 
+            fsp2 = flightSchedulePlanSessionBeanLocal.createNewFlightSchedulePlanMultiple(fsp2, fares2, f2.getFlightId(), info);
+            flightSchedulePlanSessionBeanLocal.associateExistingPlanToComplementaryPlan(fsp.getFlightSchedulePlanId(), fsp2.getFlightSchedulePlanId());
+        } catch (FareExistException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnknownPersistenceException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FlightNotFoundException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FlightSchedulePlanExistException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParseException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FlightSchedulePlanNotFoundException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        // 3 
+        try {
+            Date recurrentEnd = recurrentFormat.parse("31/12/2023");
+            Flight f1 = flightSessionBeanLocal.retrieveFlightByFlightNumber("621");
+            Date startDateTime = scheduleFormat.parse("1/12/2023 10:00:00 AM");
+            Pair<Date, Double> pair = new Pair<>(startDateTime, 8.0);
+            FlightSchedulePlan fsp = new FlightSchedulePlan(ScheduleTypeEnum.RECURRENTWEEK, recurrentEnd, f1);
+            
+            List<Fare> fares = new ArrayList<>();
+            fares.add(new Fare("HA", BigDecimal.valueOf(700), CabinClassNameEnum.ECONOMY));
+            
+            fsp = flightSchedulePlanSessionBeanLocal.createNewFlightSchedulePlanWeekly(fsp, fares, f1.getFlightId(), pair, 3);
+            
+            Flight f2 = flightSessionBeanLocal.retrieveFlightByFlightNumber("622");
+            FlightSchedulePlan fsp2 = new FlightSchedulePlan(ScheduleTypeEnum.RECURRENTWEEK, recurrentEnd, f2);
+            List<Pair<Date,Double>> info = new ArrayList<>();
+            int diff = f1.getFlightRoute().getDestinationAirport().getGmt() - f1.getFlightRoute().getOriginAirport().getGmt();
+            for(FlightSchedule fs : fsp.getFlightSchedule()) {
+            Calendar cal = Calendar.getInstance();
+            
+            cal.setTime(fs.getDepartureDateTime());
+            double duration = fs.getFlightDuration();
+            int hour = (int) duration;
+            int min = (int) (duration % 1 * 60);
+            cal.add(Calendar.HOUR_OF_DAY, hour);
+            cal.add(Calendar.MINUTE, min);
+            // layover
+            cal.add(Calendar.HOUR_OF_DAY, 2 + diff);
+            Date date = cal.getTime();
+            info.add(new Pair<>(date, fs.getFlightDuration()));
+            }
+            
+            List<Fare> fares2 = new ArrayList<>();
+            fares2.add(new Fare("HA", BigDecimal.valueOf(700), CabinClassNameEnum.ECONOMY));
+ 
+            fsp2 = flightSchedulePlanSessionBeanLocal.createNewFlightSchedulePlanMultiple(fsp2, fares2, f2.getFlightId(), info);
+            flightSchedulePlanSessionBeanLocal.associateExistingPlanToComplementaryPlan(fsp.getFlightSchedulePlanId(), fsp2.getFlightSchedulePlanId());
+        } catch (FareExistException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnknownPersistenceException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FlightNotFoundException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FlightSchedulePlanExistException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParseException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FlightSchedulePlanNotFoundException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        // 4
+        try {
+            Date recurrentEnd = recurrentFormat.parse("31/12/2023");
+            Flight f1 = flightSessionBeanLocal.retrieveFlightByFlightNumber("311");
+            Date startDateTime = scheduleFormat.parse("1/12/2023 10:00:00 AM");
+            Pair<Date, Double> pair = new Pair<>(startDateTime, 6.5);
+            FlightSchedulePlan fsp = new FlightSchedulePlan(ScheduleTypeEnum.RECURRENTWEEK, recurrentEnd, f1);
+            
+            List<Fare> fares = new ArrayList<>();
+            fares.add(new Fare("HA", BigDecimal.valueOf(3100), CabinClassNameEnum.FIRST));
+            fares.add(new Fare("HA", BigDecimal.valueOf(1600), CabinClassNameEnum.BUSINESS));
+            fares.add(new Fare("HA", BigDecimal.valueOf(600), CabinClassNameEnum.ECONOMY));
+            
+            fsp = flightSchedulePlanSessionBeanLocal.createNewFlightSchedulePlanWeekly(fsp, fares, f1.getFlightId(), pair, 2);
+            
+            Flight f2 = flightSessionBeanLocal.retrieveFlightByFlightNumber("312");
+            FlightSchedulePlan fsp2 = new FlightSchedulePlan(ScheduleTypeEnum.RECURRENTWEEK, recurrentEnd, f2);
+            List<Pair<Date,Double>> info = new ArrayList<>();
+            int diff = f1.getFlightRoute().getDestinationAirport().getGmt() - f1.getFlightRoute().getOriginAirport().getGmt();
+            for(FlightSchedule fs : fsp.getFlightSchedule()) {
+            Calendar cal = Calendar.getInstance();
+            
+            cal.setTime(fs.getDepartureDateTime());
+            double duration = fs.getFlightDuration();
+            int hour = (int) duration;
+            int min = (int) (duration % 1 * 60);
+            cal.add(Calendar.HOUR_OF_DAY, hour);
+            cal.add(Calendar.MINUTE, min);
+            // layover
+            cal.add(Calendar.HOUR_OF_DAY, 3 + diff);
+            Date date = cal.getTime();
+            info.add(new Pair<>(date, fs.getFlightDuration()));
+            }
+            
+            List<Fare> fares2 = new ArrayList<>();
+            fares2.add(new Fare("HA", BigDecimal.valueOf(3100), CabinClassNameEnum.FIRST));
+            fares2.add(new Fare("HA", BigDecimal.valueOf(1600), CabinClassNameEnum.BUSINESS));
+            fares2.add(new Fare("HA", BigDecimal.valueOf(600), CabinClassNameEnum.ECONOMY));
+ 
+            fsp2 = flightSchedulePlanSessionBeanLocal.createNewFlightSchedulePlanMultiple(fsp2, fares2, f2.getFlightId(), info);
+            flightSchedulePlanSessionBeanLocal.associateExistingPlanToComplementaryPlan(fsp.getFlightSchedulePlanId(), fsp2.getFlightSchedulePlanId());
+        } catch (FareExistException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnknownPersistenceException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FlightNotFoundException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FlightSchedulePlanExistException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParseException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FlightSchedulePlanNotFoundException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        //5 
+        
+        try {
+            Date recurrentEnd = recurrentFormat.parse("31/12/2023");
+            Flight f1 = flightSessionBeanLocal.retrieveFlightByFlightNumber("411");
+            Date startDateTime = scheduleFormat.parse("1/12/2023 10:00:00 AM");
+            Pair<Date, Double> pair = new Pair<>(startDateTime, 4.0);;
+            FlightSchedulePlan fsp = new FlightSchedulePlan(ScheduleTypeEnum.RECURRENTDAY, recurrentEnd, f1);
+            
+            List<Fare> fares = new ArrayList<>();
+            fares.add(new Fare("HA", BigDecimal.valueOf(2900), CabinClassNameEnum.FIRST));
+            fares.add(new Fare("HA", BigDecimal.valueOf(1400), CabinClassNameEnum.BUSINESS));
+            fares.add(new Fare("HA", BigDecimal.valueOf(400), CabinClassNameEnum.ECONOMY));
+            
+            fsp = flightSchedulePlanSessionBeanLocal.createNewFlightSchedulePlan(fsp, fares, f1.getFlightId(), pair, 2);
+            //
+            Flight f2 = flightSessionBeanLocal.retrieveFlightByFlightNumber("412");
+            FlightSchedulePlan fsp2 = new FlightSchedulePlan(ScheduleTypeEnum.RECURRENTDAY, recurrentEnd, f2);
+            List<Pair<Date,Double>> info = new ArrayList<>();
+            int diff = f1.getFlightRoute().getDestinationAirport().getGmt() - f1.getFlightRoute().getOriginAirport().getGmt();
+            for(FlightSchedule fs : fsp.getFlightSchedule()) {
+            Calendar cal = Calendar.getInstance();
+            
+            cal.setTime(fs.getDepartureDateTime());
+            double duration = fs.getFlightDuration();
+            int hour = (int) duration;
+            int min = (int) (duration % 1 * 60);
+            cal.add(Calendar.HOUR_OF_DAY, hour);
+            cal.add(Calendar.MINUTE, min);
+            // layover
+            cal.add(Calendar.HOUR_OF_DAY, 4 + diff);
+            Date date = cal.getTime();
+            info.add(new Pair<>(date, fs.getFlightDuration()));
+            }
+            
+            List<Fare> fares2 = new ArrayList<>();
+            fares2.add(new Fare("HA", BigDecimal.valueOf(2900), CabinClassNameEnum.FIRST));
+            fares2.add(new Fare("HA", BigDecimal.valueOf(1400), CabinClassNameEnum.BUSINESS));
+            fares2.add(new Fare("HA", BigDecimal.valueOf(400), CabinClassNameEnum.ECONOMY));
+ 
+            fsp2 = flightSchedulePlanSessionBeanLocal.createNewFlightSchedulePlanMultiple(fsp2, fares2, f2.getFlightId(), info);
+            flightSchedulePlanSessionBeanLocal.associateExistingPlanToComplementaryPlan(fsp.getFlightSchedulePlanId(), fsp2.getFlightSchedulePlanId());
+        } catch (FareExistException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnknownPersistenceException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FlightNotFoundException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FlightSchedulePlanExistException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParseException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FlightSchedulePlanNotFoundException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        // 6
+        
+        try {
+            // Date recurrentEnd = recurrentFormat.parse("31/12/2023");
+            Date startDateTime1 = scheduleFormat.parse("7/12/2020 5:00:00 PM");
+            Date startDateTime2 = scheduleFormat.parse("8/12/2020 5:00:00 PM");
+            Date startDateTime3 = scheduleFormat.parse("9/12/2020 5:00:00 PM");
+            Flight f1 = flightSessionBeanLocal.retrieveFlightByFlightNumber("511");
+            List<Pair<Date,Double>> list1 = new ArrayList<>();
+            list1.add(new Pair<>(startDateTime1, 3.0));
+            list1.add(new Pair<>(startDateTime2, 3.0));
+            list1.add(new Pair<>(startDateTime3, 3.0));
+       
+            FlightSchedulePlan fsp = new FlightSchedulePlan(ScheduleTypeEnum.MULTIPLE, f1);
+            
+            List<Fare> fares = new ArrayList<>();
+            fares.add(new Fare("HA", BigDecimal.valueOf(3100), CabinClassNameEnum.FIRST));
+            fares.add(new Fare("HA", BigDecimal.valueOf(1600), CabinClassNameEnum.BUSINESS));
+            fares.add(new Fare("HA", BigDecimal.valueOf(600), CabinClassNameEnum.ECONOMY));
+            
+            fsp = flightSchedulePlanSessionBeanLocal.createNewFlightSchedulePlanMultiple(fsp, fares, f1.getFlightId(), list1);
+            //
+            Flight f2 = flightSessionBeanLocal.retrieveFlightByFlightNumber("512");
+            FlightSchedulePlan fsp2 = new FlightSchedulePlan(ScheduleTypeEnum.MULTIPLE, f2);
+            List<Pair<Date,Double>> info = new ArrayList<>();
+            int diff = f1.getFlightRoute().getDestinationAirport().getGmt() - f1.getFlightRoute().getOriginAirport().getGmt();
+            for(FlightSchedule fs : fsp.getFlightSchedule()) {
+            Calendar cal = Calendar.getInstance();
+            
+            cal.setTime(fs.getDepartureDateTime());
+            double duration = fs.getFlightDuration();
+            int hour = (int) duration;
+            int min = (int) (duration % 1 * 60);
+            cal.add(Calendar.HOUR_OF_DAY, hour);
+            cal.add(Calendar.MINUTE, min);
+            // layover
+            cal.add(Calendar.HOUR_OF_DAY, 2 + diff);
+            Date date = cal.getTime();
+            info.add(new Pair<>(date, fs.getFlightDuration()));
+            }
+            
+            List<Fare> fares2 = new ArrayList<>();
+            fares2.add(new Fare("HA", BigDecimal.valueOf(3100), CabinClassNameEnum.FIRST));
+            fares2.add(new Fare("HA", BigDecimal.valueOf(1600), CabinClassNameEnum.BUSINESS));
+            fares2.add(new Fare("HA", BigDecimal.valueOf(600), CabinClassNameEnum.ECONOMY));
+ 
+            fsp2 = flightSchedulePlanSessionBeanLocal.createNewFlightSchedulePlanMultiple(fsp2, fares2, f2.getFlightId(), info);
+            flightSchedulePlanSessionBeanLocal.associateExistingPlanToComplementaryPlan(fsp.getFlightSchedulePlanId(), fsp2.getFlightSchedulePlanId());
+        } catch (FareExistException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnknownPersistenceException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FlightNotFoundException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FlightSchedulePlanExistException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParseException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FlightSchedulePlanNotFoundException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
             
             
             /*

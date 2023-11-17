@@ -46,6 +46,7 @@ public class SeatInventorySessionBean implements SeatInventorySessionBeanRemote,
         seatInventory.setFlightSchedule(flightSchedule);
         flightSchedule.getSeatInventory().add(seatInventory);
 
+        em.flush();
         return seatInventory;
     }
     

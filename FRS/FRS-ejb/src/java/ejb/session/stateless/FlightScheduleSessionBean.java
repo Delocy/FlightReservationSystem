@@ -57,18 +57,18 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
     
     @Override
     public FlightSchedule createNewSchedule(FlightSchedule schedule, FlightSchedulePlan plan) {
-        em.persist(schedule);
 
         //need remove next time cuz i lazy delete table again
-        ScheduleTypeEnum scheduleType = plan.getScheduleType();
-        schedule.setScheduleType(scheduleType);
+//        ScheduleTypeEnum scheduleType = plan.getScheduleType();
+//        schedule.setScheduleType(scheduleType);
         
+        em.persist(schedule);
         // original
         plan.getFlightSchedule().add(schedule);
-
-        schedule.setScheduleType(scheduleType);
+        //schedule.setScheduleType(scheduleType);
         schedule.setFlightSchedulePlan(plan);
 
+        em.flush();
         return schedule;
     }
     

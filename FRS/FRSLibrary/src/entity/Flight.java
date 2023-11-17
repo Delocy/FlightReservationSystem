@@ -5,6 +5,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -59,6 +60,7 @@ public class Flight implements Serializable {
 
     public Flight() {
         this.isDisabled = false;
+        this.flightSchedulePlan = new ArrayList<>();
     }
 
     public Flight(String flightNumber) {

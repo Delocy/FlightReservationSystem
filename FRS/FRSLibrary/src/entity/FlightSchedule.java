@@ -41,9 +41,9 @@ public class FlightSchedule implements Serializable {
     private Long flightScheduleId;
     
     //need remove next time cuz i lazy delete table again
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private ScheduleTypeEnum scheduleType;
+//    @Column(nullable = false)
+//    @Enumerated(EnumType.STRING)
+//    private ScheduleTypeEnum scheduleType;
     
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
@@ -84,13 +84,13 @@ public class FlightSchedule implements Serializable {
         this.flightScheduleId = flightScheduleId;
     }
 
-    public ScheduleTypeEnum getScheduleType() {
-        return scheduleType;
-    }
-
-    public void setScheduleType(ScheduleTypeEnum scheduleType) {
-        this.scheduleType = scheduleType;
-    }
+//    public ScheduleTypeEnum getScheduleType() {
+//        return scheduleType;
+//    }
+//
+//    public void setScheduleType(ScheduleTypeEnum scheduleType) {
+//        this.scheduleType = scheduleType;
+//    }
 
     public Date getDepartureDateTime() {
         return departureDateTime;

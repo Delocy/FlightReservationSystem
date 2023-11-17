@@ -209,6 +209,7 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
                 int size = info.size();
                 for(int i = 0; i < size; i++) {
                     FlightSchedule schedule = new FlightSchedule(info.get(i).getKey(), info.get(i).getValue());
+                    //em.persist(schedule);
                     flightScheduleSessionBeanLocal.createNewSchedule(schedule, plan);
               
                 }
@@ -217,12 +218,14 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
                 
                 for (FlightSchedule fse: plan.getFlightSchedule()) {               
                     for (CabinClassConfig cc: plan.getFlight().getAircraftConfig().getCabinClassConfig()) {                    
-                        SeatInventory seats = new SeatInventory(cc.getMaxSeatCapacity(), 0 , cc.getMaxSeatCapacity());                       
+                        SeatInventory seats = new SeatInventory(cc.getMaxSeatCapacity(), 0 , cc.getMaxSeatCapacity());      
+//                        em.persist(seats);
                         seatInventorySessionBeanLocal.createSeatInventory(seats, fse, cc);
                     }
                 }
                 
                 for (Fare fare: fares) {
+                   // em.persist(fare);
                     fareSessionBeanLocal.createFare(fare, plan);
                 }
                             
@@ -264,7 +267,6 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
     public FlightSchedulePlan createNewFlightSchedulePlanWeekly(FlightSchedulePlan plan, List<Fare> fares, long flightID, Pair<Date, Double> pair, int recurrent) throws FareExistException, UnknownPersistenceException, FlightNotFoundException, FlightSchedulePlanExistException {
         //Set<ConstraintViolation<FlightSchedulePlanEntity>>constraintViolations = validator.validate(plan);
         
-        
             try{
                 em.persist(plan);
                 
@@ -284,6 +286,7 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
                     cal.setTime(presentDate);
                     // here: from presentdate, set to first instance of day (eg wednesday)
                     FlightSchedule  schedule = new FlightSchedule(cal.getTime(), pair.getValue());
+//                    em.persist(schedule);
                     flightScheduleSessionBeanLocal.createNewSchedule(schedule, plan);
                     
                     boolean deo = false;
@@ -294,6 +297,7 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
             
                     if (deo) {
                         schedule = new FlightSchedule(cal.getTime(), pair.getValue());
+//                        em.persist(schedule);
                         flightScheduleSessionBeanLocal.createNewSchedule(schedule, plan);      
                     }
                     
@@ -302,6 +306,7 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
                     while(endDate.compareTo(cal.getTime()) > 0) {            
                         
                         schedule = new FlightSchedule(cal.getTime(), pair.getValue());
+//                        em.persist(schedule);
                         flightScheduleSessionBeanLocal.createNewSchedule(schedule, plan);
                         cal.add(Calendar.DAY_OF_MONTH, 7);         
                                       
@@ -313,12 +318,14 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
                  
                 for (FlightSchedule fse: plan.getFlightSchedule()) {               
                     for (CabinClassConfig cc: plan.getFlight().getAircraftConfig().getCabinClassConfig()) {                    
-                        SeatInventory seats = new SeatInventory(cc.getMaxSeatCapacity(), 0 , cc.getMaxSeatCapacity());                       
+                        SeatInventory seats = new SeatInventory(cc.getMaxSeatCapacity(), 0 , cc.getMaxSeatCapacity());
+//                        em.persist(seats);
                         seatInventorySessionBeanLocal.createSeatInventory(seats, fse, cc);
                     }
                 }
                 
                 for (Fare fare: fares) {
+//                    em.persist(fare);
                     fareSessionBeanLocal.createFare(fare, plan);
                 }
                 
