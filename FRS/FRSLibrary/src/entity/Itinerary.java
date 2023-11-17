@@ -50,7 +50,7 @@ public class Itinerary implements Serializable {
     private String cvv;
     
     @ManyToOne(optional = false)
-    @JoinColumn(nullable = false)
+    @JoinColumn
     private Customer customer;
     
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "itinerary")

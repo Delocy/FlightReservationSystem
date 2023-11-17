@@ -41,7 +41,7 @@ public class Fare implements Serializable {
     private CabinClassNameEnum cabinClassName;
     
     @ManyToOne(optional = false)
-    @JoinColumn(nullable = false)
+    @JoinColumn
     private FlightSchedulePlan flightSchedulePlan;
 
     public Fare() {

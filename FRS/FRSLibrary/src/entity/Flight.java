@@ -40,7 +40,7 @@ public class Flight implements Serializable {
     private boolean isDisabled;
     
     @ManyToOne
-    @JoinColumn(name = "flightRouteId", nullable = false)
+    @JoinColumn(name = "flightRouteId")
     private FlightRoute flightRoute;
     
     @OneToOne
@@ -51,7 +51,7 @@ public class Flight implements Serializable {
     private Flight originalFlight;
 
     @ManyToOne
-    @JoinColumn(name = "aircraftConfigId", nullable = false)
+    @JoinColumn(name = "aircraftConfigId")
     private AircraftConfig aircraftConfig;
     
     @OneToMany(mappedBy = "flight", fetch = FetchType.EAGER)
