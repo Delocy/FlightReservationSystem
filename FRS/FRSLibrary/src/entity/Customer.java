@@ -19,12 +19,12 @@ import javax.persistence.OneToMany;
  * @author zares
  */
 @Entity
-public class Customer implements Serializable {
+public class Customer extends Person implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long customerId;
+//    private static final long serialVersionUID = 1L;
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    private Long customerId;
     @Column(nullable = false)
     private String firstName;
     @Column(nullable = false)
@@ -35,33 +35,25 @@ public class Customer implements Serializable {
     private String mobileNumber;
     @Column(nullable = false)
     private String address;
-    @Column(nullable = false)
-    private String username;
-    @Column(nullable = false)
-    private String password;
+//    @Column(nullable = false)
+//    private String username;
+//    @Column(nullable = false)
+//    private String password;
     
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "customer")
-    private List<Itinerary> itineraries;   
+//    @OneToMany(fetch = FetchType.EAGER, mappedBy = "customer")
+//    private List<Itinerary> itineraries;   
 
     public Customer() {
+        super();
     }
 
     public Customer(String firstName, String lastName, String email, String mobileNumber, String address, String username, String password) {
+        super(username,password);
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.mobileNumber = mobileNumber;
         this.address = address;
-        this.username = username;
-        this.password = password;
-    }
-
-    public Long getCustomerId() {
-        return customerId;
-    }
-
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
     }
 
     public String getFirstName() {
@@ -103,37 +95,13 @@ public class Customer implements Serializable {
     public void setAddress(String address) {
         this.address = address;
     }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public List<Itinerary> getItineraries() {
-        return itineraries;
-    }
-
-    public void setItineraries(List<Itinerary> itineraries) {
-        this.itineraries = itineraries;
-    }
     
     
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (customerId != null ? customerId.hashCode() : 0);
+        hash += (personId != null ? personId.hashCode() : 0);
         return hash;
     }
 
@@ -144,7 +112,7 @@ public class Customer implements Serializable {
             return false;
         }
         Customer other = (Customer) object;
-        if ((this.customerId == null && other.customerId != null) || (this.customerId != null && !this.customerId.equals(other.customerId))) {
+        if ((this.personId == null && other.personId != null) || (this.personId != null && !this.personId.equals(other.personId))) {
             return false;
         }
         return true;
@@ -152,7 +120,7 @@ public class Customer implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.Customer[ id=" + customerId + " ]";
+        return "entity.Customer[ id=" + personId + " ]";
     }
     
 }

@@ -34,7 +34,7 @@ public class PartnerSessionBean implements PartnerSessionBeanRemote, PartnerSess
         try {
             em.persist(partner);
             em.flush();
-            return partner.getPartnerId();
+            return partner.getPersonId();
         } catch (PersistenceException ex) {
             throw new UnknownPersistenceException(ex.getMessage());
         }
@@ -48,7 +48,7 @@ public class PartnerSessionBean implements PartnerSessionBeanRemote, PartnerSess
             
             if(p.getPassword().equals(password))
             {     
-                return p.getPartnerId();
+                return p.getPersonId();
             }
             else
             {

@@ -21,6 +21,9 @@ import ws.holiday.Fare;
 import ws.holiday.Flight;
 import ws.holiday.FlightNotFoundException;
 import ws.holiday.FlightNotFoundException_Exception;
+import ws.holiday.FlightReservation;
+import ws.holiday.FlightReservationExistException;
+import ws.holiday.FlightReservationExistException_Exception;
 import ws.holiday.FlightSchedule;
 import ws.holiday.FlightScheduleNotFoundException;
 import ws.holiday.FlightScheduleNotFoundException_Exception;
@@ -28,8 +31,21 @@ import ws.holiday.FsPair;
 import ws.holiday.HolidayReservationSystemWebService;
 import ws.holiday.HolidayReservationSystemWebService_Service;
 import ws.holiday.InvalidLoginCredentialException_Exception;
+import ws.holiday.Itinerary;
+import ws.holiday.ItineraryExistException_Exception;
+import ws.holiday.ItineraryNotFoundException;
+import ws.holiday.ItineraryNotFoundException_Exception;
 import ws.holiday.ParseException_Exception;
+import ws.holiday.Passenger;
+import ws.holiday.PersonNotFoundException_Exception;
 import ws.holiday.SeatInventory;
+import ws.holiday.SeatInventoryNotFoundException;
+import ws.holiday.SeatInventoryNotFoundException_Exception;
+import ws.holiday.SeatsBookedException;
+import ws.holiday.SeatsBookedException_Exception;
+import ws.holiday.UnknownPersistenceException;
+import ws.holiday.UnknownPersistenceException_Exception;
+import ws.holiday.UnsignedShortArray;
 
 /**
  *
@@ -110,9 +126,9 @@ public class HolidayReservationSystemClient {
                 if(response == 1) {
                     doSearchFlight();
                 } else if(response == 2) {
-                    //doViewFlightReservation();
+                    doViewFlightReservation();
                 } else if (response == 3) {
-                    //doViewFlightReservationDetails();
+                    doViewFlightReservationDetails();
                 } else if (response == 4) {
                     break;
                 } else {
@@ -204,8 +220,7 @@ public class HolidayReservationSystemClient {
                 }
             }
             
-            /*
-            if (isLogin) {
+            
                 System.out.println("\nDo you want to reserve a flight? (Y/N)> ");
                 response = scanner.nextLine().trim();
                 if (response.equalsIgnoreCase("N")) {
@@ -252,9 +267,9 @@ public class HolidayReservationSystemClient {
                 }
 
                 doReserveFlight(o1, o2, i1, i2, cabinClassName, numPasengers);
-            }
             
-            */
+            
+            
         } catch (ParseException ex) {
             Logger.getLogger(HolidayReservationSystemClient.class.getName()).log(Level.SEVERE, null, ex);
         } 
@@ -358,6 +373,8 @@ public class HolidayReservationSystemClient {
         
     }
     
+    
+    //helper methods
     public static List<ws.holiday.FsPair> getListOfConnectingFlightSchedules(String origin, String destination, String date, CabinClassNameEnum cabinclassname) throws FlightNotFoundException_Exception, ParseException_Exception {
         HolidayReservationSystemWebService_Service service = new HolidayReservationSystemWebService_Service();
         HolidayReservationSystemWebService port = service.getHolidayReservationSystemWebServicePort();
@@ -513,7 +530,7 @@ public class HolidayReservationSystemClient {
         HolidayReservationSystemWebService port = service.getHolidayReservationSystemWebServicePort();
         return port.highestFare(flightschedule, cabinclassname);
     }
-    /*
+    
     private void doReserveFlight(Long outbound1, Long outbound2, Long inbound1, Long inbound2, CabinClassNameEnum cabinClassType, int noOfPassengers) {
         //try {
             Scanner scanner = new Scanner(System.in);
@@ -540,36 +557,44 @@ public class HolidayReservationSystemClient {
                 pricePerPerson = pricePerPerson.add(fare.getFare());
             }
             
-            Itinerary finalItinerary = finaliseItinerary(itinerary, pricePerPerson, noOfPassengers, flightSchedules, seatSelections, reservations, currentCustomer.getCustomerId());
-            System.out.println("Reservation Itinerary with Booking ID: " + finalItinerary.getItineraryID() + " created successfully for Customer " + currentCustomer.getCustomerId() + "!\n");
+            Itinerary finalItinerary = finaliseItinerary(itinerary, pricePerPerson, noOfPassengers, flightSchedules, seatSelections, reservations, currentPartner);
+            System.out.println("Reservation Itinerary with Booking ID: " + finalItinerary.getItineraryID() + " created successfully for Customer " + "!\n");
     }
+    
+    
     
     private void processFlightLeg(Long flightScheduleId, CabinClassNameEnum cabinClassType, int noOfPassengers, 
                               List<FlightSchedule> flightSchedules, List<List<String>> seatSelections, 
                               List<Fare> fares, List<SeatInventory> seats, List<FlightReservation> reservations) {
         
         try {
-            FlightSchedule flightSchedule = flightScheduleSessionBeanRemote.retrieveFlightScheduleById(flightScheduleId);
+            FlightSchedule flightSchedule = retrieveFlightScheduleById(flightScheduleId);
             flightSchedules.add(flightSchedule);
             
             System.out.println("Seat Selection for flight " + flightSchedule.getFlightSchedulePlan().getFlightNumber());
             SeatInventory seatInventory = (cabinClassType == null) ?
                     getSelectedSeatInventory(flightSchedule) :
-                    flightScheduleSessionBeanRemote.getValidSeatInventory(flightSchedule, cabinClassType);
+                    getValidSeatInventory(flightSchedule, cabinClassType);
             seats.add(seatInventory);
             
-            Fare fare = flightScheduleSessionBeanRemote.lowestFare(flightSchedule, seatInventory.getCabinClass().getCabinClassName());
+            Fare fare = highestFare(flightSchedule, seatInventory.getCabinClass().getCabinClassName());
             fares.add(fare);
             
             List<String> seatSelection = getSeatBookings(seatInventory, noOfPassengers);
             seatSelections.add(seatSelection);
             
-            FlightReservation reservation = new FlightReservation(fare.getFareBasisCode(), fare.getFare(), seatInventory.getCabinClass().getCabinClassName());
+            FlightReservation reservation = new FlightReservation();
+            reservation.setFareBasisCode(fare.getFareBasisCode());
+            reservation.setFareAmount(fare.getFare());
+            reservation.setCabinClassName(seatInventory.getCabinClass().getCabinClassName());
+            
+            // FlightReservation r = new FlightReservation(fare.getFareBasisCode(), fare.getFare(), seatInventory.getCabinClass().getCabinClassName());
+          
             reservations.add(reservation);
-        } catch (FlightScheduleNotFoundException ex) {
-            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SeatInventoryNotFoundException ex) {
-            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SeatInventoryNotFoundException_Exception ex) {
+            Logger.getLogger(HolidayReservationSystemClient.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FlightScheduleNotFoundException_Exception ex) {
+            Logger.getLogger(HolidayReservationSystemClient.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
@@ -579,7 +604,7 @@ public class HolidayReservationSystemClient {
         try {
             System.out.println("Price per person: $" + pricePerPerson + "\nTotal Amount: $" + pricePerPerson.multiply(new BigDecimal(noOfPassengers)));
             doTransaction(itinerary);
-            itinerary = itinerarySessionBeanRemote.createNewItinerary(itinerary, customerId);
+            itinerary = createNewItinerary(itinerary, customerId);
             
             List<Passenger> passengers = obtainPassengerDetails(noOfPassengers);
             
@@ -590,49 +615,46 @@ public class HolidayReservationSystemClient {
                 }
                 
                 //System.out.println(passengers.get(0).getFirstName() + passengers.get(0).getLastName() + passengers.get(0).getPassportNumber()+ passengers.get(0).getSeatNumber());
-                flightReservationSessionBeanRemote.createNewReservation(reservations.get(i), passengers, flightSchedules.get(i).getFlightScheduleId(), itinerary.getItineraryID());
+                createNewReservation(reservations.get(i), passengers, flightSchedules.get(i).getFlightScheduleId(), itinerary.getItineraryID());
             }
 
-        } catch (UnknownPersistenceException ex) {
-            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (CustomerNotFoundException ex) {
-            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ItineraryExistException ex) {
-            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (FlightReservationExistException ex) {
-            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (FlightScheduleNotFoundException ex) {
-            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SeatInventoryNotFoundException ex) {
-            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SeatsBookedException ex) {
-            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ItineraryNotFoundException ex) {
-            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FlightReservationExistException_Exception ex) {
+            Logger.getLogger(HolidayReservationSystemClient.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnknownPersistenceException_Exception ex) {
+            Logger.getLogger(HolidayReservationSystemClient.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FlightScheduleNotFoundException_Exception ex) {
+            Logger.getLogger(HolidayReservationSystemClient.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SeatInventoryNotFoundException_Exception ex) {
+            Logger.getLogger(HolidayReservationSystemClient.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SeatsBookedException_Exception ex) {
+            Logger.getLogger(HolidayReservationSystemClient.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ItineraryNotFoundException_Exception ex) {
+            Logger.getLogger(HolidayReservationSystemClient.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (PersonNotFoundException_Exception ex) {
+            Logger.getLogger(HolidayReservationSystemClient.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ItineraryExistException_Exception ex) {
+            Logger.getLogger(HolidayReservationSystemClient.class.getName()).log(Level.SEVERE, null, ex);
         }
         return itinerary;
     }
 
     private void doTransaction(Itinerary itinerary) {
-        try {
-            Scanner scanner = new Scanner(System.in);
-            System.out.print("Enter Credit Card Number> ");
-            String creditCardNum = scanner.nextLine().trim();
-            
-            SimpleDateFormat formatter = new SimpleDateFormat("dd/M/yyyy");
-            SimpleDateFormat outputFormatter = new SimpleDateFormat("dd/M/yyyy");
-            
-            System.out.print("Enter Expiry Date (dd/mm/yyyy)> ");
-            Date expiryDate = formatter.parse(scanner.nextLine().trim());
-            
-            System.out.print("Enter cvv> ");
-            String cvv = scanner.nextLine().trim();
-            itinerary.setCreditCardNumber(creditCardNum); 
-            itinerary.setExpiryDate(expiryDate);
-            itinerary.setCvv(cvv);
-        } catch (ParseException ex) {
-            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
-        }  
+        
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter Credit Card Number> ");
+        String creditCardNum = scanner.nextLine().trim();
+
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/M/yyyy");
+        SimpleDateFormat outputFormatter = new SimpleDateFormat("dd/M/yyyy");
+
+        System.out.print("Enter Expiry Date (dd/mm/yyyy)> ");
+        String expiryDate = scanner.nextLine().trim();
+
+        System.out.print("Enter cvv> ");
+        String cvv = scanner.nextLine().trim();
+        itinerary.setCreditCardNumber(creditCardNum); 
+        itinerary.setExpiryDate(expiryDate);
+        itinerary.setCvv(cvv);
     }
     
     private List<Passenger> obtainPassengerDetails(int noOfPassengers) {
@@ -694,13 +716,22 @@ public class HolidayReservationSystemClient {
         int totalAvailSeats = seatInventory.getAvailableSeats();
         int totalReservedSeats = seatInventory.getReserveSeats();
         int totalBalanceSeats = seatInventory.getBalanceSeats();
+        
+   
+        char[][] seats = new char[seatInventory.getCabinClass().getNumRows()][seatInventory.getCabinClass().getNumSeatsAbreast()];
 
-        char[][] seats = seatInventory.getSeats();
+        for(int i = 0; i < seats.length; i++) {
+            List<Integer> list = seatInventory.getSeats().get(i).getItem();
+            for(int j = 0; j < seats[0].length; j++) {
+                seats[i][j] = (char) list.get(j).intValue();
+            }
+        }
+        
         String cabinClassConfig = seatInventory.getCabinClass().getSeatConfiguration();
 
-        //Display Seats
+        
         String type = "";
-        if (seatInventory.getCabinClass().getCabinClassName() != null)
+        if (null != seatInventory.getCabinClass().getCabinClassName()) {
             switch (seatInventory.getCabinClass().getCabinClassName()) {
                 case FIRST:
                     type = "First Class";
@@ -717,6 +748,7 @@ public class HolidayReservationSystemClient {
                 default:
                     break;
             }
+        }
 
         System.out.println(" -- " + type + " -- ");
         System.out.print("Row  ");
@@ -726,7 +758,7 @@ public class HolidayReservationSystemClient {
             if (Character.isDigit(cabinClassConfig.charAt(i))) {
                 no += Integer.parseInt(String.valueOf(cabinClassConfig.charAt(i)));
                 while (count < no) {
-                    System.out.print((char)('A' + count) + "  ");
+                    System.out.print((char) ('A' + count) + "  ");
                     count++;
                 }
             } else {
@@ -736,7 +768,7 @@ public class HolidayReservationSystemClient {
         System.out.println();
 
         for (int j = 0; j < seats.length; j++) {
-            System.out.printf("%-5s", String.valueOf(j+1));
+            System.out.printf("%-5s", String.valueOf(j + 1));
             int count2 = 0;
             int no2 = 0;
             for (int i = 0; i < cabinClassConfig.length(); i++) {
@@ -758,14 +790,14 @@ public class HolidayReservationSystemClient {
         System.out.println("Number of balance seats: " + totalBalanceSeats);
 
         List<String> seatSelection = new ArrayList<>();
-//        while (true) {        
+      
             for (int i = 0; i < noOfPassengers; i++) {                   
                 String seatNumber;
-                //int a = 0;
+                
                 while (true) {
                     System.out.print("\nEnter seat to reserve for Passenger " +  (i + 1) + "(Eg. A1)> ");
                     seatNumber = sc.nextLine().trim();
-                    boolean booked = seatInventorySessionBeanRemote.checkAvailability(seatInventory, seatNumber);
+                    boolean booked = checkAvailability(seatInventory, seatNumber);
                     if (booked) {
                         System.out.println("Seat taken!\nPlease select another seat");
                     } else if (seatSelection.contains(seatNumber)) {
@@ -777,13 +809,13 @@ public class HolidayReservationSystemClient {
                 seatSelection.add(seatNumber);
                 
             }
-            return seatSelection;          
+        return seatSelection;   
     }
     
     private void doViewFlightReservation() {
         Scanner sc = new Scanner(System.in);
         System.out.println("*** View Flight Reservations ***\n");
-        List<Itinerary> list = itinerarySessionBeanRemote.retrieveItinerariesByCustomerId(currentCustomer.getCustomerId());
+        List<Itinerary> list = retrieveItinerariesByPartnerId(currentPartner);
         System.out.printf("%-20s%-30s%-20s%-20s%-30s%-25s\n", "Itinerary ID", "Flight Reservation ID", "Flight Number", "Trip", "Departure Date Time", "Flight Duration");
         
         for (Itinerary itinerary : list) {
@@ -819,7 +851,7 @@ public class HolidayReservationSystemClient {
             long id = sc.nextLong();
             sc.nextLine();
             System.out.println();
-            Itinerary itinerary = itinerarySessionBeanRemote.retrieveItineraryByID(id);
+            Itinerary itinerary = retreiveItineraryById(id);
             
             BigDecimal totalPaid = new BigDecimal(0);
             int idx = 1;
@@ -871,11 +903,64 @@ public class HolidayReservationSystemClient {
             System.out.print("Press any key to continue...> ");
             sc.nextLine();
                 
-        } catch (ItineraryNotFoundException ex) {
-            System.out.println("Error: " + ex.getMessage() + "\nPlease try again!\n");
+        } catch (ItineraryNotFoundException_Exception ex) {
+            Logger.getLogger(HolidayReservationSystemClient.class.getName()).log(Level.SEVERE, null, ex);
         }
-
         
-    }*/
+    }
+    private static FlightSchedule retrieveFlightScheduleById(long flightscheduleid) throws FlightScheduleNotFoundException_Exception {
+        HolidayReservationSystemWebService_Service service = new HolidayReservationSystemWebService_Service();
+        HolidayReservationSystemWebService port = service.getHolidayReservationSystemWebServicePort();
+        return port.retrieveFlightScheduleById(flightscheduleid);
+    }
+    
+    private static long createNewReservation(ws.holiday.FlightReservation flightreservation, java.util.List<ws.holiday.Passenger> passengers, long flightscheduleid, long itineraryid) throws 
+            FlightReservationExistException_Exception,
+            UnknownPersistenceException_Exception,
+            FlightScheduleNotFoundException_Exception,
+            SeatInventoryNotFoundException_Exception,
+            SeatsBookedException_Exception,
+            ItineraryNotFoundException_Exception {
+        HolidayReservationSystemWebService_Service service = new HolidayReservationSystemWebService_Service();
+        HolidayReservationSystemWebService port = service.getHolidayReservationSystemWebServicePort();
+        return port.createNewReservation(flightreservation, passengers, flightscheduleid, itineraryid);
+    }
+    
+    private static Itinerary createNewItinerary(ws.holiday.Itinerary itinerary, long partnerid) throws 
+            UnknownPersistenceException_Exception,
+            PersonNotFoundException_Exception,
+            ItineraryExistException_Exception
+            {
+        HolidayReservationSystemWebService_Service service = new HolidayReservationSystemWebService_Service();
+        HolidayReservationSystemWebService port = service.getHolidayReservationSystemWebServicePort();
+        return port.createNewItinerary(itinerary, partnerid);
+    }
+
+    private static java.util.List<ws.holiday.Itinerary> retrieveItinerariesByPartnerId(long partnerid) {
+        HolidayReservationSystemWebService_Service service = new HolidayReservationSystemWebService_Service();
+        HolidayReservationSystemWebService port = service.getHolidayReservationSystemWebServicePort();
+        return port.retrieveItinerariesByPartnerId(partnerid);
+    }
+
+    private static Itinerary retreiveItineraryById(long itineraryid) throws ItineraryNotFoundException_Exception {
+        HolidayReservationSystemWebService_Service service = new HolidayReservationSystemWebService_Service();
+        HolidayReservationSystemWebService port = service.getHolidayReservationSystemWebServicePort();
+        return port.retreiveItineraryById(itineraryid);
+    }
+    
+    private static SeatInventory getValidSeatInventory(ws.holiday.FlightSchedule flightschedule, ws.holiday.CabinClassNameEnum cabinclasstype) throws 
+            SeatInventoryNotFoundException_Exception,
+            FlightScheduleNotFoundException_Exception {
+        HolidayReservationSystemWebService_Service service = new HolidayReservationSystemWebService_Service();
+        HolidayReservationSystemWebService port = service.getHolidayReservationSystemWebServicePort();
+        return port.getValidSeatInventory(flightschedule, cabinclasstype);
+    }
+    
+    private static boolean checkAvailability(ws.holiday.SeatInventory seatinventory, java.lang.String seatnumber) {
+        HolidayReservationSystemWebService_Service service = new HolidayReservationSystemWebService_Service();
+        HolidayReservationSystemWebService port = service.getHolidayReservationSystemWebServicePort();
+        return port.checkAvailability(seatinventory, seatnumber);
+    }
+    
 
 }

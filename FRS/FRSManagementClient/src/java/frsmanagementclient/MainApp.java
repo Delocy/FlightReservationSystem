@@ -1415,7 +1415,7 @@ public class MainApp {
                         Passenger pass = pair.getKey();
                         String fareCode = pair.getValue();
                         System.out.printf("%-30s%-20s%-30s\n",
-                                pass.getFirstName() + pass.getLastName(),
+                                pass.getFirstName() + " " + pass.getLastName(),
                                 pass.getSeatNumber(),
                                 fareCode);
                     }

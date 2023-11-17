@@ -47,4 +47,7 @@ public interface FlightScheduleSessionBeanRemote {
     public List<Pair<FlightSchedule, FlightSchedule>> retrieveConnectingFlightSchedulesDetach(String originAirport, String destAirport, Date departureDate, CabinClassNameEnum cabinClassName) throws FlightNotFoundException;
 
     public List<FlightSchedule> retrieveListOfFlightScheduleDetach(String originAirport, String destAirport, Date departureDate, CabinClassNameEnum cabinClassName) throws FlightNotFoundException;
+    public SeatInventory getValidSeatInventoryDetached(FlightSchedule schedule, CabinClassNameEnum cabinClassType) throws FlightScheduleNotFoundException, SeatInventoryNotFoundException;
+
+    public FlightSchedule retrieveFlightScheduleByIdDetached(Long flightScheduleID) throws FlightScheduleNotFoundException;
 }

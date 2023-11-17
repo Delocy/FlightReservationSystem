@@ -84,6 +84,19 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
     }
     
     @Override
+    public FlightSchedule retrieveFlightScheduleByIdDetached(Long flightScheduleID) throws FlightScheduleNotFoundException {
+        FlightSchedule schedule = em.find(FlightSchedule.class, flightScheduleID);
+        
+        if(schedule != null) {
+            em.detach(schedule);
+            return schedule;
+        } else {
+            throw new FlightScheduleNotFoundException("Flight Schedule " + flightScheduleID + " not found!");      
+        }
+        
+    }
+    
+    @Override
     public List<FlightSchedule> retrieveListOfFlightSchedule(String originAirport, String destAirport, Date departureDate, CabinClassNameEnum cabinClassName) throws FlightNotFoundException {
         List<FlightSchedule> schedules;
         schedules = new ArrayList<>();
@@ -472,4 +485,17 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
         }
         throw new SeatInventoryNotFoundException("Seat inventory not found");
     }
+    
+    @Override
+    public SeatInventory getValidSeatInventoryDetached(FlightSchedule schedule, CabinClassNameEnum cabinClassType) throws FlightScheduleNotFoundException, SeatInventoryNotFoundException {
+        FlightSchedule latestSchedule = retrieveFlightScheduleById(schedule.getFlightScheduleId());
+        for (SeatInventory seatInventory : latestSchedule.getSeatInventory()) {
+            if (seatInventory.getCabinClass().getCabinClassName() == cabinClassType) {
+                em.detach(seatInventory);
+                return seatInventory;
+            }
+        }
+        throw new SeatInventoryNotFoundException("Seat inventory not found");
+    }
+   
 }

@@ -41,6 +41,7 @@ import util.exception.FlightScheduleNotFoundException;
 import util.exception.InvalidLoginCredentialException;
 import util.exception.ItineraryExistException;
 import util.exception.ItineraryNotFoundException;
+import util.exception.PersonNotFoundException;
 import util.exception.SeatInventoryNotFoundException;
 import util.exception.SeatsBookedException;
 import util.exception.UnknownPersistenceException;
@@ -180,6 +181,7 @@ public class MainApp {
             
             Long customerId = customerSessionBeanRemote.createNewCustomer(customer);
             currentCustomer = customerSessionBeanRemote.retrieveCustomerByCustomerId(customerId);
+            isLogin = true;
             menuMain();
         } catch (UnknownPersistenceException ex) {
             Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
@@ -610,8 +612,8 @@ public class MainApp {
                 pricePerPerson = pricePerPerson.add(fare.getFare());
             }
             
-            Itinerary finalItinerary = finaliseItinerary(itinerary, pricePerPerson, noOfPassengers, flightSchedules, seatSelections, reservations, currentCustomer.getCustomerId());
-            System.out.println("Reservation Itinerary with Booking ID: " + finalItinerary.getItineraryID() + " created successfully for Customer " + currentCustomer.getCustomerId() + "!\n");
+            Itinerary finalItinerary = finaliseItinerary(itinerary, pricePerPerson, noOfPassengers, flightSchedules, seatSelections, reservations, currentCustomer.getPersonId());
+            System.out.println("Reservation Itinerary with Booking ID: " + finalItinerary.getItineraryID() + " created successfully for Customer " + currentCustomer.getPersonId() + "!\n");
     }
     
     private void processFlightLeg(Long flightScheduleId, CabinClassNameEnum cabinClassType, int noOfPassengers, 
@@ -665,7 +667,7 @@ public class MainApp {
 
         } catch (UnknownPersistenceException ex) {
             Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (CustomerNotFoundException ex) {
+        } catch (PersonNotFoundException ex) {
             Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ItineraryExistException ex) {
             Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
@@ -684,25 +686,22 @@ public class MainApp {
     }
 
     private void doTransaction(Itinerary itinerary) {
-        try {
-            Scanner scanner = new Scanner(System.in);
-            System.out.print("Enter Credit Card Number> ");
-            String creditCardNum = scanner.nextLine().trim();
-            
-            SimpleDateFormat formatter = new SimpleDateFormat("dd/M/yyyy");
-            SimpleDateFormat outputFormatter = new SimpleDateFormat("dd/M/yyyy");
-            
-            System.out.print("Enter Expiry Date (dd/mm/yyyy)> ");
-            Date expiryDate = formatter.parse(scanner.nextLine().trim());
-            
-            System.out.print("Enter cvv> ");
-            String cvv = scanner.nextLine().trim();
-            itinerary.setCreditCardNumber(creditCardNum); 
-            itinerary.setExpiryDate(expiryDate);
-            itinerary.setCvv(cvv);
-        } catch (ParseException ex) {
-            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
-        }  
+        
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter Credit Card Number> ");
+        String creditCardNum = scanner.nextLine().trim();
+
+        //SimpleDateFormat formatter = new SimpleDateFormat("dd/M/yyyy");
+        // SimpleDateFormat outputFormatter = new SimpleDateFormat("dd/M/yyyy");
+
+        System.out.print("Enter Expiry Date (dd/mm/yyyy)> ");
+        String expiryDate = scanner.nextLine().trim();
+
+        System.out.print("Enter cvv> ");
+        String cvv = scanner.nextLine().trim();
+        itinerary.setCreditCardNumber(creditCardNum); 
+        itinerary.setExpiryDate(expiryDate);
+        itinerary.setCvv(cvv);
     }
     
     private List<Passenger> obtainPassengerDetails(int noOfPassengers) {
@@ -853,7 +852,7 @@ public class MainApp {
     private void doViewFlightReservation() {
         Scanner sc = new Scanner(System.in);
         System.out.println("*** View Flight Reservations ***\n");
-        List<Itinerary> list = itinerarySessionBeanRemote.retrieveItinerariesByCustomerId(currentCustomer.getCustomerId());
+        List<Itinerary> list = itinerarySessionBeanRemote.retrieveItinerariesByPersonId(currentCustomer.getPersonId());
         System.out.printf("%-20s%-30s%-20s%-20s%-30s%-25s\n", "Itinerary ID", "Flight Reservation ID", "Flight Number", "Trip", "Departure Date Time", "Flight Duration");
         
         for (Itinerary itinerary : list) {
