@@ -663,8 +663,14 @@ public class MainApp {
     
     private void doDeleteFlight(Long flightId) throws FlightNotFoundException {
         Flight flight = flightSessionBeanRemote.retrieveFlightByFlightID(flightId);
+        
         flightSessionBeanRemote.deleteFlight(flightId);
-        System.out.println("Successfully deleted flight " + flight.getFlightNumber());
+        
+        if (flight.getFlightSchedulePlan() != null) {
+            System.out.println("Successfully disabled flight");
+        } else {
+            System.out.println("Successfully deleted flight " + flight.getFlightNumber());
+        } 
     }
     
     private void doCreateAircraftConfig() {

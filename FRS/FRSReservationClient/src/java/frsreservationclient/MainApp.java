@@ -490,7 +490,7 @@ public class MainApp {
                             arrivalDate.toString().substring(0, 19),
                             s.getCabinClass().getCabinClassName(),
                             s.getBalanceSeats(),
-                            flightScheduleSessionBeanRemote.lowestFare(fs, cabinClassName).getFare(),
+                            flightScheduleSessionBeanRemote.lowestFare(fs, s.getCabinClass().getCabinClassName()).getFare(),
                             flightScheduleSessionBeanRemote.lowestFare(fs, s.getCabinClass().getCabinClassName()).getFare().multiply(BigDecimal.valueOf(numPassenger))
                         );
 

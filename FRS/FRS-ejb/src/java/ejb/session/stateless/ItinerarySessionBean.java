@@ -140,6 +140,7 @@ public class ItinerarySessionBean implements ItinerarySessionBeanRemote, Itinera
                     }
                     
                     for (SeatInventory seatInventory : res.getFlightSchedule().getSeatInventory()) {
+                        em.detach(seatInventory.getCabinClass());
                         em.detach(seatInventory);
                     }
                 }
@@ -178,6 +179,7 @@ public class ItinerarySessionBean implements ItinerarySessionBeanRemote, Itinera
                     }
                     
                     for (SeatInventory seatInventory : res.getFlightSchedule().getSeatInventory()) {
+                        em.detach(seatInventory.getCabinClass());
                         em.detach(seatInventory);
                     }
                 }

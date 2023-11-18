@@ -619,6 +619,7 @@ public class HolidayReservationSystemClient {
                 //System.out.println(passengers.get(0).getFirstName() + passengers.get(0).getLastName() + passengers.get(0).getPassportNumber()+ passengers.get(0).getSeatNumber());
                 createNewReservation(reservations.get(i), passengers, flightSchedules.get(i).getFlightScheduleId(), itinerary.getItineraryID());
             }
+            
 
         } catch (FlightReservationExistException_Exception ex) {
             Logger.getLogger(HolidayReservationSystemClient.class.getName()).log(Level.SEVERE, null, ex);

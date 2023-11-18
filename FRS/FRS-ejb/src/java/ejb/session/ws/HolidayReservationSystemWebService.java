@@ -264,11 +264,11 @@ public class HolidayReservationSystemWebService {
     }
     
     @WebMethod(operationName = "retrieveItinerariesByPartnerId")
-    public List<Itinerary> retrieveItinerariesByCustomerId(@WebParam(name = "partnerid") long partnerid) {
+    public List<Itinerary> retrieveItinerariesByPartnerId(@WebParam(name = "partnerid") long partnerid) {
         List<Itinerary> list = itinerarySessionBeanLocal.retrieveItinerariesByPersonIdDetached(partnerid);
         for (Itinerary itinerary: list) {
-            //itinerary.getPerson().setItineraries(null);
-            itinerary.setPerson(null);
+            itinerary.getPerson().setItineraries(null);
+            //itinerary.setPerson(null);
             for (FlightReservation res: itinerary.getReservations()) {
                 res.setItinerary(null);
                 res.getFlightSchedule().setReservations(null);
