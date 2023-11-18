@@ -29,5 +29,7 @@ public interface ItinerarySessionBeanLocal {
     public List<Itinerary> retrieveItinerariesByPersonId(Long personId);
 
     public List<Itinerary> retrieveItinerariesByPersonIdDetached(Long personId);
+
+    public Itinerary createNewItineraryDetached(Itinerary itinerary, long custId) throws UnknownPersistenceException, PersonNotFoundException, ItineraryExistException;
     
 }

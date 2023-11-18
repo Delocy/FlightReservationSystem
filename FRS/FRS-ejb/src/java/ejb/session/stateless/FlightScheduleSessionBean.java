@@ -90,16 +90,26 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
         FlightSchedulePlan plan = schedule.getFlightSchedulePlan();
         List<SeatInventory> seats = schedule.getSeatInventory();
         List<FlightReservation> reservations = schedule.getReservations();
+        List<Fare> fares = plan.getFares();
         
         if(schedule != null) {
+            
             em.detach(schedule);
             em.detach(plan);
+            em.detach(plan.getFlight().getFlightRoute());
+            em.detach(plan.getFlight());
             for (SeatInventory seat : seats) {
                 em.detach(seat);
             }
+            
             for (FlightReservation res : reservations) {
                 em.detach(res);
             }
+            
+            for (Fare fare : fares) {
+                em.detach(fare);
+            }
+            
             return schedule;
         } else {
             throw new FlightScheduleNotFoundException("Flight Schedule " + flightScheduleID + " not found!");      
@@ -191,7 +201,10 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
                     
                     if (include) {
                         em.detach(fs);
+                        em.detach(fs.getFlightSchedulePlan().getFlight().getFlightRoute());
+                        em.detach(fs.getFlightSchedulePlan().getFlight());
                         em.detach(fs.getFlightSchedulePlan());
+                        
                         List<FlightReservation> reservations = fs.getReservations();
                         for (FlightReservation res : reservations) {
                             em.detach(res);
@@ -199,6 +212,11 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
                         List<SeatInventory> seats = fs.getSeatInventory();
                         for (SeatInventory seat : seats) {
                             em.detach(seat);
+                        }
+                        
+                        List<Fare> fares = fs.getFlightSchedulePlan().getFares();
+                        for (Fare fare : fares) {
+                            em.detach(fare);
                         }
                         schedules.add(fs);
                     }
@@ -365,6 +383,8 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
 
                             if (include) {
                                 em.detach(fs);
+                                em.detach(fs.getFlightSchedulePlan().getFlight().getFlightRoute());
+                                em.detach(fs.getFlightSchedulePlan().getFlight());
                                 em.detach(fs.getFlightSchedulePlan());
                                 List<FlightReservation> reservations = fs.getReservations();
                                 for (FlightReservation res : reservations) {
@@ -374,16 +394,42 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
                                 for (SeatInventory seat : seats) {
                                     em.detach(seat);
                                 }
+
+                                List<Fare> fares = fs.getFlightSchedulePlan().getFares();
+                                for (Fare fare : fares) {
+                                    em.detach(fare);
+                                }
+                                
+//                                em.detach(fs);
+//                                em.detach(fs.getFlightSchedulePlan());
+//                                List<FlightReservation> reservations = fs.getReservations();
+//                                for (FlightReservation res : reservations) {
+//                                    em.detach(res);
+//                                }
+//                                List<SeatInventory> seats = fs.getSeatInventory();
+//                                for (SeatInventory seat : seats) {
+//                                    em.detach(seat);
+//                                }
+                                reservations.clear();
+                                seats.clear();
+                                fares.clear();
                                 
                                 em.detach(fs2);
+                                em.detach(fs2.getFlightSchedulePlan().getFlight().getFlightRoute());
+                                em.detach(fs2.getFlightSchedulePlan().getFlight());
                                 em.detach(fs2.getFlightSchedulePlan());
-                                List<FlightReservation> r2 = fs2.getReservations();
-                                for (FlightReservation res : r2) {
+                                reservations = fs2.getReservations();
+                                for (FlightReservation res : reservations) {
                                     em.detach(res);
                                 }
-                                List<SeatInventory> seats2 = fs2.getSeatInventory();
-                                for (SeatInventory seat : seats2) {
+                                seats = fs2.getSeatInventory();
+                                for (SeatInventory seat : seats) {
                                     em.detach(seat);
+                                }
+
+                                fares = fs2.getFlightSchedulePlan().getFares();
+                                for (Fare fare : fares) {
+                                    em.detach(fare);
                                 }
                                 schedules.add(new Pair(fs, fs2));
                             }
@@ -536,7 +582,9 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
         }
         List<SeatInventory> seats = latestSchedule.getSeatInventory();
         for (SeatInventory seat : seats) {
+            em.detach(seat.getCabinClass());
             em.detach(seat);
+            
         }
         
         for (SeatInventory seatInventory : latestSchedule.getSeatInventory()) {

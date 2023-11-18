@@ -127,9 +127,9 @@ public class HolidayReservationSystemClient {
                 if(response == 1) {
                     doSearchFlight();
                 } else if(response == 2) {
-                    //doViewFlightReservation();
+                    doViewFlightReservation();
                 } else if (response == 3) {
-                    //doViewFlightReservationDetails();
+                    doViewFlightReservationDetails();
                 } else if (response == 4) {
                     break;
                 } else {

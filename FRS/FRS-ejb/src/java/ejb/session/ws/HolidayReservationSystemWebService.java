@@ -12,6 +12,7 @@ import ejb.session.stateless.SeatInventorySessionBeanLocal;
 import entity.Fare;
 import entity.FlightReservation;
 import entity.FlightSchedule;
+import entity.FlightSchedulePlan;
 import entity.Itinerary;
 import entity.Partner;
 import entity.Passenger;
@@ -81,6 +82,11 @@ public class HolidayReservationSystemWebService {
         List<FlightSchedule> schedules = flightScheduleSessionBeanLocal.retrieveListOfFlightScheduleDetach(origin, destination, departureDate, cabinclassname);
         for (FlightSchedule fs : schedules) {
             fs.getFlightSchedulePlan().getFlight().getFlightRoute().setFlights(null);
+            
+            // TRIALLLLL
+//            for (FlightSchedulePlan fsp : fs.getFlightSchedulePlan().getFlight().getFlightSchedulePlan()) {
+//                fsp.setFlight(null);
+//            }
             fs.getFlightSchedulePlan().getFlight().setFlightSchedulePlan(null);
             fs.getFlightSchedulePlan().getFlight().setReturningFlight(null);
             fs.getFlightSchedulePlan().getFlight().setOriginalFlight(null);
@@ -228,8 +234,8 @@ public class HolidayReservationSystemWebService {
             ItineraryNotFoundException,
             FlightReservationNotFoundException {
         
-        Long id = flightReservationSessionBeanLocal.createNewReservation(flightreservation, passengers, flightscheduleid, itineraryid);
-        FlightReservation fr = flightReservationSessionBeanLocal.retrieveFlightReservationByReserverationId(id);
+        Long id = flightReservationSessionBeanLocal.createNewReservationDetached(flightreservation, passengers, flightscheduleid, itineraryid);
+        //FlightReservation fr = flightReservationSessionBeanLocal.retrieveFlightReservationByReserverationId(id);
 //        fr.setFlightSchedule(null);
 //        fr.setItinerary(null);
 
@@ -261,7 +267,7 @@ public class HolidayReservationSystemWebService {
     public List<Itinerary> retrieveItinerariesByCustomerId(@WebParam(name = "partnerid") long partnerid) {
         List<Itinerary> list = itinerarySessionBeanLocal.retrieveItinerariesByPersonIdDetached(partnerid);
         for (Itinerary itinerary: list) {
-            itinerary.getPerson().setItineraries(null);
+            //itinerary.getPerson().setItineraries(null);
             itinerary.setPerson(null);
             for (FlightReservation res: itinerary.getReservations()) {
                 res.setItinerary(null);
@@ -291,7 +297,7 @@ public class HolidayReservationSystemWebService {
     public Itinerary retrieveItineraryById(@WebParam(name = "itineraryid") long itineraryid) throws ItineraryNotFoundException {
        Itinerary itinerary = itinerarySessionBeanLocal.retrieveItineraryByIDDetached(itineraryid);
        itinerary.getPerson().setItineraries(null);
-       itinerary.setPerson(null);
+       //itinerary.setPerson(null);
         for (FlightReservation res: itinerary.getReservations()) {
             res.setItinerary(null);
             res.getFlightSchedule().setReservations(null);
