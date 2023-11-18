@@ -55,7 +55,6 @@ public class AircraftConfigSessionBean implements AircraftConfigSessionBeanRemot
             int seatCapacity = 0;
             for (CabinClassConfig c : cabins) {
                 seatCapacity += c.getMaxSeatCapacity();
-                em.persist(c);
                 cabinClassConfigSessionBeanLocal.createCabinClass(c, aircraftConfig);
             }
             
