@@ -436,7 +436,7 @@ public class MainApp {
             System.out.println("\n************** Flights 2 Days Before Selected Date **************");
             printFlightScheduleWithConnecting(outbound2Before, numPassenger, cabinClassName);
             System.out.println("\n************** Flights 3 Days Before Selected Date **************");
-            printFlightScheduleWithConnecting(outbound2Before, numPassenger, cabinClassName);
+            printFlightScheduleWithConnecting(outbound3Before, numPassenger, cabinClassName);
             System.out.println("\n************** Flights 1 Day After Selected Date **************");
             printFlightScheduleWithConnecting(outbound1After, numPassenger, cabinClassName);
             System.out.println("\n************** Flights 2 Days After Selected Date **************");
@@ -479,7 +479,7 @@ public class MainApp {
             Date arrivalDate = c.getTime();
             
             for (SeatInventory s : fs.getSeatInventory()) {
-                if (s.getCabinClass().getCabinClassName().equals(cabinClassName) || cabinClassName == null)  {
+                if ((s.getCabinClass().getCabinClassName().equals(cabinClassName) || cabinClassName == null) && s.getBalanceSeats() >= numPassenger  )  {
                     try {
                         System.out.printf("%15s%20s%30s%30s%40s%20s%20s%20s%30s%25s%25s\n", fs.getFlightScheduleId(),
                             fs.getFlightSchedulePlan().getFlightNumber(),
@@ -554,8 +554,8 @@ public class MainApp {
             for (SeatInventory seats1 : fs1.getSeatInventory()) {
                 for (SeatInventory seats2 : fs2.getSeatInventory()) {
                     // DO ON BOTH SIDES
-                    if ((seats1.getCabinClass().getCabinClassName().equals(cabinClassName) || cabinClassName == null) 
-                        && (seats2.getCabinClass().getCabinClassName().equals(cabinClassName) || cabinClassName == null)) {
+                    if (((seats1.getCabinClass().getCabinClassName().equals(cabinClassName) || cabinClassName == null) && seats1.getBalanceSeats() >= numPassengers ) 
+                        && ((seats2.getCabinClass().getCabinClassName().equals(cabinClassName) || cabinClassName == null) && seats2.getBalanceSeats() >= numPassengers)) {
                     System.out.printf("%15s%20s%40s%40s%30s%20s%30s%30s%30s%25s%25s%25s%30s%45s%45s%40s%20s%30s%30s%30s%25s%25s\n", fs1.getFlightScheduleId(), 
                         fs1.getFlightSchedulePlan().getFlightNumber(), 
                         fs1.getFlightSchedulePlan().getFlight().getFlightRoute().getOriginAirport().getAirportName(), 
@@ -613,7 +613,7 @@ public class MainApp {
             }
             
             Itinerary finalItinerary = finaliseItinerary(itinerary, pricePerPerson, noOfPassengers, flightSchedules, seatSelections, reservations, currentCustomer.getPersonId());
-            System.out.println("Reservation Itinerary with Booking ID: " + finalItinerary.getItineraryID() + " created successfully for Customer " + currentCustomer.getPersonId() + "!\n");
+            System.out.println("Reservation Itinerary with Booking ID: " + finalItinerary.getItineraryID() + " created successfully!\n");
     }
     
     private void processFlightLeg(Long flightScheduleId, CabinClassNameEnum cabinClassType, int noOfPassengers, 
@@ -634,6 +634,9 @@ public class MainApp {
             fares.add(fare);
             
             List<String> seatSelection = getSeatBookings(seatInventory, noOfPassengers);
+            if (seatSelection == null) {
+                return;
+            }
             seatSelections.add(seatSelection);
             
             FlightReservation reservation = new FlightReservation(fare.getFareBasisCode(), fare.getFare(), seatInventory.getCabinClass().getCabinClassName());
@@ -758,7 +761,7 @@ public class MainApp {
                 
     }
     
-    private List<String> getSeatBookings(SeatInventory seatInventory, int noOfPassengers) {
+        private List<String> getSeatBookings(SeatInventory seatInventory, int noOfPassengers) {
         Scanner sc = new Scanner(System.in);
         int totalAvailSeats = seatInventory.getAvailableSeats();
         int totalReservedSeats = seatInventory.getReserveSeats();
@@ -828,7 +831,11 @@ public class MainApp {
 
         List<String> seatSelection = new ArrayList<>();
 //        while (true) {        
-            for (int i = 0; i < noOfPassengers; i++) {                   
+            for (int i = 0; i < noOfPassengers; i++) {   
+                if (totalBalanceSeats == 0) {
+                    System.out.println("Error :: No seats svailable for this class!");
+                    return null;
+                }
                 String seatNumber;
                 //int a = 0;
                 while (true) {

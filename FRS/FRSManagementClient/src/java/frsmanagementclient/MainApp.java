@@ -1283,7 +1283,7 @@ public class MainApp {
             if (id == 0) {
                 return;
             }
-            Long chosenFlightScheduleId = sc.nextLong();
+            Long chosenFlightScheduleId = id;
             sc.nextLine();
             
 //            FlightSchedule flightSchedule = null;

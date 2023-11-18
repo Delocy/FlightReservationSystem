@@ -414,7 +414,7 @@ public class HolidayReservationSystemClient {
             Date arrivalDate = c.getTime();
             
             for (SeatInventory s : fs.getSeatInventory()) {
-                if (s.getCabinClass().getCabinClassName().equals(cabinClassName) || cabinClassName == null)  {
+                if ((s.getCabinClass().getCabinClassName().equals(cabinClassName) || cabinClassName == null) && s.getBalanceSeats() >= numPassenger)  {
                     try {
                         System.out.printf("%15s%20s%30s%30s%40s%20s%20s%20s%30s%25s%25s\n", fs.getFlightScheduleId(),
                             fs.getFlightSchedulePlan().getFlightNumber(),
@@ -490,8 +490,8 @@ public class HolidayReservationSystemClient {
             for (SeatInventory seats1 : fs1.getSeatInventory()) {
                 for (SeatInventory seats2 : fs2.getSeatInventory()) {
                     // DO ON BOTH SIDES
-                    if ((seats1.getCabinClass().getCabinClassName().equals(cabinClassName) || cabinClassName == null) 
-                        && (seats2.getCabinClass().getCabinClassName().equals(cabinClassName) || cabinClassName == null)) {
+                    if (((seats1.getCabinClass().getCabinClassName().equals(cabinClassName) || cabinClassName == null) && seats1.getBalanceSeats() >= numPassengers) 
+                        && ((seats2.getCabinClass().getCabinClassName().equals(cabinClassName) || cabinClassName == null) && seats2.getBalanceSeats() >= numPassengers)) {
                         try {
                             System.out.printf("%15s%20s%40s%40s%30s%20s%30s%30s%30s%25s%25s%25s%30s%45s%45s%40s%20s%30s%30s%30s%25s%25s\n", fs1.getFlightScheduleId(),
                                 fs1.getFlightSchedulePlan().getFlightNumber(),

@@ -287,15 +287,15 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
                     // here: from presentdate, set to first instance of day (eg wednesday)
                     FlightSchedule  schedule = new FlightSchedule(cal.getTime(), pair.getValue());
 //                    em.persist(schedule);
-                    flightScheduleSessionBeanLocal.createNewSchedule(schedule, plan);
+                    // flightScheduleSessionBeanLocal.createNewSchedule(schedule, plan);
                     
-                    boolean deo = false;
+                    boolean correctDay = false;
                     while(cal.get(Calendar.DAY_OF_WEEK) != recurrent) {
                         cal.add(Calendar.DATE, 1);
-                        deo = true;
+                        correctDay = true;
                     }       
             
-                    if (deo) {
+                    if (correctDay) {
                         schedule = new FlightSchedule(cal.getTime(), pair.getValue());
 //                        em.persist(schedule);
                         flightScheduleSessionBeanLocal.createNewSchedule(schedule, plan);      

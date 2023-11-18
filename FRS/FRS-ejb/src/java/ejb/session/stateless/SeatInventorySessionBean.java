@@ -75,7 +75,9 @@ public class SeatInventorySessionBean implements SeatInventorySessionBeanRemote,
             int col = seatNumber.charAt(0) - 'A';
             int row = Integer.parseInt(seatNumber.substring(1)) - 1;
             
-            if(mtx[row][col] == 'X') {
+            if (row >= mtx.length || col >= mtx[0].length ) {
+                throw new SeatInventoryNotFoundException("Out of Bounds!");
+            } else if (mtx[row][col] == 'X')  {         
                 return true;
             } 
         } catch (SeatInventoryNotFoundException ex) {
