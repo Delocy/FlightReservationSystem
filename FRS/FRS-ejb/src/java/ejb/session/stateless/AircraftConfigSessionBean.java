@@ -10,7 +10,9 @@ import entity.CabinClassConfig;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Resource;
 import javax.ejb.EJB;
+import javax.ejb.EJBContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -28,6 +30,10 @@ import util.exception.UnknownPersistenceException;
 @Stateless
 public class AircraftConfigSessionBean implements AircraftConfigSessionBeanRemote, AircraftConfigSessionBeanLocal {
 
+    
+    @Resource
+    private EJBContext eJBContext;
+    
     @EJB
     private CabinClassConfigSessionBeanLocal cabinClassConfigSessionBeanLocal;
 
@@ -42,36 +48,35 @@ public class AircraftConfigSessionBean implements AircraftConfigSessionBeanRemot
     // "Insert Code > Add Business Method")
     
     @Override
-    public Long createAircraftConfig(AircraftConfig aircraftConfig, List<CabinClassConfig> cabins, Long aircraftTypeId) throws UnknownPersistenceException {
+    public Long createAircraftConfig(AircraftConfig aircraftConfig, List<CabinClassConfig> cabins, Long aircraftTypeId) throws UnknownPersistenceException, MaxSeatCapacityExceededException, AircraftTypeNotFoundException {
         try {
             em.persist(aircraftConfig);
        
             
             AircraftType type = aircraftTypeSessionBeanLocal.retrieveAircraftTypeByAircraftTypeId(aircraftTypeId);
+            System.out.println(type.getMaxCapacity());
             aircraftConfig.setAircraftType(type);
             type.getAircraftConfig().add(aircraftConfig);
             
             
             int seatCapacity = 0;
+            System.out.println(cabins.size());
+            System.out.println();
             for (CabinClassConfig c : cabins) {
                 seatCapacity += c.getMaxSeatCapacity();
                 cabinClassConfigSessionBeanLocal.createCabinClass(c, aircraftConfig);
             }
-            
-            if (seatCapacity <= type.getMaxCapacity())  {
-                em.flush();
-                return aircraftConfig.getAircraftConfigId();
-            } else {
-                throw new MaxSeatCapacityExceededException("Cabin configuration has exceeded max seating capacity!");
+            System.out.println(seatCapacity);
+            if (seatCapacity > type.getMaxCapacity())  {
+               eJBContext.setRollbackOnly();
+               throw new MaxSeatCapacityExceededException("Cabin configuration has exceeded max seating capacity!");
             }
+            em.flush();
+            return aircraftConfig.getAircraftConfigId();
+            
         } catch (PersistenceException ex) {
             throw new UnknownPersistenceException(ex.getMessage());
-        } catch (AircraftTypeNotFoundException ex) {
-            Logger.getLogger(AircraftConfigSessionBean.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (Exception ex) {
-            Logger.getLogger(AircraftConfigSessionBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
+        } 
     }
 
     @Override

@@ -411,6 +411,7 @@ public class MainApp {
     }
     
     private void doViewAllFlightRoutes() {
+        Scanner scanner = new Scanner(System.in);
         System.out.println("*** FRS Management Portal - View All Flight Routes ***\n");
         List<FlightRoute> allFlightRoutes = flightRouteSessionBeanRemote.viewAllFlightRoutes();
         System.out.printf("%4s%16s%24s\n", "Route ID", "Origin Airport", "Destination Airport");
@@ -418,7 +419,8 @@ public class MainApp {
             System.out.printf("%4s%16s%24s\n", flightRoute.getFlightRouteId(), flightRoute.getOriginAirport().getAirportName(), flightRoute.getDestinationAirport().getAirportName());
         }
         
-        System.out.print("Press any key to continue...> \n ");
+        System.out.print("Press any key to continue...> ");
+        scanner.nextLine();
     }
     
     private void doDeleteFlightRoute() throws FlightRouteNotFoundException {
@@ -435,19 +437,18 @@ public class MainApp {
             Scanner scanner = new Scanner(System.in);
             Flight newFlight = new Flight();
             System.out.println("*** FRS Management Portal - Create Flight ***\n");
-            System.out.println("Enter flight number");
+            System.out.println("Enter flight number (Numbers only)> ");
             newFlight.setFlightNumber("ML" + scanner.nextLine().trim());
 
             //if want to set flight configurations and routes at this time:
-            System.out.println("Select Aircraft Configuration");
             System.out.printf("%-30s%-40s%-25s%-20s\n", "Aircraft Configuration ID", "Name", "Number of Cabin Classes", "Aircraft Type");
             List<AircraftConfig> aircraftConfigs = aircraftConfigSessionBeanRemote.retrieveAllAircraftConfig();
 
             for (AircraftConfig a : aircraftConfigs) {
                 System.out.printf("%-30s%-40s%-25s%-20s\n", a.getAircraftConfigId(), a.getAircraftConfigName(), a.getNumCabinClass(), a.getAircraftType().getAircraftTypeName());
             }
-
-            System.out.println("");
+            System.out.print("Select Aircraft Configuration BY ID> ");
+  
 
             AircraftConfig selectedAircraftConfig = aircraftConfigSessionBeanRemote.retrieveAircraftConfigById(scanner.nextLong());
     //        newFlight.setAircraftConfig(selectedAircraftConfig); 
@@ -462,6 +463,8 @@ public class MainApp {
                         flightRoute.getOriginAirport().getAirportCode(),
                         flightRoute.getDestinationAirport().getAirportCode());
             }   
+            
+            System.out.print("Select flight route BY ID> ");
             FlightRoute selectedFlightRoute = flightRouteSessionBeanRemote.retrieveFlightRouteByRouteID(scanner.nextLong());
             scanner.nextLine();
 
@@ -483,7 +486,7 @@ public class MainApp {
                 Airport refOrigin = flightRoute.getOriginAirport();
                 Airport refDestination = flightRoute.getDestinationAirport();
                 if (refOrigin.equals(destination) && refDestination.equals(origin)) {
-                    System.out.println("Do you want to create a complementary return flight based on the same aircraft configuration but with a different flight number? Press (Y) for yes ");
+                    System.out.println("Do you want to create a complementary return flight based on the same aircraft configuration but with a different flight number? Press (Y) for yes | Press (N) for no ");
                     Flight returnFlight = new Flight();
                     String input = scanner.nextLine().trim();
                     if (input.equals("Y")) {
@@ -514,6 +517,7 @@ public class MainApp {
 
     
     private void doViewAllFlights() {
+        Scanner scanner = new Scanner(System.in);
         System.out.println("*** FRS Management Portal - View All Flight ***\n");
         List<Flight> allFlights = flightSessionBeanRemote.viewAllFlights();
 //        System.out.printf("%10s%15s%20s%20s\n", "FlightID", "Flight Number" ,"Origin Airport", "Destination Airport");
@@ -531,13 +535,14 @@ public class MainApp {
         }
         
         System.out.print("Press any key to continue> ");
+        scanner.nextLine();
     }
     
     private void doViewFlightDetails() {
         
         Scanner scanner = new Scanner(System.in);
         System.out.println("*** FRS Management Portal - View Flight Details ***\n");
-        System.out.println("Enter FlightNumber: ");
+        System.out.println("Enter FlightNumber (Numbers Only): ");
         String flightNumber = scanner.nextLine().trim();
         
         try {
@@ -714,17 +719,16 @@ public class MainApp {
             
             Long aircraftConfigId = aircraftConfigSessionBeanRemote.createAircraftConfig(newAircraftConfig);
             */
-            System.out.println("Aircraft Configuration " + aircraftConfigId + " created successfully!");
+            System.out.println("Aircraft Configuration " + name + " created successfully!");
         } catch (CabinClassNameNotFoundException ex) {
             Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
         } catch (UnknownPersistenceException ex) {
             Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
         } catch (MaxSeatCapacityExceededException ex) {
+            System.out.println("Max Seat Capacity Exceeded! \n");
+        } catch (AircraftTypeNotFoundException ex) {
             Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
         }
-       
-       
-       
     }
     
     public CabinClassConfig doCreateCabinClass() throws CabinClassNameNotFoundException, MaxSeatCapacityExceededException {
@@ -778,7 +782,6 @@ public class MainApp {
             System.out.printf("%30s%40s%25s%20s\n", a.getAircraftConfigId(), a.getAircraftConfigName(), a.getNumCabinClass(), a.getAircraftType().getAircraftTypeName());
         }
 
-        System.out.print("Press any key to continue...> ");
         System.out.println("");
         
     }
@@ -805,9 +808,9 @@ public class MainApp {
                 maxCapacity += c.getMaxSeatCapacity();
             }
             
-            System.out.println("\nCabin Overview: " + aircraftConfig.getCabinClassConfig().size() + " cabin class(es) / " + maxCapacity + " total seats");
-            System.out.print("Press any key to continue...> ");
-            System.out.println("");
+            System.out.println("\nCabin Overview: " + aircraftConfig.getCabinClassConfig().size() + " cabin class(es) / " + maxCapacity + " total seats \n");
+//            System.out.print("Press any key to continue...> ");
+         
         } catch (AircraftConfigNotFoundException ex) {
             Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
         }  
@@ -1008,43 +1011,43 @@ public class MainApp {
                         listOfFlightScheduleInfoReturn.add(new Pair<>(newDeparture, fs.getFlightDuration()));
                     }
                     
-                    System.out.println("size of now: " + plan.getFlightSchedule().size());
-                    System.out.println("size of return: " + listOfFlightScheduleInfoReturn.size());
+//                    System.out.println("size of now: " + plan.getFlightSchedule().size());
+//                    System.out.println("size of return: " + listOfFlightScheduleInfoReturn.size());
                     
                     List<CabinClassConfig> returnCabinClass = returnFlight.getAircraftConfig().getCabinClassConfig();
-                    System.out.println("Aircraft Configuration for flight " + returnFlight.getFlightNumber() + " contains " + returnCabinClass.size() + " cabins");
-                    System.out.println("Please enter fares for each cabin class!\n");
+//                    System.out.println("Aircraft Configuration for flight " + returnFlight.getFlightNumber() + " contains " + returnCabinClass.size() + " cabins");
+//                    System.out.println("Please enter fares for each cabin class!\n");
 
-                    List<Fare> faresReturn = new ArrayList<>();
-                    for (CabinClassConfig cc: returnCabinClass) {
-                        String type = "";
-                        if (cc.getCabinClassName() != null) switch (cc.getCabinClassName()) {
-                            case FIRST:
-                                type = "First Class";
-                                break;
-                            case BUSINESS:
-                                type = "Business Class";
-                                break;
-                            case PREMIUM_ECONOMY:
-                                type = "Premium Economy Class";
-                                break;
-                            case ECONOMY:
-                                type = "Economy Class";
-                                break;
-                            default:
-                                break;
-                        }
-                        System.out.println("** Creating fare for " + type + " **");
-                        while (true) {
-                            faresReturn.add(createFare(cc));
-                            System.out.print("Would you like to add more fares to this cabin class? (Y/N)> ");
-                            String reply2 = scanner.nextLine().trim();
-                            if(!reply.equalsIgnoreCase("N")) {
-                                break;
-                            }                         
-                        }
-                    }
-                    System.out.println("Fares for the cabin classes successfully created!\n");
+                    List<Fare> faresReturn = fares;
+//                    for (CabinClassConfig cc: returnCabinClass) {
+//                        String type = "";
+//                        if (cc.getCabinClassName() != null) switch (cc.getCabinClassName()) {
+//                            case FIRST:
+//                                type = "First Class";
+//                                break;
+//                            case BUSINESS:
+//                                type = "Business Class";
+//                                break;
+//                            case PREMIUM_ECONOMY:
+//                                type = "Premium Economy Class";
+//                                break;
+//                            case ECONOMY:
+//                                type = "Economy Class";
+//                                break;
+//                            default:
+//                                break;
+//                        }
+//                        System.out.println("** Creating fare for " + type + " **");
+//                        while (true) {
+//                            faresReturn.add(createFare(cc));
+//                            System.out.print("Would you like to add more fares to this cabin class? (Y/N)> ");
+//                            String reply2 = scanner.nextLine().trim();
+//                            if(!reply.equalsIgnoreCase("N")) {
+//                                break;
+//                            }                         
+//                        }
+//                    }
+//                    System.out.println("Fares for the cabin classes successfully created!\n");
                     
                     returnPlan = flightSchedulePlanSessionBeanRemote.createNewFlightSchedulePlanMultiple(returnPlan, faresReturn, returnFlight.getFlightId(), listOfFlightScheduleInfoReturn);
                     System.out.println("New Flight Schedule Plan for Return Flight " + returnPlan.getFlightNumber() + " created successfully!\n");
@@ -1257,7 +1260,7 @@ public class MainApp {
        try {
             Scanner sc = new Scanner(System.in);
             System.out.println("*** View Seats Inventory ***");
-            System.out.print("Enter Flight Number> ");
+            System.out.print("Enter Flight Number (Numbers Only)> ");
             String flightNumber = sc.nextLine().trim();
             Flight flight = flightSessionBeanRemote.retrieveFlightByFlightNumber(flightNumber);
             List<FlightSchedulePlan> plans = flight.getFlightSchedulePlan();
@@ -1275,7 +1278,11 @@ public class MainApp {
                             String.valueOf(fs.getFlightDuration()));
                 }
             }
-            System.out.print("Enter ID of flight schedule >  ");
+            System.out.print("Enter ID of flight schedule (Enter (0) to exit)>  ");
+            Long id = sc.nextLong();
+            if (id == 0) {
+                return;
+            }
             Long chosenFlightScheduleId = sc.nextLong();
             sc.nextLine();
             
@@ -1379,7 +1386,7 @@ public class MainApp {
         try {
             Scanner sc = new Scanner(System.in);
             System.out.println("*** View Flight Reservations ***");
-            System.out.print("Enter Flight Number (No. only) > ");
+            System.out.print("Enter Flight Number (Numbers Only)> ");
             String flightNumber = sc.nextLine().trim();
             Flight flight = flightSessionBeanRemote.retrieveFlightByFlightNumber(flightNumber);
             if (flight.getFlightSchedulePlan().isEmpty()) {
@@ -1394,8 +1401,12 @@ public class MainApp {
                     System.out.printf("%-25s%-30s%-20s\n", fs.getFlightScheduleId().toString(), fs.getDepartureDateTime().toString().substring(0, 19), String.valueOf(fs.getFlightDuration()));
                 }
             }
-            System.out.print("Enter ID of flight schedule>  ");
-            Long chosenFlightScheduleId = sc.nextLong();
+            System.out.print("Enter ID of flight schedule (Enter (0) to exit)>  ");
+            Long id = sc.nextLong();
+            if (id == 0) {
+                return;
+            }
+            Long chosenFlightScheduleId = id;
             sc.nextLine();
         
 //            FlightScheduleEntity flightSchedule = null;

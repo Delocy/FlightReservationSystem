@@ -357,7 +357,7 @@ public class HolidayReservationSystemClient {
             System.out.println("\n************** Flights 2 Days Before Selected Date **************");
             printFlightScheduleWithConnecting(outbound2Before, numPassenger, cabinClassName);
             System.out.println("\n************** Flights 3 Days Before Selected Date **************");
-            printFlightScheduleWithConnecting(outbound2Before, numPassenger, cabinClassName);
+            printFlightScheduleWithConnecting(outbound3Before, numPassenger, cabinClassName);
             System.out.println("\n************** Flights 1 Day After Selected Date **************");
             printFlightScheduleWithConnecting(outbound1After, numPassenger, cabinClassName);
             System.out.println("\n************** Flights 2 Days After Selected Date **************");

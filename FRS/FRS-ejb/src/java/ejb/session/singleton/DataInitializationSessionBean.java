@@ -58,6 +58,7 @@ import util.exception.FlightRouteExistException;
 import util.exception.FlightRouteNotFoundException;
 import util.exception.FlightSchedulePlanExistException;
 import util.exception.FlightSchedulePlanNotFoundException;
+import util.exception.MaxSeatCapacityExceededException;
 import util.exception.UnknownPersistenceException;
 
 /**
@@ -138,10 +139,10 @@ public class DataInitializationSessionBean {
             
             try {
                 airportSessionBeanLocal.createNewAirport(new Airport("Changi", "SIN", "Singapore", "Singapore", "Singapore", 8));
-                airportSessionBeanLocal.createNewAirport(new Airport("Chek Lap Kok", "HKG", "Hong Kong", "Hong Kong", "China", 8));
+                airportSessionBeanLocal.createNewAirport(new Airport("Hong Kong", "HKG", "Chek Lap Kok", "Hong Kong", "China", 8));
                 airportSessionBeanLocal.createNewAirport(new Airport("Taoyuan", "TPE", "Taoyuan", "Taipei", "Taiwan R.O.C", 8));
                 // airportSessionBeanLocal.createNewAirport(new Airport("Melbourne", "MEL", "Melbourne", "Melbourne", "Australia",11));
-                airportSessionBeanLocal.createNewAirport(new Airport("Narita", "NRT", "Tokyo", "Tokyo", "Japan", 9));
+                airportSessionBeanLocal.createNewAirport(new Airport("Narita", "NRT", "Narita", "Chiba", "Japan", 9));
                 //airportSessionBeanLocal.createNewAirport(new Airport("Kansai", "KIX", "Osaka", "Osaka", "Japan", 9));
 //                airportSessionBeanLocal.createNewAirport(new Airport("Pudong", "PVG", "Shanghai", "Shanghai", "China", 8));
 //                airportSessionBeanLocal.createNewAirport(new Airport("Los Angeles", "LAX", "Los Angeles", "California", "UnitedStates", -8));
@@ -168,7 +169,11 @@ public class DataInitializationSessionBean {
                 aircraftConfigSessionBeanLocal.createAircraftConfig(config, cabins, 1l);
                 } catch (UnknownPersistenceException ex) {
                 Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            } catch (MaxSeatCapacityExceededException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (AircraftTypeNotFoundException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
             
             try {
                 List<CabinClassConfig> cabins = new ArrayList<>();
@@ -183,7 +188,11 @@ public class DataInitializationSessionBean {
  
                 } catch (UnknownPersistenceException ex) {
                 Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
-            }
+                } catch (MaxSeatCapacityExceededException ex) {
+                Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (AircraftTypeNotFoundException ex) {
+                    Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+                }
             
             try {
                 List<CabinClassConfig> cabins = new ArrayList<>();
@@ -194,7 +203,11 @@ public class DataInitializationSessionBean {
                 aircraftConfigSessionBeanLocal.createAircraftConfig(config, cabins, 2l);
                 } catch (UnknownPersistenceException ex) {
                 Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            } catch (MaxSeatCapacityExceededException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (AircraftTypeNotFoundException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
             
             try {
                 List<CabinClassConfig> cabins = new ArrayList<>();
@@ -208,7 +221,11 @@ public class DataInitializationSessionBean {
                 aircraftConfigSessionBeanLocal.createAircraftConfig(config, cabins, 2l);
                 } catch (UnknownPersistenceException ex) {
                 Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            } catch (MaxSeatCapacityExceededException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (AircraftTypeNotFoundException ex) {
+            Logger.getLogger(DataInitializationSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
             
             // Flight Route
             try {  
