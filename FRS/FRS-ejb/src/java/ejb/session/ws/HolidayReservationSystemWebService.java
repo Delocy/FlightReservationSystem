@@ -209,7 +209,9 @@ public class HolidayReservationSystemWebService {
             FlightScheduleNotFoundException, 
             SeatInventoryNotFoundException {
         SeatInventory seats = flightScheduleSessionBeanLocal.getValidSeatInventoryDetached(flightschedule, cabinclasstype);
-        if (seats.getCabinClass()!= null) {seats.getCabinClass().setAircraftConfig(null);}
+        if (seats.getCabinClass()!= null) {
+            seats.getCabinClass().setAircraftConfig(null);
+        }
         //seats.setCabinClass(null);
         seats.setFlightSchedule(null);
         return seats;
@@ -222,7 +224,7 @@ public class HolidayReservationSystemWebService {
     }
     
     @WebMethod(operationName = "createNewReservation")
-    public long createNewReservation(@WebParam(name = "reservationentity") FlightReservation flightreservation,
+    public long createNewReservation(@WebParam(name = "flightreservation") FlightReservation flightreservation,
             @WebParam(name = "passengers") List<Passenger> passengers,
             @WebParam(name = "flightscheduleid") long flightscheduleid,
             @WebParam(name = "itineraryid") long itineraryid) throws 
@@ -234,29 +236,24 @@ public class HolidayReservationSystemWebService {
             ItineraryNotFoundException,
             FlightReservationNotFoundException {
         
-        Long id = flightReservationSessionBeanLocal.createNewReservationDetached(flightreservation, passengers, flightscheduleid, itineraryid);
-        //FlightReservation fr = flightReservationSessionBeanLocal.retrieveFlightReservationByReserverationId(id);
-//        fr.setFlightSchedule(null);
-//        fr.setItinerary(null);
 
+        Long id = flightReservationSessionBeanLocal.createNewReservationDetached(flightreservation, passengers, flightscheduleid, itineraryid);
         return id;
     }
     
     @WebMethod(operationName = "createNewItinerary")
     public Itinerary createNewItinerary(
             @WebParam(name = "itinerary") Itinerary itinerary,
-//            @WebParam(name = "date") String date,
-//            @WebParam(name = "cvv") String cvv,
             @WebParam(name = "userid") long userid) throws 
             UnknownPersistenceException,
             PersonNotFoundException,
             ItineraryExistException
             {
-//        SimpleDateFormat formatter = new SimpleDateFormat("dd/M/yyyy");
-//        Date expiryDate = formatter.parse(date);
-        
         Itinerary i = itinerarySessionBeanLocal.createNewItinerary(itinerary, userid);
-        i.setPerson(null);
+        for (Itinerary iti : i.getPerson().getItineraries()) {
+            iti.getPerson().setItineraries(null);
+        }
+//        isetPerson(null);
         for (FlightReservation fr : i.getReservations()) {
             fr.setItinerary(null);
         }

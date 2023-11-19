@@ -270,24 +270,16 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
             try{
                 em.persist(plan);
                 
-//                //Create Flight Schedule
-//                if(recurrent == 0) {
-//                    FlightScheduleEntity schedule = new FlightScheduleEntity(pair.getKey(), pair.getValue());
-//                    flightScheduleSessionBean.createNewSchedule(plan, schedule);
-//                    //plan.getFlightSchedule().add(schedule); //association done on schedule bean
-//                } else {
                     Date presentDate = pair.getKey();
                     Date endDate = plan.getRecurrentEndDate();
                     
-                    // set initial day (wed)
+                    
                     Calendar cal = Calendar.getInstance();
                     
                     
                     cal.setTime(presentDate);
-                    // here: from presentdate, set to first instance of day (eg wednesday)
                     FlightSchedule  schedule = new FlightSchedule(cal.getTime(), pair.getValue());
-//                    em.persist(schedule);
-                    // flightScheduleSessionBeanLocal.createNewSchedule(schedule, plan);
+//                  
                     
                     boolean correctDay = false;
                     while(cal.get(Calendar.DAY_OF_WEEK) != recurrent) {
@@ -297,16 +289,16 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
             
                     if (correctDay) {
                         schedule = new FlightSchedule(cal.getTime(), pair.getValue());
-//                        em.persist(schedule);
+//                      
                         flightScheduleSessionBeanLocal.createNewSchedule(schedule, plan);      
                     }
                     
                     cal.add(Calendar.DAY_OF_MONTH, 7);
-                     //Set recurrent
+                  
                     while(endDate.compareTo(cal.getTime()) > 0) {            
                         
                         schedule = new FlightSchedule(cal.getTime(), pair.getValue());
-//                        em.persist(schedule);
+//                       
                         flightScheduleSessionBeanLocal.createNewSchedule(schedule, plan);
                         cal.add(Calendar.DAY_OF_MONTH, 7);         
                                       
