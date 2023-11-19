@@ -37,14 +37,14 @@ public class FlightReservation implements Serializable {
     private CabinClassNameEnum cabinClassName;
     
     @ManyToOne(optional = false)
-    @JoinColumn(nullable = false)
+    @JoinColumn
     private Itinerary itinerary;
     
     @OneToMany(fetch = FetchType.EAGER)
     private List<Passenger> passengers; 
     
     @ManyToOne(optional = false)
-    @JoinColumn(nullable = false)
+    @JoinColumn
     private FlightSchedule flightSchedule;
 
     public FlightReservation() {

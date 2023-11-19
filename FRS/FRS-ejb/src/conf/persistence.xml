@@ -18,6 +18,7 @@
     <class>entity.SeatInventory</class>
     <class>entity.Itinerary</class>
     <class>entity.Passenger</class>
+    <class>entity.Person</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
       <property name="javax.persistence.schema-generation.database.action" value="create"/>

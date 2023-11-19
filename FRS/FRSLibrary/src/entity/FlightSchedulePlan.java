@@ -61,7 +61,7 @@ public class FlightSchedulePlan implements Serializable {
     private List<FlightSchedule> flightSchedule;
     
     @ManyToOne(optional = false)
-    @JoinColumn(nullable = false)
+    @JoinColumn
     private Flight flight;
     
     @OneToMany(mappedBy = "flightSchedulePlan",  fetch = FetchType.EAGER)

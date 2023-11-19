@@ -19,7 +19,7 @@ public interface PartnerSessionBeanLocal {
 
     public Long createNewPartner(Partner partner) throws UnknownPersistenceException;
 
-    public Partner partnerLogin(String username, String password) throws InvalidLoginCredentialException;
+    public Long partnerLogin(String username, String password) throws InvalidLoginCredentialException;
 
     public Partner retrievePartnerByPartnerUsername(String username) throws PartnerNotFoundException;
     

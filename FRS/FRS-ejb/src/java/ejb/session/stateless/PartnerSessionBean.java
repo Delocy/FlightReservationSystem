@@ -34,21 +34,21 @@ public class PartnerSessionBean implements PartnerSessionBeanRemote, PartnerSess
         try {
             em.persist(partner);
             em.flush();
-            return partner.getPartnerId();
+            return partner.getPersonId();
         } catch (PersistenceException ex) {
             throw new UnknownPersistenceException(ex.getMessage());
         }
     }
     
     @Override
-    public Partner partnerLogin(String username, String password) throws InvalidLoginCredentialException {
+    public Long partnerLogin(String username, String password) throws InvalidLoginCredentialException {
         try
         {
             Partner p = retrievePartnerByPartnerUsername(username);
             
             if(p.getPassword().equals(password))
             {     
-                return p;
+                return p.getPersonId();
             }
             else
             {

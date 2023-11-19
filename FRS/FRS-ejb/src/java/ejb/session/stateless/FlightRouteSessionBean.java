@@ -80,7 +80,7 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
     @Override
     public List<FlightRoute> viewAllFlightRoutes() {
         // we sorted it by airport id
-        Query query = em.createQuery("SELECT DISTINCT f FROM FlightRoute f ORDER BY f.originAirport.airportName ASC");
+        Query query = em.createQuery("SELECT DISTINCT f FROM FlightRoute f WHERE f.isDisabled = false ORDER BY f.originAirport.airportName ASC");
         List<FlightRoute> allFlightRoutes = query.getResultList();
 
 //        if (allFlightRoutes.isEmpty()) {

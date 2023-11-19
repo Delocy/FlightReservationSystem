@@ -5,6 +5,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -40,7 +41,7 @@ public class Flight implements Serializable {
     private boolean isDisabled;
     
     @ManyToOne
-    @JoinColumn(name = "flightRouteId", nullable = false)
+    @JoinColumn(name = "flightRouteId")
     private FlightRoute flightRoute;
     
     @OneToOne
@@ -51,14 +52,15 @@ public class Flight implements Serializable {
     private Flight originalFlight;
 
     @ManyToOne
-    @JoinColumn(name = "aircraftConfigId", nullable = false)
+    @JoinColumn(name = "aircraftConfigId")
     private AircraftConfig aircraftConfig;
     
-    @OneToMany(mappedBy = "flight", fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
+    @OneToMany(mappedBy = "flight", fetch = FetchType.EAGER)
     private List<FlightSchedulePlan> flightSchedulePlan;
 
     public Flight() {
         this.isDisabled = false;
+        this.flightSchedulePlan = new ArrayList<>();
     }
 
     public Flight(String flightNumber) {

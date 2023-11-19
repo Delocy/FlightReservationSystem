@@ -39,10 +39,10 @@ public class Itinerary implements Serializable {
     @Size(min = 1, max = 32)
     private String creditCardNumber;
     
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
     @NotNull
-    private Date expiryDate;
+    @Size(min = 1, max = 32)
+    private String expiryDate;
     
     @Column(nullable = false, length = 3)
     @NotNull
@@ -50,8 +50,8 @@ public class Itinerary implements Serializable {
     private String cvv;
     
     @ManyToOne(optional = false)
-    @JoinColumn(nullable = false)
-    private Customer customer;
+    @JoinColumn
+    private Person person;
     
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "itinerary")
     private List<FlightReservation> reservations;
@@ -60,7 +60,7 @@ public class Itinerary implements Serializable {
         this.reservations = new ArrayList<>();
     }
     
-    public Itinerary(String creditCardNumber, Date expiryDate, String cvv) {
+    public Itinerary(String creditCardNumber, String expiryDate, String cvv) {
         this();
         this.creditCardNumber = creditCardNumber;
         this.expiryDate = expiryDate;
@@ -83,11 +83,11 @@ public class Itinerary implements Serializable {
         this.creditCardNumber = creditCardNumber;
     }
 
-    public Date getExpiryDate() {
+    public String getExpiryDate() {
         return expiryDate;
     }
 
-    public void setExpiryDate(Date expiryDate) {
+    public void setExpiryDate(String expiryDate) {
         this.expiryDate = expiryDate;
     }
 
@@ -99,12 +99,12 @@ public class Itinerary implements Serializable {
         this.cvv = cvv;
     }
 
-    public Customer getCustomer() {
-        return customer;
+    public Person getPerson() {
+        return person;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+    public void setPerson(Person person) {
+        this.person = person;
     }
 
     public List<FlightReservation> getReservations() {

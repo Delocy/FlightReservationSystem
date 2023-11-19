@@ -26,5 +26,7 @@ public interface FlightReservationSessionBeanLocal {
     public FlightReservation retrieveFlightReservationByReserverationId(long id) throws FlightReservationNotFoundException;
 
     public long createNewReservation(FlightReservation reservation, List<Passenger> passengers, long flightScheduleId, long itineraryId) throws FlightReservationExistException, UnknownPersistenceException, FlightScheduleNotFoundException, SeatInventoryNotFoundException, SeatsBookedException, ItineraryNotFoundException;
+
+    public long createNewReservationDetached(FlightReservation reservation, List<Passenger> passengers, long flightScheduleId, long itineraryId) throws FlightReservationExistException, UnknownPersistenceException, FlightScheduleNotFoundException, SeatInventoryNotFoundException, SeatsBookedException, ItineraryNotFoundException;
     
 }

@@ -44,11 +44,11 @@ public class SeatInventory implements Serializable {
     private char[][] seats;
    
     @ManyToOne(optional = false)
-    @JoinColumn(nullable = false)
+    @JoinColumn
     private CabinClassConfig cabinClass;
     
     @ManyToOne(optional = false)
-    @JoinColumn(nullable = false)
+    @JoinColumn
     private FlightSchedule flightSchedule;
 
     public SeatInventory() {

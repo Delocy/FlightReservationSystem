@@ -126,8 +126,6 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
     private void associateFlightToPlan(Long flightID, FlightSchedulePlan flightSchedulePlan) throws FlightNotFoundException, FlightSchedulePlanExistException {
 
         Flight flight = flightSessionBeanLocal.retrieveFlightByFlightID(flightID);  
-        
-        // Check no overlaps with already existing flight plans associated with the flight
         for (FlightSchedulePlan fsp: flight.getFlightSchedulePlan()) {
             for (FlightSchedule fs: fsp.getFlightSchedule()) {
                 Date start1 = fs.getDepartureDateTime();
@@ -158,7 +156,7 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
             }
         }
         
-        // Check the flight schedule plan does not have overlaps amongst itself also
+       
         List<FlightSchedule> fs = flightSchedulePlan.getFlightSchedule();
         System.out.println("check: " + fs.size());
         for (int i = 0; i < fs.size(); i++) {
@@ -200,7 +198,6 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
     
     @Override
     public FlightSchedulePlan createNewFlightSchedulePlanMultiple(FlightSchedulePlan plan, List<Fare> fares, long flightID, List<Pair<Date, Double>> info) throws FareExistException, UnknownPersistenceException, FlightNotFoundException, FlightSchedulePlanExistException {
-        //Set<ConstraintViolation<FlightSchedulePlanEntity>>constraintViolations = validator.validate(plan);
         
         
             try {
@@ -217,7 +214,7 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
                 
                 for (FlightSchedule fse: plan.getFlightSchedule()) {               
                     for (CabinClassConfig cc: plan.getFlight().getAircraftConfig().getCabinClassConfig()) {                    
-                        SeatInventory seats = new SeatInventory(cc.getMaxSeatCapacity(), 0 , cc.getMaxSeatCapacity());                       
+                        SeatInventory seats = new SeatInventory(cc.getMaxSeatCapacity(), 0 , cc.getMaxSeatCapacity());      
                         seatInventorySessionBeanLocal.createSeatInventory(seats, fse, cc);
                     }
                 }
@@ -229,7 +226,7 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
                 em.flush();
                 return plan;
             } catch (PersistenceException ex) {
-                //eJBContext.setRollbackOnly();
+               
                 if (ex.getCause() != null && ex.getCause().getClass().getName().equals("org.eclipse.persistence.exceptions.DatabaseException")) {
                     if (ex.getCause().getCause() != null && ex.getCause().getCause().getClass().getName().equals("java.sql.SQLIntegrityConstraintViolationException")) {
                         throw new FlightSchedulePlanExistException();
@@ -239,69 +236,45 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
                 } else {
                     throw new UnknownPersistenceException(ex.getMessage());
                 }
-//            } catch (InputDataValidationException ex) {
-//                eJBContext.setRollbackOnly();
-//                throw new InputDataValidationException(ex.getMessage());
-//            } catch (FlightNotFoundException ex) {
-//                eJBContext.setRollbackOnly();
-//                throw new FlightNotFoundException(ex.getMessage());
-//            } catch (FlightSchedulePlanExistException ex) {
-//                eJBContext.setRollbackOnly();
-//                throw new FlightSchedulePlanExistException(ex.getMessage());
-//            } catch (FareExistException ex) {
-//                eJBContext.setRollbackOnly();
-//                throw new FareExistException(ex.getMessage());
-//            } 
-//        } else {
-//            eJBContext.setRollbackOnly();
-//            throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
-//        }
             
             }
         }
     
     @Override
     public FlightSchedulePlan createNewFlightSchedulePlanWeekly(FlightSchedulePlan plan, List<Fare> fares, long flightID, Pair<Date, Double> pair, int recurrent) throws FareExistException, UnknownPersistenceException, FlightNotFoundException, FlightSchedulePlanExistException {
-        //Set<ConstraintViolation<FlightSchedulePlanEntity>>constraintViolations = validator.validate(plan);
-        
         
             try{
                 em.persist(plan);
                 
-//                //Create Flight Schedule
-//                if(recurrent == 0) {
-//                    FlightScheduleEntity schedule = new FlightScheduleEntity(pair.getKey(), pair.getValue());
-//                    flightScheduleSessionBean.createNewSchedule(plan, schedule);
-//                    //plan.getFlightSchedule().add(schedule); //association done on schedule bean
-//                } else {
                     Date presentDate = pair.getKey();
                     Date endDate = plan.getRecurrentEndDate();
                     
-                    // set initial day (wed)
+                    
                     Calendar cal = Calendar.getInstance();
                     
                     
                     cal.setTime(presentDate);
-                    // here: from presentdate, set to first instance of day (eg wednesday)
                     FlightSchedule  schedule = new FlightSchedule(cal.getTime(), pair.getValue());
-                    flightScheduleSessionBeanLocal.createNewSchedule(schedule, plan);
+//                  
                     
-                    boolean deo = false;
+                    boolean correctDay = false;
                     while(cal.get(Calendar.DAY_OF_WEEK) != recurrent) {
                         cal.add(Calendar.DATE, 1);
-                        deo = true;
+                        correctDay = true;
                     }       
             
-                    if (deo) {
+                    if (correctDay) {
                         schedule = new FlightSchedule(cal.getTime(), pair.getValue());
+//                      
                         flightScheduleSessionBeanLocal.createNewSchedule(schedule, plan);      
                     }
                     
                     cal.add(Calendar.DAY_OF_MONTH, 7);
-                     //Set recurrent
+                  
                     while(endDate.compareTo(cal.getTime()) > 0) {            
                         
                         schedule = new FlightSchedule(cal.getTime(), pair.getValue());
+//                       
                         flightScheduleSessionBeanLocal.createNewSchedule(schedule, plan);
                         cal.add(Calendar.DAY_OF_MONTH, 7);         
                                       
@@ -309,16 +282,18 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
                 
                 
                 associateFlightToPlan(flightID, plan);
-                //System.out.print("test" + plan.getFlightSchedule().size());
+               
                  
                 for (FlightSchedule fse: plan.getFlightSchedule()) {               
                     for (CabinClassConfig cc: plan.getFlight().getAircraftConfig().getCabinClassConfig()) {                    
-                        SeatInventory seats = new SeatInventory(cc.getMaxSeatCapacity(), 0 , cc.getMaxSeatCapacity());                       
+                        SeatInventory seats = new SeatInventory(cc.getMaxSeatCapacity(), 0 , cc.getMaxSeatCapacity());
+//                 
                         seatInventorySessionBeanLocal.createSeatInventory(seats, fse, cc);
                     }
                 }
                 
                 for (Fare fare: fares) {
+//                 
                     fareSessionBeanLocal.createFare(fare, plan);
                 }
                 
@@ -335,23 +310,6 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
                 } else {
                     throw new UnknownPersistenceException(ex.getMessage());
                 }
-//            } catch (InputDataValidationException ex) {
-//                eJBContext.setRollbackOnly();
-//                throw new InputDataValidationException(ex.getMessage());
-//            } catch (FlightNotFoundException ex) {
-//                eJBContext.setRollbackOnly();
-//                throw new FlightNotFoundException(ex.getMessage());
-//            } catch (FlightSchedulePlanExistException ex) {
-//                eJBContext.setRollbackOnly();
-//                throw new FlightSchedulePlanExistException(ex.getMessage());
-//            } catch (FareExistException ex) {
-//                eJBContext.setRollbackOnly();
-//                throw new FareExistException(ex.getMessage());
-//            } 
-//        } else {
-//            eJBContext.setRollbackOnly();
-//            throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
-//        }
         }
     }
     

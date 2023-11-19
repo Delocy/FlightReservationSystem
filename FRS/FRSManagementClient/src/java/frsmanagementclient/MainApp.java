@@ -359,127 +359,154 @@ public class MainApp {
         }
     }
     
-    private void doCreateFlightRoute() throws AirportNotFoundException, FlightRouteExistException, UnknownPersistenceException {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("*** FRS Management Portal - Create Flight Route ***\n");
-        System.out.println("Enter origin IATA airport code");
-        String origin = scanner.nextLine().trim();
-        Airport originAirport = airportSessionBeanRemote.retrieveAirportByAirportCode(origin);
-        System.out.println("Enter destination IATA airport code");
-        String destination = scanner.nextLine().trim();
-        Airport destinationAirport = airportSessionBeanRemote.retrieveAirportByAirportCode(destination);
-        
-        FlightRoute newFlightRoute = flightRouteSessionBeanRemote.createFlightRoute(originAirport.getAirportId(), destinationAirport.getAirportId());
-        System.out.println("** Flight Route: from Origin " + newFlightRoute.getOriginAirport().getAirportName() + " to Destination " + newFlightRoute.getDestinationAirport().getAirportName() + " has been successfully created **");
-        System.out.println("Would you like to create a complementary return route? (Y/N)");
-        if (scanner.nextLine().trim().equalsIgnoreCase("Y")) {
-              FlightRoute compFlightRoute = flightRouteSessionBeanRemote.createFlightRoute(destinationAirport.getAirportId(), originAirport.getAirportId());
-              System.out.println("** Flight Route: from Origin " + compFlightRoute.getOriginAirport().getAirportName() + " to Destination " + compFlightRoute.getDestinationAirport().getAirportName() + " has been successfully created **");
+    private void doCreateFlightRoute() throws FlightRouteExistException {
+        try {
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("*** FRS Management Portal - Create Flight Route ***\n");
+            System.out.println("Enter origin IATA airport code");
+            String origin = scanner.nextLine().trim();
+            Airport originAirport = airportSessionBeanRemote.retrieveAirportByAirportCode(origin);
+            System.out.println("Enter destination IATA airport code");
+            String destination = scanner.nextLine().trim();
+            Airport destinationAirport = airportSessionBeanRemote.retrieveAirportByAirportCode(destination);
+
+            List<FlightRoute> allFlightRoutes = flightRouteSessionBeanRemote.viewAllFlightRoutes();
+            boolean inside = false;
+            for (FlightRoute route : allFlightRoutes) {
+                Airport o = route.getOriginAirport();
+                Airport d = route.getDestinationAirport();
+                if (originAirport.equals(o) && destinationAirport.equals(d)) {
+                    inside = true;
+                    break;
+                }
+            }
+            if (inside == false) {
+                FlightRoute newFlightRoute = flightRouteSessionBeanRemote.createFlightRoute(originAirport.getAirportId(), destinationAirport.getAirportId());
+                System.out.println("** Flight Route: from Origin " + newFlightRoute.getOriginAirport().getAirportName() + " to Destination " + newFlightRoute.getDestinationAirport().getAirportName() + " has been successfully created **");
+                boolean insideC = false;
+                for (FlightRoute route : allFlightRoutes) {
+                    Airport o = route.getOriginAirport();
+                    Airport d = route.getDestinationAirport();
+                    if (destinationAirport.equals(o) && originAirport.equals(d)) {
+                        insideC = true;
+                        break;
+                    }
+                }
+
+                if (insideC == false) {
+                    System.out.println("Would you like to create a complementary return route? (Y/N)");
+                    if (scanner.nextLine().trim().equalsIgnoreCase("Y")) {
+                          FlightRoute compFlightRoute = flightRouteSessionBeanRemote.createFlightRoute(destinationAirport.getAirportId(), originAirport.getAirportId());
+                          System.out.println("** Flight Route: from Origin " + compFlightRoute.getOriginAirport().getAirportName() + " to Destination " + compFlightRoute.getDestinationAirport().getAirportName() + " has been successfully created **");
+                    }
+                }
+            } else {
+                System.out.println("Flight Route exists! \n");
+            }
+        } catch (AirportNotFoundException | UnknownPersistenceException ex) {
+            System.out.println("Error creating flight route");  
         }
+        
+        
     }
     
     private void doViewAllFlightRoutes() {
+        Scanner scanner = new Scanner(System.in);
         System.out.println("*** FRS Management Portal - View All Flight Routes ***\n");
         List<FlightRoute> allFlightRoutes = flightRouteSessionBeanRemote.viewAllFlightRoutes();
         System.out.printf("%4s%16s%24s\n", "Route ID", "Origin Airport", "Destination Airport");
         for (FlightRoute flightRoute : allFlightRoutes) {
             System.out.printf("%4s%16s%24s\n", flightRoute.getFlightRouteId(), flightRoute.getOriginAirport().getAirportName(), flightRoute.getDestinationAirport().getAirportName());
-        }    
+        }
+        
+        System.out.print("Press any key to continue...> ");
+        scanner.nextLine();
     }
     
     private void doDeleteFlightRoute() throws FlightRouteNotFoundException {
         Scanner scanner = new Scanner(System.in);
         System.out.println("*** FRS Management Portal - Delete Flight Route ***\n");
         System.out.println("Enter ID of flight route for deletion");
-        flightRouteSessionBeanRemote.deleteFlightRoute(scanner.nextLong());
+        Long routeIdToDelete = scanner.nextLong();
+        flightRouteSessionBeanRemote.deleteFlightRoute(routeIdToDelete);
+        System.out.println("Flight route with ID: " + routeIdToDelete + " successfully deleted!");
     }
     
     private void doCreateFlight() throws AircraftConfigNotFoundException, FlightRouteNotFoundException, UnknownPersistenceException, FlightExistException, FlightNotFoundException {
-        Scanner scanner = new Scanner(System.in);
-        Flight newFlight = new Flight();
-        System.out.println("*** FRS Management Portal - Create Flight ***\n");
-        System.out.println("Enter flight number");
-        newFlight.setFlightNumber("ML" + scanner.nextLine().trim());
+        try {
+            Scanner scanner = new Scanner(System.in);
+            Flight newFlight = new Flight();
+            System.out.println("*** FRS Management Portal - Create Flight ***\n");
+            System.out.println("Enter flight number (Numbers only)> ");
+            newFlight.setFlightNumber("ML" + scanner.nextLine().trim());
 
-        //if want to set flight configurations and routes at this time:
-        System.out.println("Select Aircraft Configuration");
-        System.out.printf("%-30s%-40s%-25s%-20s\n", "Aircraft Configuration ID", "Name", "Number of Cabin Classes", "Aircraft Type");
-        List<AircraftConfig> aircraftConfigs = aircraftConfigSessionBeanRemote.retrieveAllAircraftConfig();
-        
-        for (AircraftConfig a : aircraftConfigs) {
-            System.out.printf("%-30s%-40s%-25s%-20s\n", a.getAircraftConfigId(), a.getAircraftConfigName(), a.getNumCabinClass(), a.getAircraftType().getAircraftTypeName());
-        }
+            System.out.printf("%-30s%-40s%-25s%-20s\n", "Aircraft Configuration ID", "Name", "Number of Cabin Classes", "Aircraft Type");
+            List<AircraftConfig> aircraftConfigs = aircraftConfigSessionBeanRemote.retrieveAllAircraftConfig();
 
-        System.out.println("");
-        
-        AircraftConfig selectedAircraftConfig = aircraftConfigSessionBeanRemote.retrieveAircraftConfigById(scanner.nextLong());
-//        newFlight.setAircraftConfig(selectedAircraftConfig); 
-        //
-        
-        System.out.println("Select flight route");
-        List<FlightRoute> allFlightRoutes = flightRouteSessionBeanRemote.viewAllFlightRoutes();
-        
-        for (FlightRoute flightRoute : allFlightRoutes) {
-            System.out.printf("%-8s%-16s%-24s\n",
-                    flightRoute.getFlightRouteId(),
-                    flightRoute.getOriginAirport().getAirportCode(),
-                    flightRoute.getDestinationAirport().getAirportCode());
-        }   
-        FlightRoute selectedFlightRoute = flightRouteSessionBeanRemote.retrieveFlightRouteByRouteID(scanner.nextLong());
-        scanner.nextLine();
-        
-        Airport origin = selectedFlightRoute.getOriginAirport();
-        Airport destination = selectedFlightRoute.getDestinationAirport();
-//        newFlight.setFlightRoute(selectedFlightRoute);
-        
-        Long flightID = (long) 0;
-         try {
-            flightID = flightSessionBeanRemote.createNewFlight(newFlight, selectedAircraftConfig.getAircraftConfigId(),selectedFlightRoute.getFlightRouteId());
+            for (AircraftConfig a : aircraftConfigs) {
+                System.out.printf("%-30s%-40s%-25s%-20s\n", a.getAircraftConfigId(), a.getAircraftConfigName(), a.getNumCabinClass(), a.getAircraftType().getAircraftTypeName());
+            }
+            System.out.print("Select Aircraft Configuration BY ID> ");
+  
+
+            AircraftConfig selectedAircraftConfig = aircraftConfigSessionBeanRemote.retrieveAircraftConfigById(scanner.nextLong());
+
+            System.out.println("Select flight route");
+            List<FlightRoute> allFlightRoutes = flightRouteSessionBeanRemote.viewAllFlightRoutes();
+
+            for (FlightRoute flightRoute : allFlightRoutes) {
+                System.out.printf("%-8s%-16s%-24s\n",
+                        flightRoute.getFlightRouteId(),
+                        flightRoute.getOriginAirport().getAirportCode(),
+                        flightRoute.getDestinationAirport().getAirportCode());
+            }   
             
-            System.out.println("** Flight: " + newFlight.getFlightNumber() + " has been successfully created **");
-        } catch (FlightExistException ex) {
-            System.out.println("Error occured when creating the new flight " + ex.getMessage());
-        }
+            System.out.print("Select flight route BY ID> ");
+            FlightRoute selectedFlightRoute = flightRouteSessionBeanRemote.retrieveFlightRouteByRouteID(scanner.nextLong());
+            scanner.nextLine();
 
-        
-        for (FlightRoute flightRoute : allFlightRoutes) {
-            Airport refOrigin = flightRoute.getOriginAirport();
-            Airport refDestination = flightRoute.getDestinationAirport();
-            if (refOrigin.equals(destination) && refDestination.equals(origin)) {
-                System.out.println("Do you want to create a complementary return flight based on the same aircraft configuration but with a different flight number? Press (Y) for yes ");
-                Flight returnFlight = new Flight();
-                String input = scanner.nextLine().trim();
-                if (input.equals("Y")) {
-                    System.out.println("Enter new flight number for return flight");
-                    returnFlight.setFlightNumber("ML"+ scanner.nextLine().trim());
-                    
-                    try {
+            Airport origin = selectedFlightRoute.getOriginAirport();
+            Airport destination = selectedFlightRoute.getDestinationAirport();
+
+            Long flightID = (long) 0;
+            flightID = flightSessionBeanRemote.createNewFlight(newFlight, selectedAircraftConfig.getAircraftConfigId(),selectedFlightRoute.getFlightRouteId());
+
+            System.out.println("** Flight: " + newFlight.getFlightNumber() + " has been successfully created **");
+
+
+            for (FlightRoute flightRoute : allFlightRoutes) {
+                Airport refOrigin = flightRoute.getOriginAirport();
+                Airport refDestination = flightRoute.getDestinationAirport();
+                if (refOrigin.equals(destination) && refDestination.equals(origin)) {
+                    System.out.println("Do you want to create a complementary return flight based on the same aircraft configuration but with a different flight number? Press (Y) for yes | Press (N) for no ");
+                    Flight returnFlight = new Flight();
+                    String input = scanner.nextLine().trim();
+                    if (input.equals("Y")) {
+                        System.out.println("Enter new flight number for return flight");
+                        returnFlight.setFlightNumber("ML"+ scanner.nextLine().trim());
                         Long returnFlightID = flightSessionBeanRemote.createNewFlight(returnFlight, selectedAircraftConfig.getAircraftConfigId(), flightRoute.getFlightRouteId());
-                        Flight newRFlight = flightSessionBeanRemote.retrieveFlightByFlightID(returnFlightID);
-//                        
+                        Flight newRFlight = flightSessionBeanRemote.retrieveFlightByFlightID(returnFlightID);                      
                         flightSessionBeanRemote.associateOriginalFlightWithReturnFlight(flightID, returnFlightID);
                         System.out.println("** Return Flight: " + newRFlight.getFlightNumber() + " has been successfully created **");
-                    } catch (FlightExistException ex) {
-                        System.out.println("Error occured when creating the new flight " + ex.getMessage());
+                        return;
+  
+                    } else if (input.equals("N")) {
+                        System.out.println("Unable to create a complementary return flight with a different aircraft configuration or same flight number!");
+                        return;
                     }
-                } else if (input.equals("N")) {
-                    return;
                 }
             }
+        }catch (FlightExistException ex ) {
+            System.out.println("Error occured when creating the new flight " + ex.getMessage());
         }
-
-       
         
     }
+
     
     private void doViewAllFlights() {
+        Scanner scanner = new Scanner(System.in);
         System.out.println("*** FRS Management Portal - View All Flight ***\n");
         List<Flight> allFlights = flightSessionBeanRemote.viewAllFlights();
-//        System.out.printf("%10s%15s%20s%20s\n", "FlightID", "Flight Number" ,"Origin Airport", "Destination Airport");
-//        for (Flight flight : allFlights) {
-//            System.out.printf("%10s%15s%20s%20s\n", flight.getFlightId(), flight.getFlightNumber(), flight.getFlightRoute().getOriginAirport().getAirportCode(), flight.getFlightRoute().getDestinationAirport().getAirportCode());
-//        }    
-        
         System.out.printf("%-10s %-15s %-20s %-20s\n", "FlightID", "Flight Number", "Origin Airport", "Destination Airport");
         for (Flight flight : allFlights) {
             System.out.printf("%-10s %-15s %-20s %-20s\n", 
@@ -488,13 +515,16 @@ public class MainApp {
                 flight.getFlightRoute().getOriginAirport().getAirportCode(), 
                 flight.getFlightRoute().getDestinationAirport().getAirportCode());
         }
+        
+        System.out.print("Press any key to continue> ");
+        scanner.nextLine();
     }
     
     private void doViewFlightDetails() {
         
         Scanner scanner = new Scanner(System.in);
         System.out.println("*** FRS Management Portal - View Flight Details ***\n");
-        System.out.println("Enter FlightNumber: ");
+        System.out.println("Enter FlightNumber (Numbers Only): ");
         String flightNumber = scanner.nextLine().trim();
         
         try {
@@ -505,9 +535,9 @@ public class MainApp {
             AircraftConfig config = flight.getAircraftConfig();
             List<CabinClassConfig> cabinClassConfig = config.getCabinClassConfig();
 
-            System.out.printf("%10s%20s%20s%35s%20s%35s%25s%30s%40s%25s%20s%20s%30s\n", "Flight ID", "Flight Number", "Flight Route ID", "Origin Airport Name", "Origin Airport IATA", "Destination Airport Name", "Destination Airport IATA", "Aircraft Configuration ID", "Name", "Cabin Class ID", "Max Seats Capacity", "Aircraft Type", "Returning Flight Number");
+            System.out.printf("%-10s%-20s%-20s%-20s%-35s%-20s%-35s%-25s%-30s%-40s%-25s%-20s%-20s%-30s\n", "Flight ID", "Flight Number", "Cabin Class", "Cabin Class ID", "Flight Route ID", "Origin Airport Name", "Origin Airport IATA", "Destination Airport Name", "Destination Airport IATA", "Aircraft Configuration ID", "Name", "Max Seats Capacity", "Aircraft Type", "Returning Flight Number");
             for(int i = 0; i< cabinClassConfig.size(); i++) {
-            System.out.printf("%10s%20s%20s%35s%20s%35s%25s%30s%40s%25s%20s%20s%30s\n", flight.getFlightId(), flight.getFlightNumber(), route.getFlightRouteId().toString(), route.getOriginAirport().getAirportName() ,route.getOriginAirport().getAirportCode(), route.getDestinationAirport().getAirportName() ,route.getDestinationAirport().getAirportCode(), config.getAircraftConfigId().toString(), config.getAircraftConfigName(), cabinClassConfig.get(i).getCabinClassConfigId(), cabinClassConfig.get(i).getMaxSeatCapacity(), config.getAircraftType().getAircraftTypeName(), flight.getReturningFlight() != null ? flight.getReturningFlight().getFlightNumber(): "None");
+            System.out.printf("%-10s%-20s%-20s%-20s%-35s%-20s%-35s%-25s%-30s%-40s%-25s%-20s%-20s%-30s\n", flight.getFlightId(), flight.getFlightNumber(), cabinClassConfig.get(i).getCabinClassName().toString(),cabinClassConfig.get(i).getCabinClassConfigId(), route.getFlightRouteId().toString(), route.getOriginAirport().getAirportName() ,route.getOriginAirport().getAirportCode(), route.getDestinationAirport().getAirportName() ,route.getDestinationAirport().getAirportCode(), config.getAircraftConfigId().toString(), config.getAircraftConfigName(), cabinClassConfig.get(i).getMaxSeatCapacity(), config.getAircraftType().getAircraftTypeName(), flight.getReturningFlight() != null ? flight.getReturningFlight().getFlightNumber(): "None");
             }
             
             System.out.println("--------------------------");
@@ -560,16 +590,10 @@ public class MainApp {
                 FlightRoute existingFlightRoute = flight.getFlightRoute();
                 FlightRoute flightRoute = flightRouteSessionBeanRemote.retrieveFlightRouteByRouteID(chosenRouteId);
                 if (flightRoute.getOriginAirport() != flight.getFlightRoute().getOriginAirport() && flightRoute.getDestinationAirport() != flight.getFlightRoute().getDestinationAirport()) {
-//                    List<Flight> flightsInExistingFlightRoute = existingFlightRoute.getFlights();
-//                    flightsInExistingFlightRoute.remove(flight);
-//                    existingFlightRoute.setFlights(flightsInExistingFlightRoute);
                     
                     newFlight.setFlightRoute(flightRoute);
-//                    if (flight.getReturningFlight() != null) {
-//                        
-//                    }
                     updated = true;
-//                    flightSessionBeanRemote.deleteFlight(flightId);
+
                 }
             } catch (FlightRouteNotFoundException ex) {
                 System.out.println("Error: " + ex.getMessage() + "\nPlease try again!\n");
@@ -615,8 +639,14 @@ public class MainApp {
     
     private void doDeleteFlight(Long flightId) throws FlightNotFoundException {
         Flight flight = flightSessionBeanRemote.retrieveFlightByFlightID(flightId);
+        
         flightSessionBeanRemote.deleteFlight(flightId);
-        System.out.println("Successfully deleted flight " + flight.getFlightNumber());
+        
+        if (flight.getFlightSchedulePlan() != null) {
+            System.out.println("Successfully disabled flight");
+        } else {
+            System.out.println("Successfully deleted flight " + flight.getFlightNumber());
+        } 
     }
     
     private void doCreateAircraftConfig() {
@@ -635,9 +665,6 @@ public class MainApp {
             Long aircraftTypeId = sc.nextLong();
             sc.nextLine();
             
-            //AircraftType aircraftType = aircraftTypeSessionBeanRemote.retrieveAircraftTypeByAircraftTypeId(aircraftTypeId);
-            //newAircraftConfig.setAircraftType(aircraftType);
-            //do i need to set aircraftconfig on aircraft type..?
             System.out.print("Enter Aircraft Configuration Name> ");
             String name = sc.nextLine().trim();
             newAircraftConfig.setAircraftConfigName(name);
@@ -657,31 +684,16 @@ public class MainApp {
             
             Long aircraftConfigId = aircraftConfigSessionBeanRemote.createAircraftConfig(newAircraftConfig, cabins, aircraftTypeId);
             
-            /*
-            if (seatCapacity <= aircraftType.getMaxCapacity()) {
-                aircraftType.getAircraftConfig().add(newAircraftConfig);
-                for (CabinClassConfig c : cabins) {
-                    Long id = cabinClassConfigSessionBeanRemote.createCabinClass(c, newAircraftConfig);
-                    //c.setAircraftConfig(newAircraftConfig);
-                }
-                newAircraftConfig.setCabinClassConfig(cabins);
-            } else {
-                throw new MaxSeatCapacityExceededException("Max seat capacity of cabin class exceeds the aircraft type!");
-            }
-            
-            Long aircraftConfigId = aircraftConfigSessionBeanRemote.createAircraftConfig(newAircraftConfig);
-            */
-            System.out.println("Aircraft Configuration " + aircraftConfigId + " created successfully!");
+            System.out.println("Aircraft Configuration " + name + " created successfully!");
         } catch (CabinClassNameNotFoundException ex) {
             Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
         } catch (UnknownPersistenceException ex) {
             Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
         } catch (MaxSeatCapacityExceededException ex) {
+            System.out.println("Max Seat Capacity Exceeded! \n");
+        } catch (AircraftTypeNotFoundException ex) {
             Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
         }
-       
-       
-       
     }
     
     public CabinClassConfig doCreateCabinClass() throws CabinClassNameNotFoundException, MaxSeatCapacityExceededException {
@@ -736,6 +748,7 @@ public class MainApp {
         }
 
         System.out.println("");
+        
     }
     
     public void doViewAircraftConfigDetails() {
@@ -760,8 +773,8 @@ public class MainApp {
                 maxCapacity += c.getMaxSeatCapacity();
             }
             
-            System.out.println("\nCabin Overview: " + aircraftConfig.getCabinClassConfig().size() + " cabin class(es) / " + maxCapacity + " total seats");
-            System.out.println("");
+            System.out.println("\nCabin Overview: " + aircraftConfig.getCabinClassConfig().size() + " cabin class(es) / " + maxCapacity + " total seats \n");
+         
         } catch (AircraftConfigNotFoundException ex) {
             Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
         }  
@@ -810,8 +823,24 @@ public class MainApp {
             for (Flight flight : flights) {
                 System.out.printf("%10s%20s%20s%25s\n", flight.getFlightId() ,flight.getFlightNumber(), flight.getFlightRoute().getOriginAirport().getAirportCode() + " -> " + flight.getFlightRoute().getDestinationAirport().getAirportCode() , flight.getAircraftConfig().getAircraftConfigName());
             }
-            System.out.print("Choose a flight to create a schedule plan for (INPUT ID)> ");
-            Flight selectedF = flightSessionBeanRemote.retrieveFlightByFlightID(scanner.nextLong());
+            System.out.println("\n Press (1) to enter Flight ID, Press (2) to enter Flight Number to select flight");
+            int select = scanner.nextInt();
+            Long idSelected = null;
+            String flightNoSelected = null;
+            if (select == 1) {
+                System.out.print("Choose a flight to create a schedule plan for (INPUT ID)> ");
+                idSelected = scanner.nextLong();
+            } else {
+                System.out.print("Choose a flight to create a schedule plan for (INPUT Flight Number - numbers only)> ");
+                scanner.nextLine();
+                flightNoSelected = scanner.nextLine().trim();
+            }
+            Flight selectedF = null;
+            if (idSelected != null) {
+                selectedF = flightSessionBeanRemote.retrieveFlightByFlightID(scanner.nextLong());
+            } else if (flightNoSelected != null) {
+                selectedF = flightSessionBeanRemote.retrieveFlightByFlightNumber(flightNoSelected);
+            }
             
             plan.setFlightNumber(selectedF.getFlightNumber());
             
@@ -944,45 +973,11 @@ public class MainApp {
 
                         Date newDeparture = c.getTime();
                         listOfFlightScheduleInfoReturn.add(new Pair<>(newDeparture, fs.getFlightDuration()));
-                    }
-                    
-                    System.out.println("size of now: " + plan.getFlightSchedule().size());
-                    System.out.println("size of return: " + listOfFlightScheduleInfoReturn.size());
+                    }              
                     
                     List<CabinClassConfig> returnCabinClass = returnFlight.getAircraftConfig().getCabinClassConfig();
-                    System.out.println("Aircraft Configuration for flight " + returnFlight.getFlightNumber() + " contains " + returnCabinClass.size() + " cabins");
-                    System.out.println("Please enter fares for each cabin class!\n");
 
-                    List<Fare> faresReturn = new ArrayList<>();
-                    for (CabinClassConfig cc: returnCabinClass) {
-                        String type = "";
-                        if (cc.getCabinClassName() != null) switch (cc.getCabinClassName()) {
-                            case FIRST:
-                                type = "First Class";
-                                break;
-                            case BUSINESS:
-                                type = "Business Class";
-                                break;
-                            case PREMIUM_ECONOMY:
-                                type = "Premium Economy Class";
-                                break;
-                            case ECONOMY:
-                                type = "Economy Class";
-                                break;
-                            default:
-                                break;
-                        }
-                        System.out.println("** Creating fare for " + type + " **");
-                        while (true) {
-                            faresReturn.add(createFare(cc));
-                            System.out.print("Would you like to add more fares to this cabin class? (Y/N)> ");
-                            String reply2 = scanner.nextLine().trim();
-                            if(!reply.equalsIgnoreCase("N")) {
-                                break;
-                            }                         
-                        }
-                    }
-                    System.out.println("Fares for the cabin classes successfully created!\n");
+                    List<Fare> faresReturn = fares;
                     
                     returnPlan = flightSchedulePlanSessionBeanRemote.createNewFlightSchedulePlanMultiple(returnPlan, faresReturn, returnFlight.getFlightId(), listOfFlightScheduleInfoReturn);
                     System.out.println("New Flight Schedule Plan for Return Flight " + returnPlan.getFlightNumber() + " created successfully!\n");
@@ -994,18 +989,10 @@ public class MainApp {
                 }
             }           
         } catch (FlightNotFoundException ex) {
+            System.out.println("Flight does not exist! \n");
+        } catch (ParseException | FareExistException | UnknownPersistenceException | FlightSchedulePlanExistException | FlightSchedulePlanNotFoundException  ex) {
             Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ParseException ex) {
-            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (FareExistException ex) {
-            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (UnknownPersistenceException ex) {
-            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (FlightSchedulePlanExistException ex) {
-            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (FlightSchedulePlanNotFoundException ex) {
-            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } 
     }
     
     private void doViewAllFlightSchedulePlan() {
@@ -1203,7 +1190,7 @@ public class MainApp {
        try {
             Scanner sc = new Scanner(System.in);
             System.out.println("*** View Seats Inventory ***");
-            System.out.print("Enter Flight Number> ");
+            System.out.print("Enter Flight Number (Numbers Only)> ");
             String flightNumber = sc.nextLine().trim();
             Flight flight = flightSessionBeanRemote.retrieveFlightByFlightNumber(flightNumber);
             List<FlightSchedulePlan> plans = flight.getFlightSchedulePlan();
@@ -1221,18 +1208,13 @@ public class MainApp {
                             String.valueOf(fs.getFlightDuration()));
                 }
             }
-            System.out.print("Enter ID of flight schedule >  ");
-            Long chosenFlightScheduleId = sc.nextLong();
+            System.out.print("Enter ID of flight schedule (Enter (0) to exit)>  ");
+            Long id = sc.nextLong();
+            if (id == 0) {
+                return;
+            }
+            Long chosenFlightScheduleId = id;
             sc.nextLine();
-            
-//            FlightSchedule flightSchedule = null;
-//            for (FlightSchedulePlan fsp: plans) {
-//                for (FlightSchedule fs: fsp.getFlightSchedule()) {
-//                    if (Objects.equals(fs.getFlightScheduleId(), chosenFlightScheduleId)) {
-//                        flightSchedule = fs;
-//                    }
-//                }
-//            }
 
             FlightSchedule flightSchedule = flightScheduleSessionBeanRemote.retrieveFlightScheduleById(chosenFlightScheduleId);
            
@@ -1325,7 +1307,7 @@ public class MainApp {
         try {
             Scanner sc = new Scanner(System.in);
             System.out.println("*** View Flight Reservations ***");
-            System.out.print("Enter Flight Number (No. only) > ");
+            System.out.print("Enter Flight Number (Numbers Only)> ");
             String flightNumber = sc.nextLine().trim();
             Flight flight = flightSessionBeanRemote.retrieveFlightByFlightNumber(flightNumber);
             if (flight.getFlightSchedulePlan().isEmpty()) {
@@ -1340,18 +1322,13 @@ public class MainApp {
                     System.out.printf("%-25s%-30s%-20s\n", fs.getFlightScheduleId().toString(), fs.getDepartureDateTime().toString().substring(0, 19), String.valueOf(fs.getFlightDuration()));
                 }
             }
-            System.out.print("Enter ID of flight schedule>  ");
-            Long chosenFlightScheduleId = sc.nextLong();
+            System.out.print("Enter ID of flight schedule (Enter (0) to exit)>  ");
+            Long id = sc.nextLong();
+            if (id == 0) {
+                return;
+            }
+            Long chosenFlightScheduleId = id;
             sc.nextLine();
-        
-//            FlightScheduleEntity flightSchedule = null;
-//            for (FlightSchedulePlanEntity fsp: flight.getFlightSchedulePlan()) {
-//                for (FlightScheduleEntity fs: fsp.getFlightSchedule()) {
-//                    if (Objects.equals(fs.getFlightScheduleID(), chosenFlightScheduleId)) {
-//                        flightSchedule = fs;
-//                    }
-//                }
-//            }
     
             FlightSchedule flightSchedule = flightScheduleSessionBeanRemote.retrieveFlightScheduleById(chosenFlightScheduleId);
             
@@ -1415,7 +1392,7 @@ public class MainApp {
                         Passenger pass = pair.getKey();
                         String fareCode = pair.getValue();
                         System.out.printf("%-30s%-20s%-30s\n",
-                                pass.getFirstName() + pass.getLastName(),
+                                pass.getFirstName() + " " + pass.getLastName(),
                                 pass.getSeatNumber(),
                                 fareCode);
                     }

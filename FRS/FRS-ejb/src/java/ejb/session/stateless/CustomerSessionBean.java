@@ -34,7 +34,7 @@ public class CustomerSessionBean implements CustomerSessionBeanRemote, CustomerS
         try {
             em.persist(customer);
             em.flush();
-            return customer.getCustomerId();
+            return customer.getPersonId();
         } catch (PersistenceException ex) {
             throw new UnknownPersistenceException(ex.getMessage());
         }
@@ -46,7 +46,7 @@ public class CustomerSessionBean implements CustomerSessionBeanRemote, CustomerS
         if (c != null) {
             return c;
         } else {
-            throw new CustomerNotFoundException("Customer ID " + c.getCustomerId() + " does not exist!");
+            throw new CustomerNotFoundException("Customer ID " + c.getPersonId() + " does not exist!");
         }
     }
     public Customer retrieveCustomerByCustomerUsername(String username) throws CustomerNotFoundException {
